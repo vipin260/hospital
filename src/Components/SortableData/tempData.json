@@ -1,0 +1,34 @@
+{
+    "data": [
+      {
+        "id" : "1",
+        "name": "Jeevan",
+        "age": 21,
+        "gender": "male"
+      },
+      {
+        "id" : "2",
+        "name": "Piyush",
+        "age": 17,
+        "gender": "male"
+      },
+      {
+        "id" : "3",
+        "name": "Arti",
+        "age": 22,
+        "gender": "female"
+      },
+      {
+        "id" : "4",
+        "name": "Subham",
+        "age": 21,
+        "gender": "male"
+      },
+      {
+        "id" : "5",
+        "name": "Yuvraj",
+        "age": 23,
+        "gender": "male"
+      }
+    ]
+  }
