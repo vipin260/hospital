@@ -283,7 +283,7 @@ const CattegoryTable = () => {
                   name = 'pharmacy'
                   onClick={(e)=> clickNavigateCattegory(e)} 
                   >  
-                  Pharmacy
+                  Pharmacy1
                 </Button>
               </Grid>
               <Grid item sx={4}>
