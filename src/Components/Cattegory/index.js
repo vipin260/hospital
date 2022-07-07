@@ -4,14 +4,9 @@ import { makeStyles } from "@mui/styles";
 import Layout from "../../Pages/Layout";
 import FormControl from "@mui/material/FormControl";
 import Select from "react-select";
-import { red } from "@mui/material/colors";
 import { Switch } from "@mui/material";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { Hidden } from '@mui/material';
 import { useSelector, useDispatch } from "react-redux";
 import { FetchCattegoryData } from "../../redux/action/action";
-import { AddCategories } from "../../redux/action/action";
 import {categoryData} from '../../redux/action/Actions'
 import {ProductInsert} from '../../redux/action/Actions'
 
@@ -32,7 +27,6 @@ const useStyle = makeStyles((theme) => ({
       height: "max-content",
       marginBottom: "5%",
       padding: `${theme.spacing(4)} 0`,
-      //  border : '2px solid red'
     },
     '& #react-select-3-listbox':{
       backgroundColor : 'white !important',
@@ -113,47 +107,17 @@ const useStyle = makeStyles((theme) => ({
          color :"red",
 
     },
-    // '.css-1s2u09g-control':{
-    //     '& .css-2613qy-menu':{
-    //     border:'2px solid red'
-    //   }
-    // },
-    // '& . css-1pahdxg-control' :{
-    //   border:'2px solid red'
-    // },
   
   },
 }));
 
 const Addcategory = () => {
-  const toggleState  = useSelector((state) => state.togglingReducer.togglingAll);
-  const CategoryData = useSelector((state) => state.CategoryReducerData.apiState);
-  const DataCategory = useSelector((state) => state.CategoryDataReducers.ApiStat)
 
-  //console.log('categories are', DataCategory)
-  const Navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  if (CategoryData.length == 0) {
-    dispatch(FetchCattegoryData());
-  }
-
-  // if (DataCategory.length == 0) {
-  //   dispatch(categoryData());
-  // }
-
-  const options = [];
-  DataCategory.map((items)=>{
-    options.push({value : items.id, label: items.name})
-  })
-
-  
   const [category, setCategory] = useState({
     
     product_id        : "",
     product_name      : "",
     product_category  : "",
-    //opd_price         : "",
     toggle            : false,
     status            : "0",
   });
@@ -161,6 +125,22 @@ const Addcategory = () => {
   const [opdPriceState, setOpdPriceState] = useState({
     opd_price : ""
   })
+
+  const CategoryData = useSelector((state) => state.CategoryReducerData.apiState);
+  const DataCategory = useSelector((state) => state.CategoryDataReducers.ApiStat)
+
+
+  const dispatch = useDispatch();
+
+  if (CategoryData.length == 0) {
+    dispatch(FetchCattegoryData());
+  }
+
+  const options = [];
+  DataCategory.map((items)=>{
+    options.push({value : items.id, label: items.name})
+  })
+
 
   const handleChangerr = (event) => {
     const result = event.target.value.replace(/\D/g, '');
@@ -218,10 +198,8 @@ const Addcategory = () => {
 
   const SubmitData = () => {
 
-    //let sdata = {"action" : "AddNewProduct"}
     let insert_data={"action": "AddNewProduct","product": category , "opdprice": opdPriceState}
     dispatch(ProductInsert(insert_data))
-    //.then(()=>Navigate('/allproduct'))
     setCategory({
       product_id        : "",
       product_name      : "",
@@ -237,8 +215,7 @@ const Addcategory = () => {
     dispatch(categoryData(data))
   },[dispatch])
 
- //console.log('Category',category );
- //console.log('opdPriceState data', opdPriceState)
+
  
  const classes = useStyle();
 
@@ -301,11 +278,6 @@ const Addcategory = () => {
                   >
                     Active
                   </Typography>
-                {/* 
-                  <Typography
-                    type='hidden'
-                    name ='status'
-                  /> */}
 
                   </>
                 ) : (
@@ -340,5 +312,4 @@ const Addcategory = () => {
     </Layout>
   );
 };
-
 export default Addcategory;

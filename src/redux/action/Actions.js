@@ -30,14 +30,12 @@ export const InsertPatient = (data) => async dispatch =>{
 
 //PATIENTFETCH
 export const FetchPatient = (data) => async dispatch =>{
-    
     try{
     const response = await axios.post(linkUrl + 'patient.php',{...data})
         dispatch({
             type    : PATIENTFETCH,
             payload : response.data
         })
-        
     }catch(e){
         dispatch({
             type    : ERROR,
@@ -45,7 +43,7 @@ export const FetchPatient = (data) => async dispatch =>{
         })
     }
  }
- 
+
 //PATIENTBYID
 export const FetchSinglePatient = ( data) => async dispatch =>{
     //console.log("getSupplierByID",id)
@@ -102,7 +100,7 @@ export const DeletePatient = (data) => async dispatch =>{
 
 //CATEGORYDATA
  export const categoryData = (data) => async dispatch => {
-    //console.log("Rakesh dekh le",data)
+    console.log("data is",data)
  try{
  const response = await axios.post(linkUrl + 'product.php',{...data}) 
 
@@ -203,10 +201,14 @@ export const FetchProductOpd = (fetch) => async dispatch =>{
 
 
 //PRODUCTBYID
-export const FetchSingleProduct = (id,data) => async dispatch =>{
-    //console.log('PRODUCTBYID is', id)
+export const FetchSingleProduct = (data) => async dispatch =>{
+    console.log('PRODUCTBYID is', data)
   try{
-    const res = await axios.post(linkUrl + `product.php?product_id=${id}`,{"action" : "getProductByID",...data})
+    const res = await axios.post(linkUrl + `product.php`,{...data})
+
+    //const res = await axios.post(linkUrl + `product.php?product_id=${id}`,{"action" : "getProductByID",...data})
+    //const res = await axios.post(linkUrl + `purchase.php`,{...data})
+
     dispatch({
         type    :   PRODUCTBYID,
         payload :   res.data
@@ -220,10 +222,10 @@ export const FetchSingleProduct = (id,data) => async dispatch =>{
 }
 
  //UPDATEPRODUCT
- export const UpdateProduct = (id,data) => async dispatch =>{
-    //console.log('UPDATEPRODUCT is', data)
+ export const UpdateProduct = (data) => async dispatch =>{
+    console.log('UPDATEPRODUCT is', data)
     try{
-        const response = await axios.post(linkUrl + `product.php?${id}`,{"action" : "UpdateProduct",...data})
+        const response = await axios.post(linkUrl + `product.php`,{...data})
         dispatch({
             type    : UPDATEPRODUCT,
             payload : response.data

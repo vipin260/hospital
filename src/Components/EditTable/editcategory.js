@@ -13,6 +13,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { FetchSingleCattegory } from "../../redux/action/action";
 import { UpdateCattegoryData } from "../../redux/action/action";
 import { FetchSingleProduct } from "../../redux/action/Actions";
+import {categoryData} from '../../redux/action/Actions'
+
 import {UpdateProduct} from "../../redux/action/Actions"
 
 const useStyle = makeStyles((theme) => ({
@@ -107,39 +109,48 @@ const useStyle = makeStyles((theme) => ({
 const Editcategory = () => {
   const toggleState = useSelector((state) => state.togglingReducer.togglingAll);
   const SingleCategoryData = useSelector((state) => state.ProductReducersData.SingleApi);
+  const DataCategory = useSelector((state) => state.CategoryDataReducers.ApiStat)
+
 
  console.log('single data',SingleCategoryData);
+ console.log('DataCategory',DataCategory);
 
   const Navigate = useNavigate();
   const dispatch = useDispatch();
 
  
 
-  const options = [
-    { value: "1", label: "Pharmacy" },
-    { value: "2", label: "Optical" },
-    { value: "3", label: "OPD" },
-  ];
+  // const options = [
+  //   { value: "1", label: "Pharmacy" },
+  //   { value: "2", label: "Optical" },
+  //   { value: "3", label: "OPD" },
+  // ];
+
+  const options = [];
+  DataCategory.map((items)=>{
+    options.push({value : items.id, label: items.name})
+  })
+  console.log('options are', options)
   
   const [category, setCategory] = useState({
     product_id        : SingleCategoryData.data.product_id,
     product_name      : SingleCategoryData.data.product_name,
     product_category  : SingleCategoryData.data.product_category,
-    opd_price         : SingleCategoryData.data.opd_price,
     toggle            : SingleCategoryData.data.status==="0" ? false : true ,
     status            : SingleCategoryData.data.status,
   });
-
+  const [opdPriceState, setOpdPriceState] = useState({
+    opd_price : SingleCategoryData.data.opd_price
+  })
   const handleChangerr = (event) => {
     const result = event.target.value.replace(/\D/g, '');
-    setCategory((item)=>{
+    setOpdPriceState((item)=>{
       return{
         ...item,
         opd_price : result
-
       }
     });
-  };
+  }
 
   const handleData = (e) => {
     const { name, value } = e.target;
@@ -180,17 +191,38 @@ const Editcategory = () => {
         };
       });
     }
-
    // console.log("category data", category);
   };
+//const fDatat = () =>{
 
+//   const filterateData = DataCategory.map((items)=> {return items.id} )
+//   const filt = options.map((items)=>{return items.value})
+//   const fDatata = DataCategory.filter((items)=> items.id === filt)
+//   for(let i=0;i<fDatata.length;i++){
+//     return DataCategory[i].name
+//   }
+// console.log('filterateData', filterateData)
+// console.log('filt', filt)
+
+
+//}
+
+//console.log('fDatat', fDatat())
   const SubmitData = () => {
-    dispatch(UpdateProduct(category.product_id,category))
-    .then(()=>Navigate('/allproduct'))
+    let update_data={"action" : "UpdateProduct","product": category , "opdprice": opdPriceState}
+    dispatch(UpdateProduct(update_data))
+    //.then(()=>Navigate('/allproduct'))
 
   };
 
   //console.log('Category',category );
+  // useEffect(()=>{
+  //   dispatch(FetchSingleProduct)
+  // })
+  useEffect(()=>{
+    let data= {"action":"getAllCategory"}
+    dispatch(categoryData(data))
+  },[dispatch])
 
   const classes = useStyle();
 
@@ -212,11 +244,12 @@ const Editcategory = () => {
               onChange={handleData}
             />
             <FormControl className={classes.radionBtns}>
-              
+
               <Select
                 options={options}
-                defaultValue={SingleCategoryData.data.product_category === '1' ? options[0] : 
-                (SingleCategoryData.data.product_category === '3' ? options[2] : options[1]) }
+                defaultValue={category.product_category}
+                // defaultValue={SingleCategoryData.data.product_category === '1' ? options[0] : 
+                // (SingleCategoryData.data.product_category === '3' ? options[2] : options[1]) }
                 onChange={handleChange}
               />
           {  category.product_category ==='3' ?
@@ -226,7 +259,7 @@ const Editcategory = () => {
               name="opd_price"
               variant="outlined"
               sx={{marginTop: 2 }}
-              value={category.opd_price}
+              value={opdPriceState.opd_price}
               onChange={handleChangerr}
                 /> : null
           }
