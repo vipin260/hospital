@@ -1,21 +1,19 @@
 import { makeStyles } from "@mui/styles";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../../Pages/Layout";
 import Table from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
 import { Paper, Button, Box, Grid } from "@mui/material";
 import "react-data-table-component-extensions/dist/index.css";
 import { useSelector, useDispatch } from "react-redux";
-import { toggle ,  FetchCattegoryData,DeleteCattegoryData,FetchSingleCattegory } from "../../redux/action/action";
+import { toggle ,  FetchCattegoryData } from "../../redux/action/action";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditTable from "../EditTable/editcategory";
 import { useNavigate } from "react-router-dom";
-import linkData from '../baseurl/links';
 import { FetchProduct, FetchSingleProduct, DeleteProduct, FetchProductPharmacy, FetchProductOptical, FetchProductOpd } 
 from "../../redux/action/Actions";
-import { Routes, Route, Navigate, useLocation, NavLink, useParams } from 'react-router-dom';
-import { generatePath, createPath } from "react-router-dom";
+
+
 
 
 
@@ -38,56 +36,29 @@ const useStyle = makeStyles((theme) => ({
   delete :{
     color :"#FF0000"
   },
-  opd :{
-    display :"none"
-  },
 }));
 
 const CattegoryTable = () => {
+
   const [data, setData] = useState([]);
   const [tableData, setTableData] = useState({});
   const [deleteSuccess, setDeleteSuccess] = useState("");
-  const [tableOPDData, setTableOPDData] = useState({});
-  
-  
+ 
 
 
   const dispatch = useDispatch();
   const Navigates = useNavigate();
-  const Parms   = useParams();
+ 
 
-  // console.log('ss', Parms);
-
-  const toggleState  = useSelector((state) => state.togglingReducer.togglingAll);
-  const CategoryData = useSelector((state) => state.CategoryReducerData.apiState);
   const FetchProductData = useSelector((state) => state.ProductReducersData.FetchApi);
   const FetchPharmacyData = useSelector((state) => state.ProductReducersData.PharmacyFetch);
   const FetchOpticalData = useSelector((state) => state.ProductReducersData.OpticalFetch);
   const FetchOpdData = useSelector((state) => state.ProductReducersData.OpdFetch);
-  //const FetchAllProductData = useSelector((state) => state.ProductReducersData.FetchApi);
 
-  //const SingleCategoryData = useSelector((state) => state.SingleCattegoryReducer.stateApi);
-
-  //console.log(' datas are',FetchOpdData);
-
-
-
-  // if (CategoryData.length == 0) {
-  //   dispatch(FetchCattegoryData());
-  // }
-
-  // if (FetchProductData.length == 0) {
-  //   dispatch(FetchProduct());
-  // }
-
-  const Location = useLocation();
-
-  const [url, setUrl] = useState('')
-
-  //console.log('object', url);
 
   const edithandle = (product_id) => {
-    dispatch(FetchSingleProduct(product_id))
+    let data = { "id":parseInt(product_id), "action" : "getProductByID"}
+    dispatch(FetchSingleProduct(data))
     .then(()=> Navigates('/editcategory'))
   };
 
@@ -105,14 +76,7 @@ const CattegoryTable = () => {
   const classes = useStyle();
 
   const columns = [
-    // {
-    //   name: ".S.No",
-    //   selector: ".s.no",
-    //   sortable: true,
-    //   cell: (row, index) => index + 1,
-    // },
     {
-      id: 1,
       name: "Product Name",
       selector : row => row.product_name,
       sortable: true,
@@ -120,48 +84,9 @@ const CattegoryTable = () => {
     {
       name: "Product Category",
       selector: row => row.name  ,
-      //selector: row => row.product_category ==='1' ? 'Pharmacy' : (row.product_category ==='2' ?'Optical' : 'OPD') ,
       sortable: true,
-    },
-    {
-      name: "Opd Price",
-      selector : row => row.opd_price,
-      sortable: true,
-      // cell : (rows) =>{
-      //   data.map((v) => {
-      //     console.log("fun",v.name)
-      //     if(v.name=="OPD"){
-      //       console.log("hfsdhf");
-      //       return{}
-              
-              
-          
-            
-                
-            
-      //   }
-            
-      //       })
-      // }
-          
     },
     
-    // { 
-    //   cell : (rows) =>{
-    //     if(rows.opd_price){
-    //       return{
-    //         name: "Opd Price",
-    //         selector : row => row.opd_price,
-    //         sortable: true,
-    //       }
-    //     }
-    //   },
-    //   // name: "Opd Price",
-    //   // selector : row => row.opd_price,
-    //   // sortable: true,
-    //   //cell : (row) => row.product_category === '3' ? row.opd_price  : null
-    // },
-
     {
       name: "Status ",
       selector: row => row.status,
@@ -188,40 +113,23 @@ const CattegoryTable = () => {
     },
   ];
 
- 
   
-
   const clickNavigate =() =>{
     Navigates('/addproduct')
   }
 
-
-
-
-
   const clickNavigateCattegory =(e) =>{
     let {name} = e.target
     if(name === 'pharmacy'){ 
-      //setUrl(Location + '/add')
       setData(FetchPharmacyData)
-      //  Navigates(Location.pathname + '/pharmacy')
-      //Navigates('/pharmacydata') 
+
      }
     else if(name === 'optical'){
       setData(FetchOpticalData);
-      //Navigates('/opticaldata')
+
     }
     else if(name === 'opd'){
       setData(FetchOpdData);
-      //Navigates('/opddata')
-      let run = columns[2];
-      const fast = columns.filter((v) => {
-        return v.name!==run.name;
-      })
-      
-     console.log(run)
-     console.log(fast)
-
     }
     else{
       setData(FetchProductData);
@@ -229,11 +137,6 @@ const CattegoryTable = () => {
     }
     
   }
-  
-  // useEffect(() => {
-  //   setCol({fast});
-    
-  // }, [clickNavigateCattegory]);
 
 
   useEffect(() => {
@@ -268,13 +171,11 @@ const CattegoryTable = () => {
   },[dispatch])
 
 
-  //console.log('location', Location.pathname);
 
   return (
     <>
       <Layout>
         <div className={classes.root}>
-          {/* <div className={classes.student}> */}
           <Grid container spacing={2} sx={{justifyContent:'center'}}>
              <Grid item sx={4}  >
                 <Button sx={{marginRight:'10%',marginBottom:'5%',color:'#00a1ff',
@@ -334,7 +235,6 @@ const CattegoryTable = () => {
                 />
               </DataTableExtensions>
             </Paper>
-          {/* </div> */}
         </div>
       </Layout>
     </>
