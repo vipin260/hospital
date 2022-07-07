@@ -1,21 +1,19 @@
 import { makeStyles } from "@mui/styles";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../../Pages/Layout";
 import Table from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
 import { Paper, Button, Box, Grid } from "@mui/material";
 import "react-data-table-component-extensions/dist/index.css";
 import { useSelector, useDispatch } from "react-redux";
-import { toggle ,  FetchCattegoryData,DeleteCattegoryData,FetchSingleCattegory } from "../../redux/action/action";
+import { toggle ,  FetchCattegoryData } from "../../redux/action/action";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditTable from "../EditTable/editcategory";
 import { useNavigate } from "react-router-dom";
-import linkData from '../baseurl/links';
 import { FetchProduct, FetchSingleProduct, DeleteProduct, FetchProductPharmacy, FetchProductOptical, FetchProductOpd } 
 from "../../redux/action/Actions";
-import { Routes, Route, Navigate, useLocation, NavLink, useParams } from 'react-router-dom';
-import { generatePath, createPath } from "react-router-dom";
+
+
 
 
 
@@ -38,12 +36,10 @@ const useStyle = makeStyles((theme) => ({
   delete :{
     color :"#FF0000"
   },
-  opd :{
-    display :"none"
-  },
 }));
 
 const CattegoryTable = () => {
+
   const [data, setData] = useState([]);
   const [tableData, setTableData] = useState({});
   const [deleteSuccess, setDeleteSuccess] = useState("");
@@ -54,40 +50,17 @@ const CattegoryTable = () => {
 
   const dispatch = useDispatch();
   const Navigates = useNavigate();
-  const Parms   = useParams();
+ 
 
-  // console.log('ss', Parms);
-
-  const toggleState  = useSelector((state) => state.togglingReducer.togglingAll);
-  const CategoryData = useSelector((state) => state.CategoryReducerData.apiState);
   const FetchProductData = useSelector((state) => state.ProductReducersData.FetchApi);
   const FetchPharmacyData = useSelector((state) => state.ProductReducersData.PharmacyFetch);
   const FetchOpticalData = useSelector((state) => state.ProductReducersData.OpticalFetch);
   const FetchOpdData = useSelector((state) => state.ProductReducersData.OpdFetch);
-  //const FetchAllProductData = useSelector((state) => state.ProductReducersData.FetchApi);
 
-  //const SingleCategoryData = useSelector((state) => state.SingleCattegoryReducer.stateApi);
-
-  //console.log(' datas are',FetchOpdData);
-
-
-
-  // if (CategoryData.length == 0) {
-  //   dispatch(FetchCattegoryData());
-  // }
-
-  // if (FetchProductData.length == 0) {
-  //   dispatch(FetchProduct());
-  // }
-
-  const Location = useLocation();
-
-  const [url, setUrl] = useState('')
-
-  //console.log('object', url);
 
   const edithandle = (product_id) => {
-    dispatch(FetchSingleProduct(product_id))
+    let data = { "id":parseInt(product_id), "action" : "getProductByID"}
+    dispatch(FetchSingleProduct(data))
     .then(()=> Navigates('/editcategory'))
   };
 
@@ -106,7 +79,6 @@ const CattegoryTable = () => {
 
   const [columns, setColumns] = useState( [
     {
-      id: 1,
       name: "Product Name",
       selector : row => row.product_name,
       sortable: true,
@@ -188,9 +160,7 @@ const CattegoryTable = () => {
   //   },
   // ]
 
- 
   
-
   const clickNavigate =() =>{
     Navigates('/addproduct')
   }
@@ -267,9 +237,6 @@ let text= false;
     }
     
   }
-  
-  
-  
 
 
   useEffect(() => {
@@ -304,13 +271,11 @@ let text= false;
   },[dispatch])
 
 
-  
 
   return (
     <>
       <Layout>
         <div className={classes.root}>
-        
           <Grid container spacing={2} sx={{justifyContent:'center'}}>
              <Grid item sx={4}  >
                 <Button sx={{marginRight:'10%',marginBottom:'5%',color:'#00a1ff',
@@ -370,7 +335,6 @@ let text= false;
                 />
               </DataTableExtensions>
             </Paper>
-          {/* </div> */}
         </div>
       </Layout>
     </>
