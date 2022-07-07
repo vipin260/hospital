@@ -108,7 +108,7 @@ const Editcategory = () => {
   const toggleState = useSelector((state) => state.togglingReducer.togglingAll);
   const SingleCategoryData = useSelector((state) => state.ProductReducersData.SingleApi);
 
- //console.log('single data',SingleCategoryData);
+ console.log('single data',SingleCategoryData);
 
   const Navigate = useNavigate();
   const dispatch = useDispatch();
