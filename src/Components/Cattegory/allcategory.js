@@ -43,7 +43,9 @@ const CattegoryTable = () => {
   const [data, setData] = useState([]);
   const [tableData, setTableData] = useState({});
   const [deleteSuccess, setDeleteSuccess] = useState("");
- 
+  const [tableOPDData, setTableOPDData] = useState(false);
+  
+  
 
 
   const dispatch = useDispatch();
@@ -75,7 +77,7 @@ const CattegoryTable = () => {
 
   const classes = useStyle();
 
-  const columns = [
+  const [columns, setColumns] = useState( [
     {
       name: "Product Name",
       selector : row => row.product_name,
@@ -83,10 +85,10 @@ const CattegoryTable = () => {
     },
     {
       name: "Product Category",
-      selector: row => row.name  ,
+      selector: row =>  row.name,
       sortable: true,
     },
-    
+  
     {
       name: "Status ",
       selector: row => row.status,
@@ -111,25 +113,123 @@ const CattegoryTable = () => {
         </Box>
       ],
     },
-  ];
+  ]);
+
+  // const newColumn = [
+  //   {
+  //     id: 1,
+  //     name: "Product Name",
+  //     selector : row => row.product_name,
+  //     sortable: true,
+  //   },
+    
+  //   {
+  //     name: "Product Category",
+  //     selector: row =>  row.name,
+  //     sortable: true,
+  //   },
+  //   {  
+  //     name: "Opd Price",
+  //     selector : row => row.opd_price,
+  //     sortable: true,
+  //   },
+  
+  //   {
+  //     name: "Status ",
+  //     selector: row => row.status,
+  //     sortable: true,
+  //     cell : (rows)  =>{
+  //       if(rows.status ==="0"){
+  //         return "inactive"
+  //       }else{
+  //         return "active"
+  //       }
+  //     }
+  //   },
+
+  //   {
+  //     name: "Action",
+  //     sortable: row => row.false,
+  //     selector: row => row.null,
+  //     cell: (d, product_id) => [
+  //       <Box key={product_id}>
+  //       <EditIcon className={classes.edit}  onClick={()=>edithandle(d.product_id)} />
+  //       <DeleteIcon className={classes.delete} onClick={() => handledelete(d.product_id)} />
+  //       </Box>
+  //     ],
+  //   },
+  // ]
 
   
   const clickNavigate =() =>{
     Navigates('/addproduct')
   }
 
+  const add = {  
+    name: "Opd Price",
+    selector : row => row.opd_price,
+    sortable: true,
+  }
+let text= false;
+
   const clickNavigateCattegory =(e) =>{
     let {name} = e.target
     if(name === 'pharmacy'){ 
+      const newColumn1 = columns.filter((v) => {
+        return v.name!=="Opd Price";
+      })
+      // const newColumn1 = columns.slice(0,4);
+      setTableOPDData(false)
       setData(FetchPharmacyData)
-
+      setColumns(newColumn1);
+      console.log("after",columns)
+      
+      let run = columns[2]; 
      }
     else if(name === 'optical'){
       setData(FetchOpticalData);
-
+      const newColumn1 = columns.filter((v) => {
+        return v.name!=="Opd Price";
+      })
+      setColumns(newColumn1);
     }
     else if(name === 'opd'){
+      setTableOPDData(true)
+      // setColumns(newColumn);
+      columns.map((t) => {
+        if(t.name=="Opd Price"){
+          text=true;
+          
+        }
+        
+      })
+      if(text==false){
+        console.log("in loop")
+          let newColumn2 = columns.concat(add);
+          console.log("column is",columns)
+          console.log("column2 is",newColumn2)
+          
+          const moveArrayItemToNewIndex = (arr, old_index, new_index) => {
+            if (new_index >= arr.length) {
+                var k = new_index - arr.length + 1;
+                while (k--) {
+                    arr.push(undefined);
+                }
+            }
+            arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+            return arr; 
+        };
+        
+        
+        const latestColumn = moveArrayItemToNewIndex(newColumn2, 4, 2);
+
+          setColumns(latestColumn)
+          
+      }
+      
       setData(FetchOpdData);
+      
+      console.log("before",columns)
     }
     else{
       setData(FetchProductData);
@@ -184,7 +284,7 @@ const CattegoryTable = () => {
                   name = 'pharmacy'
                   onClick={(e)=> clickNavigateCattegory(e)} 
                   >  
-                  Pharmacy
+                  Pharmacy1
                 </Button>
               </Grid>
               <Grid item sx={4}>
