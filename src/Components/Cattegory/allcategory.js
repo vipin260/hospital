@@ -143,50 +143,50 @@ const CattegoryTable = () => {
     },
   ]);
 
-  const newColumn = [
-    {
-      id: 1,
-      name: "Product Name",
-      selector : row => row.product_name,
-      sortable: true,
-    },
+  // const newColumn = [
+  //   {
+  //     id: 1,
+  //     name: "Product Name",
+  //     selector : row => row.product_name,
+  //     sortable: true,
+  //   },
     
-    {
-      name: "Product Category",
-      selector: row =>  row.name,
-      sortable: true,
-    },
-    {  
-      name: "Opd Price",
-      selector : row => row.opd_price,
-      sortable: true,
-    },
+  //   {
+  //     name: "Product Category",
+  //     selector: row =>  row.name,
+  //     sortable: true,
+  //   },
+  //   {  
+  //     name: "Opd Price",
+  //     selector : row => row.opd_price,
+  //     sortable: true,
+  //   },
   
-    {
-      name: "Status ",
-      selector: row => row.status,
-      sortable: true,
-      cell : (rows)  =>{
-        if(rows.status ==="0"){
-          return "inactive"
-        }else{
-          return "active"
-        }
-      }
-    },
+  //   {
+  //     name: "Status ",
+  //     selector: row => row.status,
+  //     sortable: true,
+  //     cell : (rows)  =>{
+  //       if(rows.status ==="0"){
+  //         return "inactive"
+  //       }else{
+  //         return "active"
+  //       }
+  //     }
+  //   },
 
-    {
-      name: "Action",
-      sortable: row => row.false,
-      selector: row => row.null,
-      cell: (d, product_id) => [
-        <Box key={product_id}>
-        <EditIcon className={classes.edit}  onClick={()=>edithandle(d.product_id)} />
-        <DeleteIcon className={classes.delete} onClick={() => handledelete(d.product_id)} />
-        </Box>
-      ],
-    },
-  ]
+  //   {
+  //     name: "Action",
+  //     sortable: row => row.false,
+  //     selector: row => row.null,
+  //     cell: (d, product_id) => [
+  //       <Box key={product_id}>
+  //       <EditIcon className={classes.edit}  onClick={()=>edithandle(d.product_id)} />
+  //       <DeleteIcon className={classes.delete} onClick={() => handledelete(d.product_id)} />
+  //       </Box>
+  //     ],
+  //   },
+  // ]
 
  
   
@@ -239,7 +239,7 @@ let text= false;
           console.log("column is",columns)
           console.log("column2 is",newColumn2)
           
-          function moveArrayItemToNewIndex(arr, old_index, new_index) {
+          const moveArrayItemToNewIndex = (arr, old_index, new_index) => {
             if (new_index >= arr.length) {
                 var k = new_index - arr.length + 1;
                 while (k--) {
