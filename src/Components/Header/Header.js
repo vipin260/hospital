@@ -36,7 +36,7 @@ const schoolData = [
     { id: 2, name: 'Product', icon: <SubjectIcon />, path:'allproduct', package: [{ id:'2', text2: 'Add Category',text: 'All Products', pathName:'allcategory' , pathName2: 'addcategory'}] },
     { id: 3, name: 'Supplier', icon: <ArticleIcon />, path:'allsupplier', package: [{ id:'3', text: 'All Supplier', text2: 'Add Supplier', pathName:'allsupplier' ,pathName2: 'addsupplier' }] },
     { id: 4, name: 'Purchase', icon: <QuestionAnswerIcon />,path:'allpurchase', package: [{ id:'4', text: 'All Purchase', text2: 'Add New Purchase', pathName:'allpurchase', pathName2: 'addpurchase'}] },
-    // { id: 5, name: 'Visiting', icon: <QuestionAnswerIcon />,path:'visiting', package: [{ id:'5', text: 'Visiting', pathName:'visiting'}] },
+    { id: 5, name: 'Visiting', icon: <QuestionAnswerIcon />,path:'visiting', package: [{ id:'5', text: 'Visiting', pathName:'visiting'}] },
    
 ]
 const MainSidebar = () => {
