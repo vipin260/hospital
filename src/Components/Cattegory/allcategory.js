@@ -57,7 +57,7 @@ const CattegoryTable = () => {
   const FetchOpticalData = useSelector((state) => state.ProductReducersData.OpticalFetch);
   const FetchOpdData = useSelector((state) => state.ProductReducersData.OpdFetch);
 
-
+console.log("check",FetchOpdData)
   const edithandle = (product_id) => {
     let data = { "id":parseInt(product_id), "action" : "getProductByID"}
     dispatch(FetchSingleProduct(data))
