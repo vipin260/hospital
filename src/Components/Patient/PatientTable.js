@@ -46,6 +46,7 @@ const PatientTable = () => {
   const toggleState = useSelector((state)=>state.togglingReducer.togglingAll);
   const patientData = useSelector((state) =>state.PatientReducerData.apiState);
   //const patientData = useSelector((state) =>state.FetchDataReducer.apiState);
+  console.log("patient",patientData);
 
   const [deleteSuccess, setDeleteSuccess] = useState("");
 
