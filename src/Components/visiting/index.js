@@ -3,9 +3,10 @@ import { FormControlLabel, Paper, Box, Button, Typography, TextField , Checkbox 
 import { makeStyles } from "@mui/styles";
 import Layout from "../../Pages/Layout";
 import { useNavigate } from "react-router-dom";
-import {AddInvoiceData ,FetchSupplName, FetchData, FetchCattegoryData, FetchPurchases} from '../../redux/action/action'
+import {AddInvoiceData ,FetchSupplName, FetchData, FetchPurchases} from '../../redux/action/action'
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
+import { FetchPatient, FetchSinglePatient, FetchProduct } from '../../redux/action/Actions';
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -89,9 +90,13 @@ const Visiting = (props) => {
 
   const PatientNameReducer = useSelector((state)=>state.PatientReducerData.apiState)
   const SupplierNameReducer = useSelector((state)=>state.PurchaseReducer.supplierApi)
-  const CategoryData = useSelector((state) => state.CategoryReducerData.apiState);
+  const CategoryData = useSelector((state) => state.ProductReducersData.FetchApi);
   const PurchaseData       = useSelector((state) =>state.PurchaseReducer.fetchApi);
-  //console.log('CategoryData name',CategoryData);
+ 
+
+
+
+  console.log('PatientNameReducer name',PatientNameReducer);
 
   const [datasApi,setDatasApi] = useState({
     PurchaseDatais : '',
@@ -107,17 +112,10 @@ const Visiting = (props) => {
 
   const ButtonsName = [{id:'1',name :'OPD',para:'OPD'},{id:'2',name:'Pharmacy',para:'Pharmacy'},
   {id:'3',name:'Opticals',para:'Opticals'}]
-  //console.log('ButtonsName is',ButtonsName);
+  
 
-  if(PatientNameReducer.length === 0){
-    Dispatch(FetchData());
-  }
-  // if(CategoryData.length === 0){
-  //   Dispatch(FetchCattegoryData());
-  // }
-  // if(PurchaseData.length === 0){
-  //   Dispatch(FetchPurchases());
-  // }
+ 
+ 
 
   const options = []
   PatientNameReducer.map((items)=>
@@ -162,73 +160,28 @@ const Visiting = (props) => {
         //console.log('supplier list is ',supplierList) 
         }
     }
-    //const filterButton = ButtonsName.map((items)=>{return (items.name) })
-    //   for(let i=0;i<filterButton.length;i++){
-    //     return (filterButton[i].name)
-    //  }
-      //return items.name 
-    
-      // const filterItems =( itemsname)=>{ 
-      //   let {name, value} = itemsname.target
-      //     const filterButton = ButtonsName.filter((items)=> items.id === value )
-      //     for (let i=0;i<=filterButton.length;i++){
-      //       return (filterButton[i].id)
-      //     }
-      //     console.log('first', itemsname)
-      //   }
-      //   console.log('first', filterItems)
+
 
   const clickOpd =( itemsname)=>{ 
     let {name, value} = itemsname.target
-      // const filterButton = ButtonsName.map((items)=>{
-      //   return items.id === value 
-      // })
+     
       const ButtonFilter = ButtonsName.filter((items)=> { return value === items.id } )
 
-      //const FiltBtn = () =>{
-      // const filterButton = ButtonsName.filter((items)=>  value === items.id )
-      // for (let i=0;i<=filterButton.length;i++){
-      //   //return (console.log('filterButtonItems',filterButton[i].id))
-      //   return (filterButton[i].id)
-      // }
-    //}
-      //console.log('filterButton', FiltBtn)
+    
 
       if(value  === '1' ){
           console.log('first button')
-          Dispatch(FetchCattegoryData())   
+          //Dispatch(FetchProduct())   
       }else if(value === '2' ){
          console.log('second button')
-         Dispatch(FetchPurchases())
+         //Dispatch(FetchPurchases())
       }else if(value === '3' ){
          console.log('third button')
         //Dispatch(FetchPurchases())
       }
       
 
-  //  value === '1' ?  Dispatch(FetchCattegoryData()) : ( value === '2' ? Dispatch(FetchPurchases()) : 
-  //  ( value === '3' ? console.log('third button') : console.log('sorry no button is clicked')))
-    //console.log('hello1', value)
-
-
-    
-   // if(CategoryData.length === 0){
-    //   Dispatch(FetchCattegoryData());
-    // }
-
-    //const filterButton = ButtonsName.map((items)=>{return items.name})
-    //   for(let i=0;i<filterButton.length;i++){
-    //     return (filterButton[i].name)
-    //  }
-      //return items.name 
-   //    const datass = filterButton[0]
-
-    //   const datass = filterButton[0] =='OPD' ? 
-    //   console.log('have data')
-    // : console.log('sorry')
-      
-    //console.log('hello',datass)
-      //Dispatch(FetchCattegoryData())    
+ 
   }
 
 
@@ -238,21 +191,13 @@ const Visiting = (props) => {
 //    .then(()=> Navigate('/allvisit'))
   };
 
+  
   useEffect(()=>{
-    Dispatch(FetchData())
+    let data = {"action" : "getAllPatient"};
+    Dispatch(FetchPatient(data))
     // Dispatch(FetchCattegoryData())   
-  },[Dispatch])
+  },[Dispatch]) 
 
-  // useEffect(()=>{
-  //   setDatasApi({
-  //     PurchaseDatais : PurchaseData,
-  //     CategoryDatais : CategoryData
-  //   })
-  // },[PurchaseData ,CategoryData])
- 
-  //console.log('visit is ',visit)
-  //console.log('supplier is' ,supplierList)
-  //console.log('datasApi is',datasApi);
 
   return (
     <Layout>
@@ -278,6 +223,23 @@ const Visiting = (props) => {
                       />  
                       }
                     /> */}
+                    {/* <Box>
+                    {
+                    PatientNameReducer.map((items)=>{
+                      return(
+                        <>
+                          {
+                          visit.supplier_name === items.id ? <h6>{items.name}</h6> : null
+                        }
+                        </>
+                      
+                      )
+ 
+                 
+                    })
+                    }
+                    </Box> */}
+             
           {visit.supplier_name !==''?          
             <Box  sx={{marginBottom:'2%',padding:'4px',display:'flex'}}>
               {ButtonsName.map((itemsname,i)=>{

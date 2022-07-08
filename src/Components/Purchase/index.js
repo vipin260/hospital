@@ -4,6 +4,7 @@ import {  Paper, Box, Button, Typography, TextField , Checkbox, FormLabel, Table
 import { makeStyles } from "@mui/styles";
 import Layout from "../../Pages/Layout";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -126,6 +127,7 @@ const PurchaseAdd = (props) => {
   
 
   const Dispatch = useDispatch();
+  const Navigate = useNavigate();
 
   const supplierData = useSelector((state) =>state.SupplierReducerData.apiState);
   const DataCategory = useSelector((state) => state.CategoryDataReducers.ApiStat)
@@ -253,31 +255,10 @@ const PurchaseAdd = (props) => {
   
 
   const SubmitData = async () => {
-
     let data={"action": "AddNewPurchase","purchase": purchase, "purchasedetail": inputAdd}
+      Dispatch(PurchaseInsert(data))
+      .then(()=> Navigate('/Uploadfile'))
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("details", JSON.stringify(data));
-    formData.append("fileName", JSON.stringify(fileName));
-    formData.append("headers", JSON.stringify({"Content-type": "multipart/form-data"}));
-    formData.append("method", JSON.stringify({method: "post"}));
-    
-    try {
-      const res = await axios.post(
-        //"http://localhost/hospital_management/purchase.php",
-        linkUrl + 'purchase.php',
-        formData
-      );
-      console.log(res);
-    } catch (ex) {
-      console.log(ex);
-    }
-
-    console.log('formData', formData);
-    //Dispatch(PurchaseInsert(formData))
-
-   //.then(()=> Navigate('/allpurchase'))
   };
 
   useEffect(()=>{
@@ -291,8 +272,7 @@ console.log('purchase is ',purchase)
 //console.log('inputAdd is' ,inputAdd)
 
 
-console.log('hello file is', file)
-console.log('fileName', fileName)
+
 
 
   return (
@@ -337,10 +317,10 @@ console.log('fileName', fileName)
               required
             />
             
-           <input 
+           {/* <input 
              style={{marginTop:"1.5%", marginLeft:'1%'}}  
              type="file" name="file"  onChange={saveFile} 
-            /> 
+            />  */}
 
             </ Box>
 
