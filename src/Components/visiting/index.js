@@ -5,7 +5,7 @@ import { FormControlLabel, Paper, Box, Button, Typography, TextField , Checkbox,
 import { makeStyles } from "@mui/styles";
 import Layout from "../../Pages/Layout";
 import { useNavigate } from "react-router-dom";
-import {AddInvoiceData ,FetchSupplName, FetchData, FetchCattegoryData, FetchPurchases} from '../../redux/action/action'
+import {AddInvoiceData ,FetchSupplName, FetchData, FetchPurchases} from '../../redux/action/action'
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
 import { FetchPatient, FetchSinglePatient } from '../../redux/action/Actions';
@@ -96,7 +96,7 @@ const Visiting = (props) => {
 
   const PatientNameReducer = useSelector((state)=>state.PatientReducerData.apiState)
   const SupplierNameReducer = useSelector((state)=>state.PurchaseReducer.supplierApi)
-  const CategoryData = useSelector((state) => state.CategoryReducerData.apiState);
+  const CategoryData = useSelector((state) => state.ProductReducersData.FetchApi);
   const PurchaseData       = useSelector((state) =>state.PurchaseReducer.fetchApi);
   const SingleData         = useSelector((state) =>state.PatientReducerData.stateApi);
   const FetchOpdData = useSelector((state) => state.ProductReducersData.OpdFetch);
@@ -236,12 +236,12 @@ const Visiting = (props) => {
 //    .then(()=> Navigate('/allvisit'))
   };
 
+  
   useEffect(()=>{
     let data = {"action" : "getAllPatient"};
-
     Dispatch(FetchPatient(data))
     // Dispatch(FetchCattegoryData())   
-  },[Dispatch])
+  },[Dispatch]) 
 
   useEffect(()=>{
     setTableData((state)=>{

@@ -7,7 +7,7 @@ import { Paper , Box, Button } from '@mui/material';
 import "react-data-table-component-extensions/dist/index.css";
 import { useSelector,useDispatch } from 'react-redux';
 import { toggle } from '../../redux/action/action';
-import { FetchPurchases  ,DeletePurchaseData ,FetchCattegoryData} from '../../redux/action/action';
+import GetAppIcon from '@mui/icons-material/GetApp';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {  useNavigate } from 'react-router-dom';
@@ -28,6 +28,9 @@ const useStyle = makeStyles((theme)=>({
    },
    edit :{
     color :"#2E2EFF"
+  },
+  download :{
+    color :"black",
   },
   delete :{
     color :"red"
@@ -58,13 +61,18 @@ const PurchaseTable = () => {
 
   const [deleteSuccess, setDeleteSuccess] = useState("");
 
-  //console.log('data of purchase is ',PurchaseData);
+  console.log('data of purchase is ',PurchaseData);
 
  
   const edithandle = (id) => {
     let data = {"id":parseInt(id),"action" : "getPurchaseByID"}
     dispatch(FetchSinglePurchase(data))
     .then(()=> Navigate('/editpurchase'))
+  };
+
+  const downloadFile = (id) => {
+    console.log('id is', id)
+    
   };
 
   const handledelete = (id) => {
@@ -108,34 +116,14 @@ const PurchaseTable = () => {
           },
           {
             name: " Pdf file link ",
-            selector: row => row.file_name,
-            sortable: true
+            selector: row => row.file_path,
+            sortable: true,
+            cell: (d,id) => [ 
+              <Box key={id}>
+                  <GetAppIcon className={classes.download} onClick={()=>downloadFile(d.id)}  />
+              </Box>
+            ],
           },
-        // {
-        //     name: "Item Name",
-        //     selector: row => row.product_name,
-        //     sortable: true
-        // },
-        // {
-        //   name: "Item Qty",
-        //   selector: row => row.item_qty,
-        //   sortable: true
-        // },
-        // {
-        //   name: " Item MSRP ",
-        //   selector: row => row.item_msrp,
-        //   sortable: true
-        // },
-        //  {
-        //   name: " Cost Price ",
-        //   selector: row => row.cost_price,
-        //   sortable: true
-        // },
-        // {
-        //   name: "Selling Price",
-        //   selector: row => row.selling_price,
-        //   sortable: true
-        // },
         {
           name: "Action",
           sortable: false,

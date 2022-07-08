@@ -23,6 +23,8 @@ import Visiting from './Components/visiting';
 import PharmacyFetch from './Components/Cattegory/pharmacyfetch';
 import OpticalFetch from './Components/Cattegory/opticalfetch';
 import OpdFetch from './Components/Cattegory/opdfetch';
+import Uploadfile from './Components/Uploadfile/uploadfile';
+
 
 
 const App = () => {
@@ -54,6 +56,7 @@ const App = () => {
         <Route path='/pharmacydata'  exact element={<PharmacyFetch/>} />
         <Route path='/opticaldata'   exact element={<OpticalFetch/>} />
         <Route path='/opddata'       exact element={<OpdFetch/>} />
+        <Route path='/uploadfile'    exact element={<Uploadfile/>} />
         
        
       </Routes>
