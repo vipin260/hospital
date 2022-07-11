@@ -1,4 +1,5 @@
 import { makeStyles } from '@mui/styles';
+import axios from 'axios';
 import React, { useEffect,useState,useCallback } from 'react';
 import Layout from '../../Pages/Layout';
 import Table from "react-data-table-component";
@@ -13,6 +14,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import {  useNavigate } from 'react-router-dom';
 import linkData from '../baseurl/links';
 import { PurchaseFetch, FetchSinglePurchase, DeletePurchase } from '../../redux/action/Actions';
+import { linkUrl } from '../../Components/baseurl';
 
 
 
@@ -31,6 +33,7 @@ const useStyle = makeStyles((theme)=>({
   },
   download :{
     color :"black",
+    padding: '0 23px'
   },
   delete :{
     color :"red"
@@ -70,9 +73,15 @@ const PurchaseTable = () => {
     .then(()=> Navigate('/editpurchase'))
   };
 
-  const downloadFile = (id) => {
+  const downloadFile = async (id) => {
     console.log('id is', id)
-    
+    try{
+      const res = await axios.post( linkUrl+'downloadfile.php', {file_id:id});
+      console.log('res',res);
+    }catch (ex) {
+        console.log(ex);
+      }
+  
   };
 
   const handledelete = (id) => {
@@ -115,12 +124,11 @@ const PurchaseTable = () => {
             sortable: true
           },
           {
-            name: " Pdf file link ",
-            selector: row => row.file_path,
+            name: "File Download",
             sortable: true,
             cell: (d,id) => [ 
               <Box key={id}>
-                  <GetAppIcon className={classes.download} onClick={()=>downloadFile(d.id)}  />
+                  <GetAppIcon className={classes.download} onClick={()=>downloadFile(d.id,'http://localhost/hospital_management/uploads/patient.php')}  />
               </Box>
             ],
           },
