@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FormControlLabel, Paper, Box, Button, Typography, TextField , Checkbox, FormLabel, Table, TableBody,
   TableRow, TableCell, TableHead, TableContainer  } from "@mui/material";
 
@@ -12,7 +12,7 @@ import { FetchPatient, FetchSinglePatient } from '../../redux/action/Actions';
 // import Table from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
-import {FetchProductOpd, FetchProductPharmacy, } from "../../redux/action/Actions";
+import {FetchProductOpd, FetchProductPharmacy, FetchProductOptical } from "../../redux/action/Actions";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -101,10 +101,12 @@ const Visiting = (props) => {
   const SingleData         = useSelector((state) =>state.PatientReducerData.stateApi);
   const FetchOpdData = useSelector((state) => state.ProductReducersData.OpdFetch);
   const FetchPharmacyData = useSelector((state) => state.ProductReducersData.PharmacyFetch);
+  const FetchOpticalData = useSelector((state) => state.ProductReducersData.OpticalFetch);
   let newData = [SingleData.data];
   console.log("get",SingleData.data)
 
   console.log("real",FetchPharmacyData)
+  console.log("real1",FetchOpticalData)
   
  
 
@@ -120,7 +122,9 @@ const Visiting = (props) => {
   const [trueDataTwo, setTrueDataTwo] = useState(true)
   const [data,setData] = useState([])
   const [tableData,setTableData] = useState({})
-  // const [options1,setOptions1] = useState([])
+  const [options1,setOptions1] = useState([])
+  const [value, setValue] = useState("one");
+  const [opdpharmecyoptical,setOpdpharmecyoptical] = useState([])
 
 
 
@@ -132,7 +136,7 @@ const Visiting = (props) => {
  
 
   const options = []
-  const options1 = []
+  // const options1 = []
   PatientNameReducer.map((items)=>
   options.push({ value: items.id, label: items.name })
   )
@@ -146,6 +150,12 @@ const Visiting = (props) => {
 
 
   const [visit, setVisit] = useState({
+    id                : "",
+    supplier_name     : "",
+    buttonName        : "",
+  });
+
+  const [visit1, setVisit1] = useState({
     id                : "",
     supplier_name     : "",
     buttonName        : "",
@@ -172,8 +182,21 @@ const Visiting = (props) => {
     Dispatch(FetchSinglePatient(singleData))
     console.log("tet",selectedOption)
   };
+
+  const handleChange1 = (value) => {
+    setValue(value);
+    setVisit1((prev) => {
+      return {
+        ...prev,
+        supplier_name: value.value,
+      };
+    });
+    
+    console.log("tet5",value)
+  };
   
   
+
   useEffect(()=>{
     setData(PatientNameReducer)
    },[PatientNameReducer])
@@ -191,6 +214,9 @@ const Visiting = (props) => {
         }
     }
 
+    
+
+
 
   const clickOpd =( itemsname)=>{ 
     let {name, value} = itemsname.target
@@ -201,36 +227,68 @@ const Visiting = (props) => {
 
       if(value  === '1' ){
           console.log('first button');
-          // Dispatch(FetchCattegoryData())
-         if(options1==""){
-          FetchOpdData.map((items)=>{ 
-  options1.push({ value: items.product_id, label: items.product_name })
+
+  setValue(null)
+  options1.splice(0, options1.length)
+  setOptions1( FetchOpdData.map((items)=>{ 
+    return(
+  { value: items.product_id, label: items.product_name }
+  )
          }) 
-         }
-          
+  )  
+  setOpdpharmecyoptical(FetchOpdData)
+  // setDefaultvalue({label:"net"})
   // console.log("option",options1)
-  // console.log("dataata",FetchOpdData)
+  console.log("dataata",FetchOpdData)
+  console.log("dataata222",opdpharmecyoptical)
       }else if(value === '2' ){
          console.log('second button')
-         if(options1==""){
-          FetchPharmacyData.map((items)=>
-  options1.push({ value: items.product_id, label: items.product_name })
-  ) 
-         }
+         setValue(null)
+         options1.splice(0, options1.length)
+         setOptions1( FetchPharmacyData.map((items)=>{
+          return(
+{ value: items.product_id, label: items.product_name }
+          )
+         }) 
+         )   
+         
+         setOpdpharmecyoptical(FetchPharmacyData)
+
+         
+  //        if(options1!==""){
+  //         options1.splice(0, options1.length)
+  //         FetchPharmacyData.map((items)=>
+  // options1.push({ value: items.product_id, label: items.product_name })
+  // ) 
+  
+  //        }
          console.log("option",options1)
   console.log("dataata",FetchPharmacyData)
+  // setDefaultvalue({label:"get"})
+  
         //  Dispatch(FetchPurchases())
       }else if(value === '3' ){
          console.log('third button')
+         setValue(null)
+         options1.splice(0, options1.length)
+         setOptions1( FetchOpticalData.map((items)=>{
+          return(
+  { value: items.product_id, label: items.product_name }
+          )
+      })
+         )
+
+         setOpdpharmecyoptical(FetchOpticalData)
         //Dispatch(FetchPurchases())
+        
       }
       
-
+      
  
   }
 
-
-
+console.log("dash",opdpharmecyoptical);
+  
   const SubmitData = () => {
 //     Dispatch(AddInvoiceData(visit))
 //    .then(()=> Navigate('/allvisit'))
@@ -243,96 +301,28 @@ const Visiting = (props) => {
     // Dispatch(FetchCattegoryData())   
   },[Dispatch]) 
 
-  useEffect(()=>{
-    setTableData((state)=>{
-      console.log("state",state)
-      return{
-        
-        ...state,
-        data,
-        columns 
-      }
-    })
-   },[data])
+  
+ 
+ 
 
 
    useEffect(() => {
     let opd_fetch      = {"action" : "getProductOPD"}
     let pharmacy_data  = {"action" : "getProductPharmacy"}
+    let optical_fetch  = {"action" : "getProductOptical"}
     Dispatch(FetchProductPharmacy(pharmacy_data))
+    Dispatch(FetchProductOptical(optical_fetch))
     Dispatch(FetchProductOpd(opd_fetch))
  }, [Dispatch])
 
-  const columns = [
-    // {
-    //   name:'.S.No',
-    //   selector:'.s.no',
-    //   sortable: true,
-    //   cell: (row,index) => index+1
-    // }
-     , {
-       name: "Name",
-       selector: rows => rows.name,
-       sortable: true
-     },
-     {
-       name: "Phone Number",
-       selector: rows => rows.phone_number,
-       sortable: true
-     },
-    //  {
-    //    name: "Date Of Birth",
-    //    selector: "date_of_birth",
-    //    sortable: true
-    //  },
-    //  {
-    //   name: "Age",
-    //   selector: "age",
-    //   sortable: true
-    // },
-    {
-      name: "Address ",
-      selector: rows => rows.address,
-      sortable: true
-    },
-    {
-      name: "City",
-      selector: rows => rows.city,
-      sortable: true
-    },
-    {
-      name: "State",
-      selector: rows => rows.state,
-      sortable: true
-    },
-    {
-      name: "Pincode",
-      selector: rows => rows.pincode,
-      sortable: true
-    },
-    {
-      name: "Adhar Number",
-      selector: rows => rows.adhar_number,
-      sortable: true
-    },
-    // {
-    //   name: "Action",
-    //   sortable: false,
-    //   selector: rows => rows.null,
-    //     cell: (d,id) => [ 
-    //       <Box key={id}>
-    //           <EditIcon className={classes.edit} onClick={()=>edithandle(d.id)}  />
-    //           <DeleteIcon className={classes.delete} onClick={() => handledelete(d.id)} />
-    //       </Box>
-    //   ],
-    // },
-   ];
+  
   //  useEffect(()=>{
    
   //   let singleData = { "action" : "getPatientByID"}
   //   Dispatch(FetchSinglePatient(singleData))
   //  },[Dispatch])
    
+console.log("koat",options1.value)
 
   return (
     <Layout>
@@ -411,8 +401,9 @@ const Visiting = (props) => {
             <Box  sx={{marginBottom:'2%',padding:'4px',display:'flex'}}>
                <Select
                 options={options1}
-                // defaultValue={}
-                // onChange={}
+                value={value}
+              //  defaultValue={defaultvalue}
+                onChange={handleChange1}
                
               />
               {ButtonsName.map((itemsname,i)=>{
@@ -470,7 +461,64 @@ const Visiting = (props) => {
          </Box>
          </Box> : null}   */}
             {/* ends here code */}
-         
+
+            <Box>
+                    {
+                    opdpharmecyoptical.map((items)=>{
+                      return(
+                        <>
+                          {
+                          visit1.supplier_name === items.product_id ?
+                          <>
+                          <TableContainer>
+                    <Table sx={{marginBottom:2, width:'100%'}}> 
+                          <TableHead>
+                          
+                          <TableRow>                    
+                            <TableCell align="right">Product Name</TableCell>
+                            <TableCell align="right">Product Category</TableCell>
+                            {items.name === "OPD" ?
+                            <TableCell align="right">Opd Price</TableCell>
+                            :null
+                          }
+                            <TableCell align="right">Status</TableCell>
+                            
+                          </TableRow>
+
+                          </TableHead>
+
+                          <TableBody >
+                          <TableRow>                    
+                            <TableCell align="right">{items.product_name}</TableCell>
+                            <TableCell align="right">{items.name}</TableCell>
+                            {items.name === "OPD" ?
+                            <TableCell align="right">{items.opd_price}</TableCell>
+                            :null
+                          }
+                            <TableCell align="right">{items.status}</TableCell>
+                           
+                          </TableRow>
+                          </TableBody>
+                          </Table> 
+                         </TableContainer>
+                         </>
+                          : null
+                        }
+                        </>
+                      
+                      )
+ 
+                 
+                    })
+                    }
+                  </Box> 
+
+
+
+
+          
+
+{/*          
            {visit.supplier_name !==''?
            <Box> 
             {CategoryData.map((items,id)=>{
@@ -528,7 +576,7 @@ const Visiting = (props) => {
               
            })
         } 
-        </Box>: null }
+        </Box>: null } */}
       
 
             {/* {visit.supplier_name !==''?
