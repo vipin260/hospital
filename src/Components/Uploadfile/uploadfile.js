@@ -140,9 +140,7 @@ const Uploadfile = (props) => {
      console.log('formData', formData)
     try {
       const res = await axios.post( linkUrl+'fileupload.php', formData );
-      //let data={"action": "AddNewPurchase","formData":formData}
-      //Dispatch(PurchaseInsert(data))
-      console.log(res)
+      console.log('res', res)
   
     } catch (ex) {
       console.log(ex);
