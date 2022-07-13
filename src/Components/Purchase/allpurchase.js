@@ -15,6 +15,9 @@ import {  useNavigate } from 'react-router-dom';
 import linkData from '../baseurl/links';
 import { PurchaseFetch, FetchSinglePurchase, DeletePurchase } from '../../redux/action/Actions';
 import { linkUrl } from '../../Components/baseurl';
+import fileDownload from 'js-file-download';
+import {useDownloader, specific} from "react-files-hooks";
+import { saveAs } from "file-saver";
 
 
 
@@ -64,7 +67,18 @@ const PurchaseTable = () => {
 
   const [deleteSuccess, setDeleteSuccess] = useState("");
 
-  console.log('data of purchase is ',PurchaseData);
+
+
+  const { downloader } = useDownloader({
+    file: data,
+    onError: error => {}
+  });
+
+  const { download } = specific.useJSONDownloader();
+
+ 
+
+  //console.log('data of purchase is ',PurchaseData);
 
  
   const edithandle = (id) => {
@@ -73,11 +87,71 @@ const PurchaseTable = () => {
     .then(()=> Navigate('/editpurchase'))
   };
 
-  const downloadFile = async (id) => {
+  const downloadFileBtn = async (id) => {
+
+
+      //let FileSaver = require('file-saver');
+      // let blob = new Blob(["Hello, world!"], {type: "text/plain;charset=utf-8"});
+      // FileSaver.saveAs(blob, "hello world.txt");
+
+
+
+    // const blob = new Blob(
+    //   [ 'uploads/myw3schoolsimage.jpg' ],
+    //   { type: 'image/jpeg' }
+    // );
     console.log('id is', id)
     try{
-      const res = await axios.post( linkUrl+'downloadfile.php', {file_id:id});
-      console.log('res',res);
+      const res = await axios.post(linkUrl+'downloadfile.php', {file_id:parseInt(id), responseType: "blob"})
+       .then((resp)=> saveAs( resp.data))
+       //.then((resp)=> download({data : resp.data}))
+       //.then((resp)=> fileDownload(resp.data))
+       
+
+      //  saveAs(
+      //   "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+      //   "example.pdf"
+      // );
+ 
+
+       
+      //-----------------------------------------------------------------
+      // .then(res => {
+      //   const url = window.URL.createObjectURL(new Blob([res.data]
+      //     ,{type: "application/pdf"}))
+      //   var link = document.createElement('a');
+      //   link.href = url;
+      //   link.setAttribute('download', 'get_started_with_smallpdf');
+      //   document.body.appendChild(link);
+      //   link.click();
+      // })
+
+
+      //-------------------------------------------------------
+
+      //const originalImage="https://cdn1.iconfinder.com/data/icons/ninja-things-1/1772/ninja-simple-512.png";
+      // const originalImage="http://localhost/hospital_management/uploads/ninja-simple-512.png";
+      // const image = await fetch(originalImage);
+  
+      // const nameSplit=originalImage.split("/");
+      // const  duplicateName=nameSplit.pop();
+      // const imageBlog = await image.blob()
+      // const imageURL = URL.createObjectURL(imageBlog)
+      // const link = document.createElement('a')
+      // link.href = imageURL;
+      // link.download = ""+duplicateName+"";
+      // document.body.appendChild(link)
+      // link.click()
+      // document.body.removeChild(link) 
+
+     //---------------------------------------------------------
+
+      //console.log('res',res.data);
+ 
+      // .then((resp) => {
+      // console.log('resp',resp);
+      //   fileDownload(resp.data)
+      // })
     }catch (ex) {
         console.log(ex);
       }
@@ -128,7 +202,7 @@ const PurchaseTable = () => {
             sortable: true,
             cell: (d,id) => [ 
               <Box key={id}>
-                  <GetAppIcon className={classes.download} onClick={()=>downloadFile(d.id,'http://localhost/hospital_management/uploads/patient.php')}  />
+                  <GetAppIcon className={classes.download} onClick={()=>downloadFileBtn(d.id)}  />
               </Box>
             ],
           },
@@ -164,7 +238,7 @@ const PurchaseTable = () => {
         })
        },[data])
 
-console.log("data is",PurchaseData)
+     //console.log("data is",PurchaseData)
        
        useEffect(() => {
         let data = {"action" : "getAllPurchase"}
