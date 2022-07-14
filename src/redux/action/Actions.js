@@ -5,7 +5,8 @@ import {ERROR, FETCHPPHARMACY, FETCHPOPTICAL, FETCHPOPD,
      SUPPLIERINSERT,  SUPPLIERFETCH, SUPPLIERBYID, UPDATESUPPLIER, DELETEESUPPLIER, 
      PURCHASEINSERT, PURCHASEFETCH, PURCHASEBYID, UPDATEPURCHASE, DELETEEPURCHASE, FETCHPURCHASEDETAIL,
      PURCHASEDETAILINSERT, PURCHASEDETAILFETCH, PURCHASEDETAILBYID, UPDATEPURCHASEDETAIL, DELETEEPURCHASEDETAIL,
-     PATIENTINSERT,  PATIENTFETCH, PATIENTBYID, UPDATEPATIENT, DELETEPATIENT} 
+     PATIENTINSERT,  PATIENTFETCH, PATIENTBYID, UPDATEPATIENT, DELETEPATIENT,
+     DOWNLOADFILE} 
      from '../actionType/ActionType'
 import { linkUrl } from '../../Components/baseurl';
 
@@ -523,6 +524,24 @@ const response = await axios.post(linkUrl + `PurchaseDetail/purchase_detail.php?
     })
 }
 }
+
+//DOWNLOADFILE//
+
+export const DownloadFiles= (id) => async dispatch =>{
+    console.log('DownloadFiles id is', id)
+    try{
+    const response = await axios.post(linkUrl+`downloadfile.php?id=${id}`)
+        dispatch({
+            type    : DOWNLOADFILE,
+            payload : response.data
+        })
+    }catch(e){
+        dispatch({
+            type    : ERROR,
+            payload : console.log(e)
+        })
+    }
+    }
 
 // //DELETEEPURCHASEDETAIL
 // export const DeletePurchaseDetail = (data) => async dispatch =>{

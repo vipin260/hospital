@@ -13,7 +13,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {  useNavigate } from 'react-router-dom';
 import linkData from '../baseurl/links';
-import { PurchaseFetch, FetchSinglePurchase, DeletePurchase } from '../../redux/action/Actions';
+import { PurchaseFetch, FetchSinglePurchase, DeletePurchase, DownloadFiles } from '../../redux/action/Actions';
 import { linkUrl } from '../../Components/baseurl';
 import fileDownload from 'js-file-download';
 import {useDownloader, specific} from "react-files-hooks";
@@ -63,7 +63,10 @@ const PurchaseTable = () => {
 
   const toggleState        = useSelector((state)=>state.togglingReducer.togglingAll);
   const PurchaseData       = useSelector((state) =>state.PurchaseReducer.fetchApi);
+  const Filereducer        = useSelector((state)=>state.FileReducerData.apiState);
  
+  // console.log('Filereducer data is', Filereducer)
+   
 
   const [deleteSuccess, setDeleteSuccess] = useState("");
 
@@ -77,7 +80,7 @@ const PurchaseTable = () => {
   const { download } = specific.useJSONDownloader();
 
  
-
+  
   //console.log('data of purchase is ',PurchaseData);
 
  
@@ -88,10 +91,11 @@ const PurchaseTable = () => {
   };
 
   const downloadFileBtn = async (id) => {
+    
+    dispatch(DownloadFiles(id))
 
-
-      //let FileSaver = require('file-saver');
-      // let blob = new Blob(["Hello, world!"], {type: "text/plain;charset=utf-8"});
+      // let FileSaver = require('file-saver');
+      // let blob = new Blob([Filereducer], {type: "text/plain;charset=utf-8"});
       // FileSaver.saveAs(blob, "hello world.txt");
 
 
@@ -102,8 +106,8 @@ const PurchaseTable = () => {
     // );
     console.log('id is', id)
     try{
-      const res = await axios.post(linkUrl+'downloadfile.php', {file_id:parseInt(id), responseType: "blob"})
-       .then((resp)=> saveAs( resp.data))
+      //  const res =  axios.post(linkUrl+'downloadfile.php', {file_id:parseInt(id), responseType: "blob"})
+      //.then((resp)=> saveAs( resp.data))
        //.then((resp)=> download({data : resp.data}))
        //.then((resp)=> fileDownload(resp.data))
        
@@ -171,12 +175,7 @@ const PurchaseTable = () => {
     const classes = useStyle()
 
     const columns = [
-        // {
-        //   name:'.S.No',
-        //   selector: row=>row.s.no,
-        //   sortable: true,
-        //   cell: (row,index) => index+1
-        // },
+
         {
           name: "ID ",
           selector: rows => rows.id,
@@ -202,7 +201,9 @@ const PurchaseTable = () => {
             sortable: true,
             cell: (d,id) => [ 
               <Box key={id}>
-                  <GetAppIcon className={classes.download} onClick={()=>downloadFileBtn(d.id)}  />
+                  {/* <GetAppIcon className={classes.download} onClick={()=>downloadFileBtn(d.id)}   /> */}
+                  <a className={classes.download} href={linkUrl+`downloadfile.php?id=${d.id}`} download >
+                     <GetAppIcon/></a>
               </Box>
             ],
           },
