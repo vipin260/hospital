@@ -1,4 +1,5 @@
 import { makeStyles } from '@mui/styles';
+import axios from 'axios';
 import React, { useEffect,useState,useCallback } from 'react';
 import Layout from '../../Pages/Layout';
 import Table from "react-data-table-component";
@@ -7,12 +8,16 @@ import { Paper , Box, Button } from '@mui/material';
 import "react-data-table-component-extensions/dist/index.css";
 import { useSelector,useDispatch } from 'react-redux';
 import { toggle } from '../../redux/action/action';
-import { FetchPurchases  ,DeletePurchaseData ,FetchCattegoryData} from '../../redux/action/action';
+import GetAppIcon from '@mui/icons-material/GetApp';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {  useNavigate } from 'react-router-dom';
 import linkData from '../baseurl/links';
-import { PurchaseFetch, FetchSinglePurchase, DeletePurchase } from '../../redux/action/Actions';
+import { PurchaseFetch, FetchSinglePurchase, DeletePurchase, DownloadFiles } from '../../redux/action/Actions';
+import { linkUrl } from '../../Components/baseurl';
+import fileDownload from 'js-file-download';
+import {useDownloader, specific} from "react-files-hooks";
+import { saveAs } from "file-saver";
 
 
 
@@ -28,6 +33,10 @@ const useStyle = makeStyles((theme)=>({
    },
    edit :{
     color :"#2E2EFF"
+  },
+  download :{
+    color :"black",
+    padding: '0 23px'
   },
   delete :{
     color :"red"
@@ -54,10 +63,24 @@ const PurchaseTable = () => {
 
   const toggleState        = useSelector((state)=>state.togglingReducer.togglingAll);
   const PurchaseData       = useSelector((state) =>state.PurchaseReducer.fetchApi);
+  const Filereducer        = useSelector((state)=>state.FileReducerData.apiState);
  
+  // console.log('Filereducer data is', Filereducer)
+   
 
   const [deleteSuccess, setDeleteSuccess] = useState("");
 
+
+
+  const { downloader } = useDownloader({
+    file: data,
+    onError: error => {}
+  });
+
+  const { download } = specific.useJSONDownloader();
+
+ 
+  
   //console.log('data of purchase is ',PurchaseData);
 
  
@@ -65,6 +88,78 @@ const PurchaseTable = () => {
     let data = {"id":parseInt(id),"action" : "getPurchaseByID"}
     dispatch(FetchSinglePurchase(data))
     .then(()=> Navigate('/editpurchase'))
+  };
+
+  const downloadFileBtn = async (id) => {
+    
+    dispatch(DownloadFiles(id))
+
+      // let FileSaver = require('file-saver');
+      // let blob = new Blob([Filereducer], {type: "text/plain;charset=utf-8"});
+      // FileSaver.saveAs(blob, "hello world.txt");
+
+
+
+    // const blob = new Blob(
+    //   [ 'uploads/myw3schoolsimage.jpg' ],
+    //   { type: 'image/jpeg' }
+    // );
+    console.log('id is', id)
+    try{
+      //  const res =  axios.post(linkUrl+'downloadfile.php', {file_id:parseInt(id), responseType: "blob"})
+      //.then((resp)=> saveAs( resp.data))
+       //.then((resp)=> download({data : resp.data}))
+       //.then((resp)=> fileDownload(resp.data))
+       
+
+      //  saveAs(
+      //   "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+      //   "example.pdf"
+      // );
+ 
+
+       
+      //-----------------------------------------------------------------
+      // .then(res => {
+      //   const url = window.URL.createObjectURL(new Blob([res.data]
+      //     ,{type: "application/pdf"}))
+      //   var link = document.createElement('a');
+      //   link.href = url;
+      //   link.setAttribute('download', 'get_started_with_smallpdf');
+      //   document.body.appendChild(link);
+      //   link.click();
+      // })
+
+
+      //-------------------------------------------------------
+
+      //const originalImage="https://cdn1.iconfinder.com/data/icons/ninja-things-1/1772/ninja-simple-512.png";
+      // const originalImage="http://localhost/hospital_management/uploads/ninja-simple-512.png";
+      // const image = await fetch(originalImage);
+  
+      // const nameSplit=originalImage.split("/");
+      // const  duplicateName=nameSplit.pop();
+      // const imageBlog = await image.blob()
+      // const imageURL = URL.createObjectURL(imageBlog)
+      // const link = document.createElement('a')
+      // link.href = imageURL;
+      // link.download = ""+duplicateName+"";
+      // document.body.appendChild(link)
+      // link.click()
+      // document.body.removeChild(link) 
+
+     //---------------------------------------------------------
+
+      //console.log('res',res.data);
+ 
+      // .then((resp) => {
+      // console.log('resp',resp);
+      //   fileDownload(resp.data)
+      // })
+    }catch (ex) {
+        console.log(ex);
+      }
+  
   };
 
   const handledelete = (id) => {
@@ -80,12 +175,7 @@ const PurchaseTable = () => {
     const classes = useStyle()
 
     const columns = [
-        // {
-        //   name:'.S.No',
-        //   selector: row=>row.s.no,
-        //   sortable: true,
-        //   cell: (row,index) => index+1
-        // },
+
         {
           name: "ID ",
           selector: rows => rows.id,
@@ -107,35 +197,16 @@ const PurchaseTable = () => {
             sortable: true
           },
           {
-            name: " Pdf file link ",
-            selector: row => row.file_name,
-            sortable: true
+            name: "File Download",
+            sortable: true,
+            cell: (d,id) => [ 
+              <Box key={id}>
+                  {/* <GetAppIcon className={classes.download} onClick={()=>downloadFileBtn(d.id)}   /> */}
+                  <a className={classes.download} href={linkUrl+`downloadfile.php?id=${d.id}`} download >
+                     <GetAppIcon/></a>
+              </Box>
+            ],
           },
-        // {
-        //     name: "Item Name",
-        //     selector: row => row.product_name,
-        //     sortable: true
-        // },
-        // {
-        //   name: "Item Qty",
-        //   selector: row => row.item_qty,
-        //   sortable: true
-        // },
-        // {
-        //   name: " Item MSRP ",
-        //   selector: row => row.item_msrp,
-        //   sortable: true
-        // },
-        //  {
-        //   name: " Cost Price ",
-        //   selector: row => row.cost_price,
-        //   sortable: true
-        // },
-        // {
-        //   name: "Selling Price",
-        //   selector: row => row.selling_price,
-        //   sortable: true
-        // },
         {
           name: "Action",
           sortable: false,
@@ -168,7 +239,7 @@ const PurchaseTable = () => {
         })
        },[data])
 
-console.log("data is",PurchaseData)
+     //console.log("data is",PurchaseData)
        
        useEffect(() => {
         let data = {"action" : "getAllPurchase"}
