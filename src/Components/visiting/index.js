@@ -12,8 +12,26 @@ import { FetchPatient, FetchSinglePatient } from '../../redux/action/Actions';
 // import Table from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
-import {FetchProductOpd, FetchProductPharmacy, FetchProductOptical } from "../../redux/action/Actions";
+import {FetchProductOpd, FetchProductPharmacy, FetchProductOptical, getAllInventory } from "../../redux/action/Actions";
 import AddIcon from '@mui/icons-material/Add';
+
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -30,7 +48,7 @@ const useStyle = makeStyles((theme) => ({
     "& .MuiPaper-root": {
       minWidth: "35%",
       height: "auto",
-      padding: `${theme.spacing(4)} 0`,
+      padding: `${theme.spacing(4)} 30px`,
       marginTop :'7%',
       [theme.breakpoints.down("lg")]: {
         width: "70%",
@@ -38,6 +56,7 @@ const useStyle = makeStyles((theme) => ({
       },
       //border:'1px solid yellow',
     },
+    
   },
 
   inputs: {
@@ -88,6 +107,7 @@ const useStyle = makeStyles((theme) => ({
 }
 }));
 
+
 const Visiting = (props) => {
   
   const classes = useStyle(props);
@@ -103,10 +123,11 @@ const Visiting = (props) => {
   const FetchOpdData = useSelector((state) => state.ProductReducersData.OpdFetch);
   const FetchPharmacyData = useSelector((state) => state.ProductReducersData.PharmacyFetch);
   const FetchOpticalData = useSelector((state) => state.ProductReducersData.OpticalFetch);
+  const FetchVisitData = useSelector((state) => state.VisitReducer.fetchApi);
   let newData = [SingleData.data];
   console.log("get",SingleData.data)
 
-  console.log("real",FetchPharmacyData)
+  console.log("real",FetchVisitData)
   console.log("real1",FetchOpticalData)
   
  
@@ -126,9 +147,10 @@ const Visiting = (props) => {
   const [options1,setOptions1] = useState([])
   const [value, setValue] = useState("one");
   const [opdpharmecyoptical,setOpdpharmecyoptical] = useState([])
-  const [selectdatasave, setSelectdatasave] = useState([]);
+  // const [selectdatasave, setSelectdatasave] = useState([]);
   const [inputAdd, setInputAdd] = useState([]);
   const [price, setPrice] = useState(0);
+  const [addPharmacy, setAddPharmacy] = useState([]);
 
  
 
@@ -175,6 +197,7 @@ console.log("opdpharmecyoptical",opdpharmecyoptical)
   });
 
   const handleServiceAdd = (items) => {
+    if(items.name==="OPD"){
     setInputAdd([...inputAdd,  
       {
         product_name       : items.product_name, 
@@ -190,8 +213,57 @@ console.log("opdpharmecyoptical",opdpharmecyoptical)
         
       }
       console.log("price", price)
-    
+    }
+    else if(items.name==="pharmacy"){
+      let data = {"pharmacy_id" : items.product_id, "action" : "getAllInvertory"}
+      Dispatch(getAllInventory(data))
+      .then(() => handleClickOpen())
+    }
   };
+
+  
+  
+  const BootstrapDialogTitle = (props) => {
+    const { children, onClose, ...other } = props;
+  
+    return (
+      <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+        {children}
+        {onClose ? (
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        ) : null}
+      </DialogTitle>
+    );
+  };
+
+  // BootstrapDialogTitle.propTypes = {
+  //   children: PropTypes.node,
+  //   onClose: PropTypes.func.isRequired,
+  // };
+
+  
+    const [open, setOpen] = React.useState(false);
+  
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+    const handleClose = () => {
+      setOpen(false);
+    };
+
+
+
 
 
   console.log("inputAdd", inputAdd)
@@ -219,7 +291,7 @@ console.log("opdpharmecyoptical",opdpharmecyoptical)
 
   const handleChange1 = (value) => {
     setValue(value);
-    setSelectdatasave(["nhhhh"])
+   console.log("kya h value me",value)
     setVisit1((prev) => {
       return {
         ...prev,
@@ -230,7 +302,7 @@ console.log("opdpharmecyoptical",opdpharmecyoptical)
     
   
     console.log("tet5",opdpharmecyoptical)
-    console.log("tet9",selectdatasave)
+    
    
   };
   console.log("tet6",visit1.supplier_name)
@@ -332,6 +404,19 @@ console.log("opdpharmecyoptical",opdpharmecyoptical)
  
   }
 
+ const SelectedCheckboxes = (value) => {
+  console.log("label",value)
+  setAddPharmacy([ ...addPharmacy,
+   {
+    id : value.id,
+    product_name : value.product_name,
+    selling_price : value.selling_price,
+    cost_price : value.cost_price,
+    item_msrp : value.item_msrp,
+   } 
+  ])
+ }
+ console.log("label222",addPharmacy)
 console.log("dash",opdpharmecyoptical);
   
   const SubmitData = () => {
@@ -368,16 +453,26 @@ console.log("dash",opdpharmecyoptical);
   //  },[Dispatch])
    
 
-
+  console.log("hdakhsdkj",FetchVisitData)
   return (
     <Layout>
       <div className={classes.root}>
         <Paper className={classes.paper} elevation={5}>
           <Box className={classes.inputs}>
-            <Typography variant="h5" component="h5" sx={{ marginBottom: 2 }}>
+          <Box className={classes.inputs} sx={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', width:'100%', marginBottom: '16px'}}>
+          <Typography variant="h5" component="h5" sx={{ marginBottom: 2 }}>
               Add Visiting
             </Typography>
-            <Box className="react_select_box" sx={{width:'90%', marginBottom: 2}}>
+            <Button
+              onClick={SubmitData}
+              variant="contained"
+              className={classes.stundentBtn}
+            >
+              Add Invoice
+            </Button>
+            </Box>
+           
+            <Box className="react_select_box" sx={{width:'100%', marginBottom: 2}}>
               <Select
                 options={options}
                 defaultValue={visit.supplier_name}
@@ -444,13 +539,7 @@ console.log("dash",opdpharmecyoptical);
                   </Box> 
           {visit.supplier_name !==''?          
             <Box  sx={{marginBottom:'2%',padding:'4px',display:'flex'}}>
-               <Select
-                options={options1}
-                value={value}
-              //  defaultValue={defaultvalue}
-                onChange={handleChange1}
                
-              />
               {ButtonsName.map((itemsname,i)=>{
                 return(
                   <Box key={i} sx={{marginBottom:'2%',padding:'4px',display:'flex'}}>
@@ -469,6 +558,13 @@ console.log("dash",opdpharmecyoptical);
                   ) 
               })
              }
+             <Select
+                options={options1}
+                value={value}
+              //  defaultValue={defaultvalue}
+                onChange={handleChange1}
+               
+              />
               {
                     opdpharmecyoptical.map((items)=>{
                       return(
@@ -476,7 +572,7 @@ console.log("dash",opdpharmecyoptical);
                           {
                           visit1.supplier_name === items.product_id ?
                           <>
-                            <AddIcon sx={{marginTop:'15px',color:'white', backgroundColor:'blue', borderRadius:'50%'}} 
+                            <AddIcon sx={{marginTop:'7px',marginLeft:'15px',color:'white', backgroundColor:'blue', borderRadius:'50%'}} 
                             name='more_input_fields'  onClick={()=>handleServiceAdd(items)} /> 
                             </>
                           : null
@@ -643,6 +739,7 @@ console.log("dash",opdpharmecyoptical);
                          :null }
                     </>
                   </Box> 
+
                   <Box>
                   {visit1.supplier_name !==''? 
                     <TableContainer>
@@ -661,6 +758,68 @@ console.log("dash",opdpharmecyoptical);
                     </TableContainer>
                     : null }
                   </Box>
+
+
+                  <Box>
+                    <>
+                    {visit1.supplier_name !==''? 
+                  <TableContainer>
+                    <Table sx={{marginBottom:2, width:'100%'}}> 
+                          <TableHead>
+                          
+                          <TableRow>                    
+                            <TableCell align="right">Product Name</TableCell>
+                            
+                            
+                            <TableCell align="right">Item MSRP</TableCell>
+                            <TableCell align="right">Cost Price</TableCell>
+                            <TableCell align="right">Selling Price</TableCell>
+                            
+                          
+                            
+                            
+                          </TableRow>
+
+                          </TableHead>
+                    {
+                    addPharmacy.map((items)=>{
+                      return(
+                        
+
+                          <TableBody >
+                          <TableRow>                    
+                            <TableCell align="right">{items.product_name}</TableCell>
+                            
+                            
+                            
+                                <TableCell align="right">{items.item_msrp}</TableCell>
+                                <TableCell align="right">{items.cost_price}</TableCell>
+                                <TableCell align="right">{items.selling_price}</TableCell>
+                            
+                           
+                        
+                            
+                          
+                            
+                           
+                          </TableRow>
+                         
+                          </TableBody>
+                         
+                         
+                        
+                      
+                      )
+ 
+                 
+                    })
+                    }
+
+                     </Table> 
+                         </TableContainer>
+                         :null }
+                    </>
+                  </Box> 
 
                   
 
@@ -810,15 +969,61 @@ console.log("dash",opdpharmecyoptical);
                       </DataTableExtensions>
                     </Paper> */}
   
-            <Button
-              onClick={SubmitData}
-              variant="contained"
-              className={classes.stundentBtn}
-            >
-              Add Invoice
-            </Button>
+           
           </Box>
         </Paper>
+        <div>
+      {/* <Button variant="outlined" onClick={handleClickOpen}>
+        Open dialog
+      </Button> */}
+      <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+         Products Details
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+        <TableContainer>
+                      <Table>
+                        <TableHead>
+                        <TableRow>
+                          <TableCell align="right">Product Name</TableCell>
+                          <TableCell align="right">Item MSRP</TableCell>
+                          <TableCell align="right">Cost Price</TableCell>
+                          <TableCell align="right">Selling Price</TableCell>
+                          </TableRow>
+                        </TableHead>
+
+                           {
+                            FetchVisitData.map((items) => {
+                              return(
+                              
+                              <TableBody>
+                            <TableRow>
+                            <TableCell align="right">{<FormControlLabel value={items.id} control={<Checkbox  />} 
+                             label={items.product_name} onChange={() => SelectedCheckboxes(items)} />}</TableCell>
+                            <TableCell align="right">{items.item_msrp}</TableCell>
+                            <TableCell align="right">{items.cost_price}</TableCell>
+                            <TableCell align="right">{items.selling_price}</TableCell>
+                              </TableRow>
+                              </TableBody>
+                              )
+                            })
+  
+                           }
+                        
+                      </Table>
+                    </TableContainer>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleClose}>
+            Add
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
+    </div>
       </div>
     </Layout>
   );

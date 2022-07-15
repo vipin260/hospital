@@ -6,7 +6,7 @@ import {ERROR, FETCHPPHARMACY, FETCHPOPTICAL, FETCHPOPD,
      PURCHASEINSERT, PURCHASEFETCH, PURCHASEBYID, UPDATEPURCHASE, DELETEEPURCHASE, FETCHPURCHASEDETAIL,
      PURCHASEDETAILINSERT, PURCHASEDETAILFETCH, PURCHASEDETAILBYID, UPDATEPURCHASEDETAIL, DELETEEPURCHASEDETAIL,
      PATIENTINSERT,  PATIENTFETCH, PATIENTBYID, UPDATEPATIENT, DELETEPATIENT,
-     DOWNLOADFILE} 
+     DOWNLOADFILE,INVENTORYFILE} 
      from '../actionType/ActionType'
 import { linkUrl } from '../../Components/baseurl';
 
@@ -542,6 +542,27 @@ export const DownloadFiles= (id) => async dispatch =>{
         })
     }
     }
+
+   // inventoryaction//
+
+   export const getAllInventory = (data) => async dispatch => {
+    console.log('inventory id is', data)
+    try{
+        const response = await axios.post(linkUrl+ `inventory.php`,{...data})
+        console.log('inventory ', response)
+        dispatch({
+            type : INVENTORYFILE,
+            payload : response.data
+        })
+    }
+    catch(e){
+        dispatch({
+            type : ERROR,
+            payload : console.log(e)
+        })
+    }
+    
+   }
 
 // //DELETEEPURCHASEDETAIL
 // export const DeletePurchaseDetail = (data) => async dispatch =>{
