@@ -112,7 +112,7 @@ const PurchaseTable = () => {
 
        //.then((resp)=> download({data : resp.data}))
        //.then((resp)=> fileDownload(resp.data))
-      
+
 
       //  saveAs(
       //   "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
