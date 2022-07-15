@@ -464,14 +464,32 @@ console.log("dash",opdpharmecyoptical);
                         >
                         {itemsname.name} 
                       </Button>
+                     
                   </Box>
                   ) 
               })
              }
+              {
+                    opdpharmecyoptical.map((items)=>{
+                      return(
+                        <>
+                          {
+                          visit1.supplier_name === items.product_id ?
+                          <>
+                            <AddIcon sx={{marginTop:'15px',color:'white', backgroundColor:'blue', borderRadius:'50%'}} 
+                            name='more_input_fields'  onClick={()=>handleServiceAdd(items)} /> 
+                            </>
+                          : null
+                        }
+                        </>
+                      )
+                    })
+                    }
             </Box>
            :  null
            
           }
+          
           
         {/* to show button static */}
          {/* {visit.supplier_name !==''?
@@ -508,7 +526,7 @@ console.log("dash",opdpharmecyoptical);
             {/* ends here code */}
 
             <Box>
-                    {
+                    {/* {
                     opdpharmecyoptical.map((items)=>{
                       return(
                         <>
@@ -565,12 +583,13 @@ console.log("dash",opdpharmecyoptical);
  
                  
                     })
-                    }
+                    } */}
                   </Box> 
 
 
                   <Box>
                     <>
+                    {visit1.supplier_name !==''? 
                   <TableContainer>
                     <Table sx={{marginBottom:2, width:'100%'}}> 
                           <TableHead>
@@ -621,9 +640,11 @@ console.log("dash",opdpharmecyoptical);
 
                      </Table> 
                          </TableContainer>
+                         :null }
                     </>
                   </Box> 
                   <Box>
+                  {visit1.supplier_name !==''? 
                     <TableContainer>
                       <Table>
                         <TableHead>
@@ -638,6 +659,7 @@ console.log("dash",opdpharmecyoptical);
                         </TableBody>
                       </Table>
                     </TableContainer>
+                    : null }
                   </Box>
 
                   
