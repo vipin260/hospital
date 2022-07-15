@@ -106,11 +106,13 @@ const PurchaseTable = () => {
     // );
     console.log('id is', id)
     try{
+
       //  const res =  axios.post(linkUrl+'downloadfile.php', {file_id:parseInt(id), responseType: "blob"})
       //.then((resp)=> saveAs( resp.data))
+
        //.then((resp)=> download({data : resp.data}))
        //.then((resp)=> fileDownload(resp.data))
-       
+       console.log("resp",resp.data.download)
 
       //  saveAs(
       //   "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",

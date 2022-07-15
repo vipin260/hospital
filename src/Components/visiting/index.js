@@ -13,6 +13,7 @@ import { FetchPatient, FetchSinglePatient } from '../../redux/action/Actions';
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import {FetchProductOpd, FetchProductPharmacy, FetchProductOptical } from "../../redux/action/Actions";
+import AddIcon from '@mui/icons-material/Add';
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -125,8 +126,13 @@ const Visiting = (props) => {
   const [options1,setOptions1] = useState([])
   const [value, setValue] = useState("one");
   const [opdpharmecyoptical,setOpdpharmecyoptical] = useState([])
+  const [selectdatasave, setSelectdatasave] = useState([]);
+  const [inputAdd, setInputAdd] = useState([]);
+  const [price, setPrice] = useState(0);
 
+ 
 
+console.log("opdpharmecyoptical",opdpharmecyoptical)
 
   const ButtonsName = [{id:'1',name :'OPD',para:'OPD'},{id:'2',name:'Pharmacy',para:'Pharmacy'},
   {id:'3',name:'Opticals',para:'Opticals'}]
@@ -141,7 +147,14 @@ const Visiting = (props) => {
   options.push({ value: items.id, label: items.name })
   )
 
-  
+  const [purchaseDetail, setPurchaseDetail] = useState({
+    id                : "",
+    item_name         : "",
+    item_qty          : "",
+    item_msrp         : "",
+    cost_price        : "",
+    selling_price     : "",
+  })
 
   
 
@@ -161,7 +174,28 @@ const Visiting = (props) => {
     buttonName        : "",
   });
 
-  
+  const handleServiceAdd = (items) => {
+    setInputAdd([...inputAdd,  
+      {
+        product_name       : items.product_name, 
+        product_id        : items.product_id,  
+        product_name       : items.product_name,
+        product_category      : items.product_category, 
+        opd_price           : items.opd_price 
+      }])
+      
+      if(inputAdd!==""){
+        // setPrice(price.concat(items.opd_price))
+        setPrice(price + parseFloat(items.opd_price))
+        
+      }
+      console.log("price", price)
+    
+  };
+
+
+  console.log("inputAdd", inputAdd)
+  console.log("visit1",visit1)
   const submitPntData = (e) => {
     let { name, value } = e.target;
     setVisit({ 
@@ -185,6 +219,7 @@ const Visiting = (props) => {
 
   const handleChange1 = (value) => {
     setValue(value);
+    setSelectdatasave(["nhhhh"])
     setVisit1((prev) => {
       return {
         ...prev,
@@ -192,12 +227,22 @@ const Visiting = (props) => {
       };
     });
     
-    console.log("tet5",value)
+    
+  
+    console.log("tet5",opdpharmecyoptical)
+    console.log("tet9",selectdatasave)
+   
   };
+  console.log("tet6",visit1.supplier_name)
+  
   
   
 
   useEffect(()=>{
+    
+   },[visit1])
+
+   useEffect(()=>{
     setData(PatientNameReducer)
    },[PatientNameReducer])
 
@@ -322,7 +367,7 @@ console.log("dash",opdpharmecyoptical);
   //   Dispatch(FetchSinglePatient(singleData))
   //  },[Dispatch])
    
-console.log("koat",options1.value)
+
 
   return (
     <Layout>
@@ -419,14 +464,32 @@ console.log("koat",options1.value)
                         >
                         {itemsname.name} 
                       </Button>
+                     
                   </Box>
                   ) 
               })
              }
+              {
+                    opdpharmecyoptical.map((items)=>{
+                      return(
+                        <>
+                          {
+                          visit1.supplier_name === items.product_id ?
+                          <>
+                            <AddIcon sx={{marginTop:'15px',color:'white', backgroundColor:'blue', borderRadius:'50%'}} 
+                            name='more_input_fields'  onClick={()=>handleServiceAdd(items)} /> 
+                            </>
+                          : null
+                        }
+                        </>
+                      )
+                    })
+                    }
             </Box>
            :  null
            
           }
+          
           
         {/* to show button static */}
          {/* {visit.supplier_name !==''?
@@ -463,7 +526,7 @@ console.log("koat",options1.value)
             {/* ends here code */}
 
             <Box>
-                    {
+                    {/* {
                     opdpharmecyoptical.map((items)=>{
                       return(
                         <>
@@ -476,12 +539,12 @@ console.log("koat",options1.value)
                           
                           <TableRow>                    
                             <TableCell align="right">Product Name</TableCell>
-                            <TableCell align="right">Product Category</TableCell>
+                            
                             {items.name === "OPD" ?
                             <TableCell align="right">Opd Price</TableCell>
                             :null
                           }
-                            <TableCell align="right">Status</TableCell>
+                            
                             
                           </TableRow>
 
@@ -490,18 +553,28 @@ console.log("koat",options1.value)
                           <TableBody >
                           <TableRow>                    
                             <TableCell align="right">{items.product_name}</TableCell>
-                            <TableCell align="right">{items.name}</TableCell>
+                            
                             {items.name === "OPD" ?
-                            <TableCell align="right">{items.opd_price}</TableCell>
+                            <>
+                                <TableCell align="right">{items.opd_price}</TableCell>
+                            <AddIcon sx={{marginTop:'15px',color:'white', backgroundColor:'blue', borderRadius:'50%'}} 
+                            name='more_input_fields'  onClick={()=>handleServiceAdd(items)} /> 
+                            </>
+                        
                             :null
                           }
-                            <TableCell align="right">{items.status}</TableCell>
+                            
                            
+                          </TableRow>
+                          <TableRow>
+                         
                           </TableRow>
                           </TableBody>
                           </Table> 
                          </TableContainer>
+                         
                          </>
+                         
                           : null
                         }
                         </>
@@ -510,10 +583,86 @@ console.log("koat",options1.value)
  
                  
                     })
-                    }
+                    } */}
                   </Box> 
 
 
+                  <Box>
+                    <>
+                    {visit1.supplier_name !==''? 
+                  <TableContainer>
+                    <Table sx={{marginBottom:2, width:'100%'}}> 
+                          <TableHead>
+                          
+                          <TableRow>                    
+                            <TableCell align="right">Product Name</TableCell>
+                            
+                            
+                            <TableCell align="right">Opd Price</TableCell>
+                            
+                          
+                            
+                            
+                          </TableRow>
+
+                          </TableHead>
+                    {
+                    inputAdd.map((items)=>{
+                      return(
+                        
+
+                          <TableBody >
+                          <TableRow>                    
+                            <TableCell align="right">{items.product_name}</TableCell>
+                            
+                            
+                            
+                                <TableCell align="right">{items.opd_price}</TableCell>
+                            
+                           
+                        
+                            
+                          
+                            
+                           
+                          </TableRow>
+                         
+                          </TableBody>
+                         
+                         
+                        
+                      
+                      )
+ 
+                 
+                    })
+                    }
+
+                     </Table> 
+                         </TableContainer>
+                         :null }
+                    </>
+                  </Box> 
+                  <Box>
+                  {visit1.supplier_name !==''? 
+                    <TableContainer>
+                      <Table>
+                        <TableHead>
+                        <TableRow>
+                          <TableCell align="right">total</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                        <TableRow>
+                        <TableCell align="right">{price}</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                    : null }
+                  </Box>
+
+                  
 
 
           
