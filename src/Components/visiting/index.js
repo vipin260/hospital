@@ -125,14 +125,7 @@ const Visiting = (props) => {
   const FetchOpticalData = useSelector((state) => state.ProductReducersData.OpticalFetch);
   const FetchVisitData = useSelector((state) => state.VisitReducer.fetchApi);
   let newData = [SingleData.data];
-  console.log("get",SingleData.data)
-
-  console.log("real",FetchVisitData)
-  console.log("real1",FetchOpticalData)
-  
  
-
-  console.log('PatientNameReducer name',PatientNameReducer);
 
   const [datasApi,setDatasApi] = useState({
     PurchaseDatais : '',
@@ -150,11 +143,13 @@ const Visiting = (props) => {
   // const [selectdatasave, setSelectdatasave] = useState([]);
   const [inputAdd, setInputAdd] = useState([]);
   const [price, setPrice] = useState(0);
+  const [price1, setPrice1] = useState(0);
   const [addPharmacy, setAddPharmacy] = useState([]);
+  const [addPharmacydata, setAddPharmacydata] = useState([]);
 
  
 
-console.log("opdpharmecyoptical",opdpharmecyoptical)
+
 
   const ButtonsName = [{id:'1',name :'OPD',para:'OPD'},{id:'2',name:'Pharmacy',para:'Pharmacy'},
   {id:'3',name:'Opticals',para:'Opticals'}]
@@ -217,12 +212,42 @@ console.log("opdpharmecyoptical",opdpharmecyoptical)
     else if(items.name==="pharmacy"){
       let data = {"pharmacy_id" : items.product_id, "action" : "getAllInvertory"}
       Dispatch(getAllInventory(data))
-      .then(() => handleClickOpen())
+      // .then(() => {
+      //   console.log("checking data",FetchVisitData)
+        
+        
+      // }
+      //   )
     }
   };
 
+  useEffect(()=>{
+    if(FetchVisitData.length>1){
+      handleClickOpen()
+    }
+    else{
+      
+        // setAddPharmacydata([ ...addPharmacydata,
+        //   {
+        //    id : items.id,
+        //    product_name : items.product_name,
+        //    selling_price : items.selling_price,
+        //    cost_price : items.cost_price,
+        //    item_msrp : items.item_msrp,
+        //   } 
+        //  ])
+        setAddPharmacydata([...new Map(FetchVisitData.map(item => [item.id, item])).values()])
+         console.log("first",FetchVisitData)
+      
+      }
+     
+    
+  },[FetchVisitData]) 
+
   
+
   
+  // console.log("data is ",FetchVisitData)
   const BootstrapDialogTitle = (props) => {
     const { children, onClose, ...other } = props;
   
@@ -247,10 +272,7 @@ console.log("opdpharmecyoptical",opdpharmecyoptical)
     );
   };
 
-  // BootstrapDialogTitle.propTypes = {
-  //   children: PropTypes.node,
-  //   onClose: PropTypes.func.isRequired,
-  // };
+ 
 
   
     const [open, setOpen] = React.useState(false);
@@ -262,12 +284,33 @@ console.log("opdpharmecyoptical",opdpharmecyoptical)
       setOpen(false);
     };
 
+    const pharmacydata = (items) => {
+    //   setAddPharmacydata( addPharmacy.filter((c) => {
+    //     return (
+    //       addPharmacy.map((y) => {
+    //         return(
+    //         (y.id).findIndex((c.id))!=2
+    //         )
+    //       })
+    //     )
+    // })
+    //   )
+    
+    let pricevar = 0;
+    setOpen(false);
+   
+    addPharmacydata.map((items) => {
+      return(
+      // console.log("under22",items.selling_price),
+      pricevar += price + parseFloat(items.selling_price)
+      )
+    })
+    setPrice1(pricevar)
+    
+    }
+    
 
-
-
-
-  console.log("inputAdd", inputAdd)
-  console.log("visit1",visit1)
+     
   const submitPntData = (e) => {
     let { name, value } = e.target;
     setVisit({ 
@@ -286,26 +329,27 @@ console.log("opdpharmecyoptical",opdpharmecyoptical)
     });
     let singleData = {"id" : selectedOption.value, "action" : "getPatientByID"}
     Dispatch(FetchSinglePatient(singleData))
-    console.log("tet",selectedOption)
+    
   };
 
   const handleChange1 = (value) => {
     setValue(value);
-   console.log("kya h value me",value)
+   
     setVisit1((prev) => {
       return {
         ...prev,
         supplier_name: value.value,
+        buttonName: value.data
       };
     });
     
     
   
-    console.log("tet5",opdpharmecyoptical)
+    
     
    
   };
-  console.log("tet6",visit1.supplier_name)
+  
   
   
   
@@ -343,28 +387,27 @@ console.log("opdpharmecyoptical",opdpharmecyoptical)
     
 
       if(value  === '1' ){
-          console.log('first button');
+        
 
   setValue(null)
   options1.splice(0, options1.length)
   setOptions1( FetchOpdData.map((items)=>{ 
     return(
-  { value: items.product_id, label: items.product_name }
+  { value: items.product_id, label: items.product_name, data: items.name }
   )
          }) 
   )  
   setOpdpharmecyoptical(FetchOpdData)
   // setDefaultvalue({label:"net"})
   // console.log("option",options1)
-  console.log("dataata",FetchOpdData)
-  console.log("dataata222",opdpharmecyoptical)
+  
       }else if(value === '2' ){
          console.log('second button')
          setValue(null)
          options1.splice(0, options1.length)
          setOptions1( FetchPharmacyData.map((items)=>{
           return(
-{ value: items.product_id, label: items.product_name }
+{ value: items.product_id, label: items.product_name, data: items.name }
           )
          }) 
          )   
@@ -379,18 +422,17 @@ console.log("opdpharmecyoptical",opdpharmecyoptical)
   // ) 
   
   //        }
-         console.log("option",options1)
-  console.log("dataata",FetchPharmacyData)
+        
   // setDefaultvalue({label:"get"})
   
         //  Dispatch(FetchPurchases())
       }else if(value === '3' ){
-         console.log('third button')
+         
          setValue(null)
          options1.splice(0, options1.length)
          setOptions1( FetchOpticalData.map((items)=>{
           return(
-  { value: items.product_id, label: items.product_name }
+  { value: items.product_id, label: items.product_name, data: items.name }
           )
       })
          )
@@ -405,7 +447,7 @@ console.log("opdpharmecyoptical",opdpharmecyoptical)
   }
 
  const SelectedCheckboxes = (value) => {
-  console.log("label",value)
+  
   setAddPharmacy([ ...addPharmacy,
    {
     id : value.id,
@@ -415,9 +457,20 @@ console.log("opdpharmecyoptical",opdpharmecyoptical)
     item_msrp : value.item_msrp,
    } 
   ])
+  
+  // console.log("check",addPharmacy)
+      
+      // setPrice1(price1 + parseFloat(value.selling_price))
+  
+   
  }
- console.log("label222",addPharmacy)
-console.log("dash",opdpharmecyoptical);
+ 
+ useEffect(()=>{
+  setAddPharmacydata([...new Map(addPharmacy.map(item => [item.id, item])).values()])
+  
+},[addPharmacy]) 
+
+// console.log("addPharmacy222",addPharmacydata)
   
   const SubmitData = () => {
 //     Dispatch(AddInvoiceData(visit))
@@ -431,6 +484,7 @@ console.log("dash",opdpharmecyoptical);
     // Dispatch(FetchCattegoryData())   
   },[Dispatch]) 
 
+  
   
  
  
@@ -453,7 +507,7 @@ console.log("dash",opdpharmecyoptical);
   //  },[Dispatch])
    
 
-  console.log("hdakhsdkj",FetchVisitData)
+  
   return (
     <Layout>
       <div className={classes.root}>
@@ -538,7 +592,7 @@ console.log("dash",opdpharmecyoptical);
                     }
                   </Box> 
           {visit.supplier_name !==''?          
-            <Box  sx={{marginBottom:'2%',padding:'4px',display:'flex'}}>
+            <Box  sx={{marginBottom:'2%',padding:'4px',display:'flex', width: "100%", justifyContent: "center"}}>
                
               {ButtonsName.map((itemsname,i)=>{
                 return(
@@ -683,9 +737,18 @@ console.log("dash",opdpharmecyoptical);
                   </Box> 
 
 
-                  <Box>
+                  <Box sx={{
+          mb: 2,
+          display: "flex",
+          flexDirection: "column",
+          maxHeight: 150,
+          overflow: "hidden",
+          overflowY: "scroll",
+          width: "100%"
+         
+        }}>
                     <>
-                    {visit1.supplier_name !==''? 
+                    {visit1.buttonName =='OPD'? 
                   <TableContainer>
                     <Table sx={{marginBottom:2, width:'100%'}}> 
                           <TableHead>
@@ -740,29 +803,38 @@ console.log("dash",opdpharmecyoptical);
                     </>
                   </Box> 
 
-                  <Box>
-                  {visit1.supplier_name !==''? 
-                    <TableContainer>
-                      <Table>
-                        <TableHead>
-                        <TableRow>
-                          <TableCell align="right">total</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                        <TableRow>
-                        <TableCell align="right">{price}</TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
+                  <Box sx={{textAlign:"right", width: "100%", borderBottom: "none"}}>
+                  {visit1.buttonName =='OPD'? 
+                   <TableContainer sx={{borderBottom: "none"}}>
+                   <Table sx={{borderBottom: "none"}}>
+                     <TableHead sx={{borderBottom: "none"}}>
+                     <TableRow sx={{borderBottom: "none"}}>
+                       <TableCell sx={{borderBottom: "none",paddingBottom:"0px"}} align="right">Total</TableCell>
+                       </TableRow>
+                     </TableHead>
+                     <TableBody sx={{borderBottom: "none"}}>
+                     <TableRow sx={{borderBottom: "none"}}>
+                     <TableCell sx={{borderBottom: "none"}} align="right">{price}</TableCell>
+                       </TableRow>
+                     </TableBody>
+                   </Table>
+                 </TableContainer>
                     : null }
                   </Box>
 
 
-                  <Box>
+                  <Box sx={{
+          mb: 2,
+          display: "flex",
+          flexDirection: "column",
+          maxHeight: 150,
+          overflow: "hidden",
+          overflowY: "scroll",
+          width: "100%"
+         
+        }}>
                     <>
-                    {visit1.supplier_name !==''? 
+                    {visit1.buttonName =='pharmacy'? 
                   <TableContainer>
                     <Table sx={{marginBottom:2, width:'100%'}}> 
                           <TableHead>
@@ -782,7 +854,7 @@ console.log("dash",opdpharmecyoptical);
 
                           </TableHead>
                     {
-                    addPharmacy.map((items)=>{
+                    addPharmacydata.map((items)=>{
                       return(
                         
 
@@ -821,6 +893,25 @@ console.log("dash",opdpharmecyoptical);
                     </>
                   </Box> 
 
+                  <Box sx={{textAlign:"right", width: "100%", borderBottom: "none"}}>
+                 
+                 {visit1.buttonName =='pharmacy'? 
+                     <TableContainer sx={{borderBottom: "none"}}>
+                       <Table sx={{borderBottom: "none"}}>
+                         <TableHead sx={{borderBottom: "none"}}>
+                         <TableRow sx={{borderBottom: "none"}}>
+                           <TableCell sx={{borderBottom: "none",paddingBottom:"0px"}} align="right">Total</TableCell>
+                           </TableRow>
+                         </TableHead>
+                         <TableBody sx={{borderBottom: "none"}}>
+                         <TableRow sx={{borderBottom: "none"}}>
+                         <TableCell sx={{borderBottom: "none"}} align="right">{price1}</TableCell>
+                           </TableRow>
+                         </TableBody>
+                       </Table>
+                     </TableContainer>
+                     : null }
+                  </Box>
                   
 
 
@@ -1018,7 +1109,7 @@ console.log("dash",opdpharmecyoptical);
                     </TableContainer>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleClose}>
+          <Button autoFocus onClick={pharmacydata}>
             Add
           </Button>
         </DialogActions>
