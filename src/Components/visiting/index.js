@@ -12,7 +12,26 @@ import { FetchPatient, FetchSinglePatient } from '../../redux/action/Actions';
 // import Table from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
-import {FetchProductOpd, FetchProductPharmacy, FetchProductOptical } from "../../redux/action/Actions";
+import {FetchProductOpd, FetchProductPharmacy, FetchProductOptical, getAllInventory } from "../../redux/action/Actions";
+import AddIcon from '@mui/icons-material/Add';
+
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -29,7 +48,7 @@ const useStyle = makeStyles((theme) => ({
     "& .MuiPaper-root": {
       minWidth: "35%",
       height: "auto",
-      padding: `${theme.spacing(4)} 0`,
+      padding: `${theme.spacing(4)} 30px`,
       marginTop :'7%',
       [theme.breakpoints.down("lg")]: {
         width: "70%",
@@ -37,6 +56,7 @@ const useStyle = makeStyles((theme) => ({
       },
       //border:'1px solid yellow',
     },
+    
   },
 
   inputs: {
@@ -87,6 +107,7 @@ const useStyle = makeStyles((theme) => ({
 }
 }));
 
+
 const Visiting = (props) => {
   
   const classes = useStyle(props);
@@ -102,15 +123,9 @@ const Visiting = (props) => {
   const FetchOpdData = useSelector((state) => state.ProductReducersData.OpdFetch);
   const FetchPharmacyData = useSelector((state) => state.ProductReducersData.PharmacyFetch);
   const FetchOpticalData = useSelector((state) => state.ProductReducersData.OpticalFetch);
+  const FetchVisitData = useSelector((state) => state.VisitReducer.fetchApi);
   let newData = [SingleData.data];
-  console.log("get",SingleData.data)
-
-  console.log("real",FetchPharmacyData)
-  console.log("real1",FetchOpticalData)
-  
  
-
-  console.log('PatientNameReducer name',PatientNameReducer);
 
   const [datasApi,setDatasApi] = useState({
     PurchaseDatais : '',
@@ -125,6 +140,14 @@ const Visiting = (props) => {
   const [options1,setOptions1] = useState([])
   const [value, setValue] = useState("one");
   const [opdpharmecyoptical,setOpdpharmecyoptical] = useState([])
+  // const [selectdatasave, setSelectdatasave] = useState([]);
+  const [inputAdd, setInputAdd] = useState([]);
+  const [price, setPrice] = useState(0);
+  const [price1, setPrice1] = useState(0);
+  const [addPharmacy, setAddPharmacy] = useState([]);
+  const [addPharmacydata, setAddPharmacydata] = useState([]);
+
+ 
 
 
 
@@ -141,7 +164,14 @@ const Visiting = (props) => {
   options.push({ value: items.id, label: items.name })
   )
 
-  
+  const [purchaseDetail, setPurchaseDetail] = useState({
+    id                : "",
+    item_name         : "",
+    item_qty          : "",
+    item_msrp         : "",
+    cost_price        : "",
+    selling_price     : "",
+  })
 
   
 
@@ -161,7 +191,126 @@ const Visiting = (props) => {
     buttonName        : "",
   });
 
+  const handleServiceAdd = (items) => {
+    if(items.name==="OPD"){
+    setInputAdd([...inputAdd,  
+      {
+        product_name       : items.product_name, 
+        product_id        : items.product_id,  
+        product_name       : items.product_name,
+        product_category      : items.product_category, 
+        opd_price           : items.opd_price 
+      }])
+      
+      if(inputAdd!==""){
+        // setPrice(price.concat(items.opd_price))
+        setPrice(price + parseFloat(items.opd_price))
+        
+      }
+      console.log("price", price)
+    }
+    else if(items.name==="pharmacy"){
+      let data = {"pharmacy_id" : items.product_id, "action" : "getAllInvertory"}
+      Dispatch(getAllInventory(data))
+      // .then(() => {
+      //   console.log("checking data",FetchVisitData)
+        
+        
+      // }
+      //   )
+    }
+  };
+
+  useEffect(()=>{
+    if(FetchVisitData.length>1){
+      handleClickOpen()
+    }
+    else{
+      
+        // setAddPharmacydata([ ...addPharmacydata,
+        //   {
+        //    id : items.id,
+        //    product_name : items.product_name,
+        //    selling_price : items.selling_price,
+        //    cost_price : items.cost_price,
+        //    item_msrp : items.item_msrp,
+        //   } 
+        //  ])
+        setAddPharmacydata([...new Map(FetchVisitData.map(item => [item.id, item])).values()])
+         console.log("first",FetchVisitData)
+      
+      }
+     
+    
+  },[FetchVisitData]) 
+
   
+
+  
+  // console.log("data is ",FetchVisitData)
+  const BootstrapDialogTitle = (props) => {
+    const { children, onClose, ...other } = props;
+  
+    return (
+      <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+        {children}
+        {onClose ? (
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        ) : null}
+      </DialogTitle>
+    );
+  };
+
+ 
+
+  
+    const [open, setOpen] = React.useState(false);
+  
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+    const handleClose = () => {
+      setOpen(false);
+    };
+
+    const pharmacydata = (items) => {
+    //   setAddPharmacydata( addPharmacy.filter((c) => {
+    //     return (
+    //       addPharmacy.map((y) => {
+    //         return(
+    //         (y.id).findIndex((c.id))!=2
+    //         )
+    //       })
+    //     )
+    // })
+    //   )
+    
+    let pricevar = 0;
+    setOpen(false);
+   
+    addPharmacydata.map((items) => {
+      return(
+      // console.log("under22",items.selling_price),
+      pricevar += price + parseFloat(items.selling_price)
+      )
+    })
+    setPrice1(pricevar)
+    
+    }
+    
+
+     
   const submitPntData = (e) => {
     let { name, value } = e.target;
     setVisit({ 
@@ -180,24 +329,36 @@ const Visiting = (props) => {
     });
     let singleData = {"id" : selectedOption.value, "action" : "getPatientByID"}
     Dispatch(FetchSinglePatient(singleData))
-    console.log("tet",selectedOption)
+    
   };
 
   const handleChange1 = (value) => {
     setValue(value);
+   
     setVisit1((prev) => {
       return {
         ...prev,
         supplier_name: value.value,
+        buttonName: value.data
       };
     });
     
-    console.log("tet5",value)
+    
+  
+    
+    
+   
   };
+  
+  
   
   
 
   useEffect(()=>{
+    
+   },[visit1])
+
+   useEffect(()=>{
     setData(PatientNameReducer)
    },[PatientNameReducer])
 
@@ -226,28 +387,27 @@ const Visiting = (props) => {
     
 
       if(value  === '1' ){
-          console.log('first button');
+        
 
   setValue(null)
   options1.splice(0, options1.length)
   setOptions1( FetchOpdData.map((items)=>{ 
     return(
-  { value: items.product_id, label: items.product_name }
+  { value: items.product_id, label: items.product_name, data: items.name }
   )
          }) 
   )  
   setOpdpharmecyoptical(FetchOpdData)
   // setDefaultvalue({label:"net"})
   // console.log("option",options1)
-  console.log("dataata",FetchOpdData)
-  console.log("dataata222",opdpharmecyoptical)
+  
       }else if(value === '2' ){
          console.log('second button')
          setValue(null)
          options1.splice(0, options1.length)
          setOptions1( FetchPharmacyData.map((items)=>{
           return(
-{ value: items.product_id, label: items.product_name }
+{ value: items.product_id, label: items.product_name, data: items.name }
           )
          }) 
          )   
@@ -262,18 +422,17 @@ const Visiting = (props) => {
   // ) 
   
   //        }
-         console.log("option",options1)
-  console.log("dataata",FetchPharmacyData)
+        
   // setDefaultvalue({label:"get"})
   
         //  Dispatch(FetchPurchases())
       }else if(value === '3' ){
-         console.log('third button')
+         
          setValue(null)
          options1.splice(0, options1.length)
          setOptions1( FetchOpticalData.map((items)=>{
           return(
-  { value: items.product_id, label: items.product_name }
+  { value: items.product_id, label: items.product_name, data: items.name }
           )
       })
          )
@@ -287,7 +446,31 @@ const Visiting = (props) => {
  
   }
 
-console.log("dash",opdpharmecyoptical);
+ const SelectedCheckboxes = (value) => {
+  
+  setAddPharmacy([ ...addPharmacy,
+   {
+    id : value.id,
+    product_name : value.product_name,
+    selling_price : value.selling_price,
+    cost_price : value.cost_price,
+    item_msrp : value.item_msrp,
+   } 
+  ])
+  
+  // console.log("check",addPharmacy)
+      
+      // setPrice1(price1 + parseFloat(value.selling_price))
+  
+   
+ }
+ 
+ useEffect(()=>{
+  setAddPharmacydata([...new Map(addPharmacy.map(item => [item.id, item])).values()])
+  
+},[addPharmacy]) 
+
+// console.log("addPharmacy222",addPharmacydata)
   
   const SubmitData = () => {
 //     Dispatch(AddInvoiceData(visit))
@@ -301,6 +484,7 @@ console.log("dash",opdpharmecyoptical);
     // Dispatch(FetchCattegoryData())   
   },[Dispatch]) 
 
+  
   
  
  
@@ -322,17 +506,27 @@ console.log("dash",opdpharmecyoptical);
   //   Dispatch(FetchSinglePatient(singleData))
   //  },[Dispatch])
    
-console.log("koat",options1.value)
 
+  
   return (
     <Layout>
       <div className={classes.root}>
         <Paper className={classes.paper} elevation={5}>
           <Box className={classes.inputs}>
-            <Typography variant="h5" component="h5" sx={{ marginBottom: 2 }}>
+          <Box className={classes.inputs} sx={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', width:'100%', marginBottom: '16px'}}>
+          <Typography variant="h5" component="h5" sx={{ marginBottom: 2 }}>
               Add Visiting
             </Typography>
-            <Box className="react_select_box" sx={{width:'90%', marginBottom: 2}}>
+            <Button
+              onClick={SubmitData}
+              variant="contained"
+              className={classes.stundentBtn}
+            >
+              Add Invoice
+            </Button>
+            </Box>
+           
+            <Box className="react_select_box" sx={{width:'100%', marginBottom: 2}}>
               <Select
                 options={options}
                 defaultValue={visit.supplier_name}
@@ -398,14 +592,8 @@ console.log("koat",options1.value)
                     }
                   </Box> 
           {visit.supplier_name !==''?          
-            <Box  sx={{marginBottom:'2%',padding:'4px',display:'flex'}}>
-               <Select
-                options={options1}
-                value={value}
-              //  defaultValue={defaultvalue}
-                onChange={handleChange1}
+            <Box  sx={{marginBottom:'2%',padding:'4px',display:'flex', width: "100%", justifyContent: "center"}}>
                
-              />
               {ButtonsName.map((itemsname,i)=>{
                 return(
                   <Box key={i} sx={{marginBottom:'2%',padding:'4px',display:'flex'}}>
@@ -419,14 +607,39 @@ console.log("koat",options1.value)
                         >
                         {itemsname.name} 
                       </Button>
+                     
                   </Box>
                   ) 
               })
              }
+             <Select
+                options={options1}
+                value={value}
+              //  defaultValue={defaultvalue}
+                onChange={handleChange1}
+               
+              />
+              {
+                    opdpharmecyoptical.map((items)=>{
+                      return(
+                        <>
+                          {
+                          visit1.supplier_name === items.product_id ?
+                          <>
+                            <AddIcon sx={{marginTop:'7px',marginLeft:'15px',color:'white', backgroundColor:'blue', borderRadius:'50%'}} 
+                            name='more_input_fields'  onClick={()=>handleServiceAdd(items)} /> 
+                            </>
+                          : null
+                        }
+                        </>
+                      )
+                    })
+                    }
             </Box>
            :  null
            
           }
+          
           
         {/* to show button static */}
          {/* {visit.supplier_name !==''?
@@ -463,7 +676,7 @@ console.log("koat",options1.value)
             {/* ends here code */}
 
             <Box>
-                    {
+                    {/* {
                     opdpharmecyoptical.map((items)=>{
                       return(
                         <>
@@ -476,12 +689,12 @@ console.log("koat",options1.value)
                           
                           <TableRow>                    
                             <TableCell align="right">Product Name</TableCell>
-                            <TableCell align="right">Product Category</TableCell>
+                            
                             {items.name === "OPD" ?
                             <TableCell align="right">Opd Price</TableCell>
                             :null
                           }
-                            <TableCell align="right">Status</TableCell>
+                            
                             
                           </TableRow>
 
@@ -490,18 +703,28 @@ console.log("koat",options1.value)
                           <TableBody >
                           <TableRow>                    
                             <TableCell align="right">{items.product_name}</TableCell>
-                            <TableCell align="right">{items.name}</TableCell>
+                            
                             {items.name === "OPD" ?
-                            <TableCell align="right">{items.opd_price}</TableCell>
+                            <>
+                                <TableCell align="right">{items.opd_price}</TableCell>
+                            <AddIcon sx={{marginTop:'15px',color:'white', backgroundColor:'blue', borderRadius:'50%'}} 
+                            name='more_input_fields'  onClick={()=>handleServiceAdd(items)} /> 
+                            </>
+                        
                             :null
                           }
-                            <TableCell align="right">{items.status}</TableCell>
+                            
                            
+                          </TableRow>
+                          <TableRow>
+                         
                           </TableRow>
                           </TableBody>
                           </Table> 
                          </TableContainer>
+                         
                          </>
+                         
                           : null
                         }
                         </>
@@ -510,10 +733,186 @@ console.log("koat",options1.value)
  
                  
                     })
-                    }
+                    } */}
                   </Box> 
 
 
+                  <Box sx={{
+          mb: 2,
+          display: "flex",
+          flexDirection: "column",
+          maxHeight: 150,
+          overflow: "hidden",
+          overflowY: "scroll",
+          width: "100%"
+         
+        }}>
+                    <>
+                    {visit1.buttonName =='OPD'? 
+                  <TableContainer>
+                    <Table sx={{marginBottom:2, width:'100%'}}> 
+                          <TableHead>
+                          
+                          <TableRow>                    
+                            <TableCell align="right">Product Name</TableCell>
+                            
+                            
+                            <TableCell align="right">Opd Price</TableCell>
+                            
+                          
+                            
+                            
+                          </TableRow>
+
+                          </TableHead>
+                    {
+                    inputAdd.map((items)=>{
+                      return(
+                        
+
+                          <TableBody >
+                          <TableRow>                    
+                            <TableCell align="right">{items.product_name}</TableCell>
+                            
+                            
+                            
+                                <TableCell align="right">{items.opd_price}</TableCell>
+                            
+                           
+                        
+                            
+                          
+                            
+                           
+                          </TableRow>
+                         
+                          </TableBody>
+                         
+                         
+                        
+                      
+                      )
+ 
+                 
+                    })
+                    }
+
+                     </Table> 
+                         </TableContainer>
+                         :null }
+                    </>
+                  </Box> 
+
+                  <Box sx={{textAlign:"right", width: "100%", borderBottom: "none"}}>
+                  {visit1.buttonName =='OPD'? 
+                   <TableContainer sx={{borderBottom: "none"}}>
+                   <Table sx={{borderBottom: "none"}}>
+                     <TableHead sx={{borderBottom: "none"}}>
+                     <TableRow sx={{borderBottom: "none"}}>
+                       <TableCell sx={{borderBottom: "none",paddingBottom:"0px"}} align="right">Total</TableCell>
+                       </TableRow>
+                     </TableHead>
+                     <TableBody sx={{borderBottom: "none"}}>
+                     <TableRow sx={{borderBottom: "none"}}>
+                     <TableCell sx={{borderBottom: "none"}} align="right">{price}</TableCell>
+                       </TableRow>
+                     </TableBody>
+                   </Table>
+                 </TableContainer>
+                    : null }
+                  </Box>
+
+
+                  <Box sx={{
+          mb: 2,
+          display: "flex",
+          flexDirection: "column",
+          maxHeight: 150,
+          overflow: "hidden",
+          overflowY: "scroll",
+          width: "100%"
+         
+        }}>
+                    <>
+                    {visit1.buttonName =='pharmacy'? 
+                  <TableContainer>
+                    <Table sx={{marginBottom:2, width:'100%'}}> 
+                          <TableHead>
+                          
+                          <TableRow>                    
+                            <TableCell align="right">Product Name</TableCell>
+                            
+                            
+                            <TableCell align="right">Item MSRP</TableCell>
+                            <TableCell align="right">Cost Price</TableCell>
+                            <TableCell align="right">Selling Price</TableCell>
+                            
+                          
+                            
+                            
+                          </TableRow>
+
+                          </TableHead>
+                    {
+                    addPharmacydata.map((items)=>{
+                      return(
+                        
+
+                          <TableBody >
+                          <TableRow>                    
+                            <TableCell align="right">{items.product_name}</TableCell>
+                            
+                            
+                            
+                                <TableCell align="right">{items.item_msrp}</TableCell>
+                                <TableCell align="right">{items.cost_price}</TableCell>
+                                <TableCell align="right">{items.selling_price}</TableCell>
+                            
+                           
+                        
+                            
+                          
+                            
+                           
+                          </TableRow>
+                         
+                          </TableBody>
+                         
+                         
+                        
+                      
+                      )
+ 
+                 
+                    })
+                    }
+
+                     </Table> 
+                         </TableContainer>
+                         :null }
+                    </>
+                  </Box> 
+
+                  <Box sx={{textAlign:"right", width: "100%", borderBottom: "none"}}>
+                 
+                 {visit1.buttonName =='pharmacy'? 
+                     <TableContainer sx={{borderBottom: "none"}}>
+                       <Table sx={{borderBottom: "none"}}>
+                         <TableHead sx={{borderBottom: "none"}}>
+                         <TableRow sx={{borderBottom: "none"}}>
+                           <TableCell sx={{borderBottom: "none",paddingBottom:"0px"}} align="right">Total</TableCell>
+                           </TableRow>
+                         </TableHead>
+                         <TableBody sx={{borderBottom: "none"}}>
+                         <TableRow sx={{borderBottom: "none"}}>
+                         <TableCell sx={{borderBottom: "none"}} align="right">{price1}</TableCell>
+                           </TableRow>
+                         </TableBody>
+                       </Table>
+                     </TableContainer>
+                     : null }
+                  </Box>
+                  
 
 
           
@@ -661,15 +1060,61 @@ console.log("koat",options1.value)
                       </DataTableExtensions>
                     </Paper> */}
   
-            <Button
-              onClick={SubmitData}
-              variant="contained"
-              className={classes.stundentBtn}
-            >
-              Add Invoice
-            </Button>
+           
           </Box>
         </Paper>
+        <div>
+      {/* <Button variant="outlined" onClick={handleClickOpen}>
+        Open dialog
+      </Button> */}
+      <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+         Products Details
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+        <TableContainer>
+                      <Table>
+                        <TableHead>
+                        <TableRow>
+                          <TableCell align="right">Product Name</TableCell>
+                          <TableCell align="right">Item MSRP</TableCell>
+                          <TableCell align="right">Cost Price</TableCell>
+                          <TableCell align="right">Selling Price</TableCell>
+                          </TableRow>
+                        </TableHead>
+
+                           {
+                            FetchVisitData.map((items) => {
+                              return(
+                              
+                              <TableBody>
+                            <TableRow>
+                            <TableCell align="right">{<FormControlLabel value={items.id} control={<Checkbox  />} 
+                             label={items.product_name} onChange={() => SelectedCheckboxes(items)} />}</TableCell>
+                            <TableCell align="right">{items.item_msrp}</TableCell>
+                            <TableCell align="right">{items.cost_price}</TableCell>
+                            <TableCell align="right">{items.selling_price}</TableCell>
+                              </TableRow>
+                              </TableBody>
+                              )
+                            })
+  
+                           }
+                        
+                      </Table>
+                    </TableContainer>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={pharmacydata}>
+            Add
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
+    </div>
       </div>
     </Layout>
   );

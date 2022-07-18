@@ -9,9 +9,10 @@ import {CategoryDataReducers } from "./categoryReducer";
 import {ProductReducersData} from './productReducers';
 import { PurchaseDetailReducersData } from "./PurchaseDetailReducer";
 import FileReducerData from "./FileReducer";
+import VisitReducer from "./VisitReducer";
 
 
 const rootReducer = combineReducers({togglingReducer,  PurchaseReducer ,PatientReducerData, CategoryDataReducers,
-  ProductReducersData, CategoryReducerData, SupplierReducerData, PurchaseDetailReducersData, FileReducerData });
+  ProductReducersData, CategoryReducerData, SupplierReducerData, PurchaseDetailReducersData, FileReducerData, VisitReducer });
 
 export default rootReducer;
