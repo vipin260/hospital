@@ -47,8 +47,6 @@ const useStyle = makeStyles((theme) => ({
 
     "& .MuiPaper-root": {
       minWidth: "35%",
-      width: "73%",
-    marginLeft: "20%",
       height: "auto",
       padding: `${theme.spacing(4)} 30px`,
       marginTop :'7%',
@@ -128,7 +126,6 @@ const Visiting = (props) => {
   const FetchVisitData = useSelector((state) => state.VisitReducer.fetchApi);
   let newData = [SingleData.data];
  
-  
 
   const [datasApi,setDatasApi] = useState({
     PurchaseDatais : '',
@@ -145,18 +142,10 @@ const Visiting = (props) => {
   const [opdpharmecyoptical,setOpdpharmecyoptical] = useState([])
   // const [selectdatasave, setSelectdatasave] = useState([]);
   const [inputAdd, setInputAdd] = useState([]);
-  const [inputAdddata, setInputAdddata] = useState([]);
   const [price, setPrice] = useState(0);
   const [price1, setPrice1] = useState(0);
-  const [price2, setPrice2] = useState(0);
-  const [pricetotal, setPricetotal] = useState(0);
   const [addPharmacy, setAddPharmacy] = useState([]);
-  const [beforePharmacy, setBeforePharmacy] = useState([]);
-  const [beforeOptical, setBeforeOptical] = useState([]);
-  const [addOptical, setAddOptical] = useState([]);
   const [addPharmacydata, setAddPharmacydata] = useState([]);
-  const [addOpticaldata, setAddOpticaldata] = useState([]);
-  // const [storepharmacyid, setStorepharmacyid] = useState([]);
 
  
 
@@ -203,7 +192,6 @@ const Visiting = (props) => {
   });
 
   const handleServiceAdd = (items) => {
-    console.log("items",items)
     if(items.name==="OPD"){
     setInputAdd([...inputAdd,  
       {
@@ -214,25 +202,14 @@ const Visiting = (props) => {
         opd_price           : items.opd_price 
       }])
       
-      // if(inputAdd!==""){
-      //   setPrice(price + parseFloat(items.opd_price))
+      if(inputAdd!==""){
+        // setPrice(price.concat(items.opd_price))
+        setPrice(price + parseFloat(items.opd_price))
         
-      // }
-      
+      }
+      console.log("price", price)
     }
     else if(items.name==="pharmacy"){
-      // setStorepharmacyid()
-      let data = {"pharmacy_id" : items.product_id, "action" : "getAllInvertory"}
-      Dispatch(getAllInventory(data))
-      // .then(() => {
-      //   console.log("checking data",FetchVisitData)
-        
-        
-      // }
-      //   )
-    }
-    else if(items.name==="optical"){
-      // setStorepharmacyid()
       let data = {"pharmacy_id" : items.product_id, "action" : "getAllInvertory"}
       Dispatch(getAllInventory(data))
       // .then(() => {
@@ -245,103 +222,27 @@ const Visiting = (props) => {
   };
 
   useEffect(()=>{
-    setInputAdddata([...new Map(inputAdd.map(item => [item.product_id, item])).values()])
-    
-  },[inputAdd]) 
-
-  useEffect(()=>{
-    
-    let pricevar2 = 0;
-    inputAdddata.map((items) => {
-      return(
-      
-      pricevar2 += parseFloat(items.opd_price)
-      )
-    })
-    setPrice(pricevar2)
-    
-  },[inputAdddata]) 
-
-
-  useEffect(()=>{
-    if(visit1.buttonName =='pharmacy'){
-    if(FetchVisitData.length>1&&visit1.buttonName =='pharmacy'){
+    if(FetchVisitData.length>1){
       handleClickOpen()
     }
     else{
-      FetchVisitData.map((items) => {
-        return(
-          setAddPharmacy([ ...addPharmacy,
-          {
-           id : items.id,
-           product_name : items.product_name,
-           selling_price : items.selling_price,
-           cost_price : items.cost_price,
-           item_msrp : items.item_msrp,
-          } 
-         ])
-        )
-      })
-        
       
-      }
-    }
-
-    else if(visit1.buttonName =='optical'){
-      if(FetchVisitData.length>1&&visit1.buttonName =='optical'){
-        handleClickOpen1()
-      }
-      else{
-        FetchVisitData.map((items) => {
-          return(
-            setAddOptical([ ...addOptical,
-            {
-             id : items.id,
-             product_name : items.product_name,
-             selling_price : items.selling_price,
-             cost_price : items.cost_price,
-             item_msrp : items.item_msrp,
-            } 
-           ])
-          )
-        })
-          
-        
-        }
+        // setAddPharmacydata([ ...addPharmacydata,
+        //   {
+        //    id : items.id,
+        //    product_name : items.product_name,
+        //    selling_price : items.selling_price,
+        //    cost_price : items.cost_price,
+        //    item_msrp : items.item_msrp,
+        //   } 
+        //  ])
+        setAddPharmacydata([...new Map(FetchVisitData.map(item => [item.id, item])).values()])
+         console.log("first",FetchVisitData)
+      
       }
      
     
   },[FetchVisitData]) 
-
-
-  useEffect(()=>{
-    
-    let pricevar = 0;
-    addPharmacydata.map((items) => {
-      return(
-      
-      pricevar += parseFloat(items.selling_price)
-      )
-    })
-    setPrice1( pricevar)
-    
-  },[addPharmacydata]) 
-
-  useEffect(()=>{
-    
-    let pricevar1 = 0;
-    addOpticaldata.map((items) => {
-      return(
-      
-      pricevar1 += parseFloat(items.selling_price)
-      )
-    })
-    setPrice2(pricevar1)
-    
-  },[addOpticaldata]) 
-
-
-  
 
   
 
@@ -383,15 +284,6 @@ const Visiting = (props) => {
       setOpen(false);
     };
 
-    const [open1, setOpen1] = React.useState(false);
-  
-    const handleClickOpen1 = () => {
-      setOpen1(true);
-    };
-    const handleClose1 = () => {
-      setOpen1(false);
-    };
-
     const pharmacydata = (items) => {
     //   setAddPharmacydata( addPharmacy.filter((c) => {
     //     return (
@@ -403,29 +295,19 @@ const Visiting = (props) => {
     //     )
     // })
     //   )
-    console.log(beforePharmacy);
-    setAddPharmacy([...addPharmacy,...beforePharmacy]);
     
+    let pricevar = 0;
     setOpen(false);
-    // let pricevar = 0;
    
-   
-    // addPharmacydata.map((items) => {
-    //   return(
-      
-    //   pricevar += price1 + parseFloat(items.selling_price)
-    //   )
-    // })
-    // setPrice1(pricevar)
+    addPharmacydata.map((items) => {
+      return(
+      // console.log("under22",items.selling_price),
+      pricevar += price + parseFloat(items.selling_price)
+      )
+    })
+    setPrice1(pricevar)
     
     }
-    const pharmacydata1 = (items) => {
-      setAddOptical([...addOptical,...beforeOptical]);
-      setOpen1(false);
-
-      
-      
-      }
     
 
      
@@ -506,8 +388,7 @@ const Visiting = (props) => {
 
       if(value  === '1' ){
         
-        // addPharmacydata.splice(0, addPharmacydata.length)
-        // addOpticaldata.splice(0, addOpticaldata.length)
+
   setValue(null)
   options1.splice(0, options1.length)
   setOptions1( FetchOpdData.map((items)=>{ 
@@ -564,11 +445,10 @@ const Visiting = (props) => {
       
  
   }
-  
-  
+
  const SelectedCheckboxes = (value) => {
   
-  setBeforePharmacy([ ...beforePharmacy,
+  setAddPharmacy([ ...addPharmacy,
    {
     id : value.id,
     product_name : value.product_name,
@@ -577,19 +457,6 @@ const Visiting = (props) => {
     item_msrp : value.item_msrp,
    } 
   ])
-
-}
-  const SelectedCheckboxes1 = (value) => {
-  
-    setBeforeOptical([ ...beforeOptical,
-     {
-      id : value.id,
-      product_name : value.product_name,
-      selling_price : value.selling_price,
-      cost_price : value.cost_price,
-      item_msrp : value.item_msrp,
-     } 
-    ])
   
   // console.log("check",addPharmacy)
       
@@ -602,11 +469,6 @@ const Visiting = (props) => {
   setAddPharmacydata([...new Map(addPharmacy.map(item => [item.id, item])).values()])
   
 },[addPharmacy]) 
-
-useEffect(()=>{
-  setAddOpticaldata([...new Map(addOptical.map(item => [item.id, item])).values()])
-  
-},[addOptical]) 
 
 // console.log("addPharmacy222",addPharmacydata)
   
@@ -683,13 +545,13 @@ useEffect(()=>{
                     
                   <Box>
                     {
-                    PatientNameReducer.map((items,index)=>{
+                    PatientNameReducer.map((items)=>{
                       return(
                         <>
                           {
                           visit.supplier_name === items.id ?
                           <>
-                          <TableContainer key={index} >
+                          <TableContainer>
                     <Table sx={{marginBottom:2, width:'100%'}}> 
                           <TableHead>
                           
@@ -758,13 +620,13 @@ useEffect(()=>{
                
               />
               {
-                    opdpharmecyoptical.map((items,index)=>{
+                    opdpharmecyoptical.map((items)=>{
                       return(
                         <>
                           {
                           visit1.supplier_name === items.product_id ?
                           <>
-                            <AddIcon key={index} sx={{marginTop:'7px',marginLeft:'15px',color:'white', backgroundColor:'blue', borderRadius:'50%'}} 
+                            <AddIcon sx={{marginTop:'7px',marginLeft:'15px',color:'white', backgroundColor:'blue', borderRadius:'50%'}} 
                             name='more_input_fields'  onClick={()=>handleServiceAdd(items)} /> 
                             </>
                           : null
@@ -886,16 +748,16 @@ useEffect(()=>{
          
         }}>
                     <>
-                    {inputAdddata !='' || addOpticaldata !='' || addPharmacydata !=''? 
+                    {visit1.buttonName =='OPD'? 
                   <TableContainer>
                     <Table sx={{marginBottom:2, width:'100%'}}> 
                           <TableHead>
                           
-                          <TableRow sx={{display : 'flex'}}>                    
-                            <TableCell sx={{flexBasis : '50%'}}  align="left">Product Name</TableCell>
+                          <TableRow>                    
+                            <TableCell align="right">Product Name</TableCell>
                             
                             
-                            <TableCell sx={{flexBasis : '50%'}} align="left">Price</TableCell>
+                            <TableCell align="right">Opd Price</TableCell>
                             
                           
                             
@@ -903,93 +765,18 @@ useEffect(()=>{
                           </TableRow>
 
                           </TableHead>
-                          <TableBody >
                     {
-                    inputAdddata.map((items,index)=>{
-                      return(
-                          <TableRow key={index} sx={{display : 'flex'}}>                    
-                            <TableCell align="left" sx={{flexBasis : '50%'}}>{items.product_name}</TableCell>
-                                <TableCell align="left" sx={{flexBasis : '50%'}}>{items.opd_price}</TableCell>
-                          </TableRow> 
-                      )
-                    })
-                    }
-
-                   {
-                    addPharmacydata.map((items,index)=>{
-                      return(
-                          <TableRow key={index} sx={{display : 'flex'}}>                    
-                            <TableCell align="left" sx={{flexBasis : '50%'}}>{items.product_name}</TableCell>
-                                <TableCell align="left" sx={{flexBasis : '50%'}}>{items.selling_price}</TableCell>
-                          </TableRow> 
-                      )
-                    })
-                    }
-                     {
-                    addOpticaldata.map((items,index)=>{
-                      return(
-                          <TableRow key={index} sx={{display : 'flex'}}>                    
-                            <TableCell align="left" sx={{flexBasis : '50%'}}>{items.product_name}</TableCell>
-                                <TableCell align="left" sx={{flexBasis : '50%'}}>{items.selling_price}</TableCell>
-                          </TableRow> 
-                      )
-                    })
-                    }
-                    </TableBody>
-
-                     </Table> 
-                         </TableContainer>
-                         :null }
-                    </>
-                  </Box> 
-
-                 
-
-{/* 
-                  <Box sx={{
-          mb: 2,
-          display: "flex",
-          flexDirection: "column",
-          maxHeight: 150,
-          overflow: "hidden",
-          overflowY: "scroll",
-          width: "100%"
-         
-        }}>
-                    <>
-                    {addPharmacydata !=''? 
-                  <TableContainer>
-                    <Table sx={{marginBottom:2, width:'100%'}}> 
-                          <TableHead>
-                          
-                          <TableRow>                    
-                            <TableCell align="right">Product Name</TableCell> */}
-                            
-                            
-                            {/* <TableCell align="right">Item MSRP</TableCell>
-                            <TableCell align="right">Cost Price</TableCell> */}
-                            {/* <TableCell align="right">Price</TableCell> */}
-                            
-                          
-                            
-                            
-                          {/* </TableRow>
-
-                          </TableHead>
-                    {
-                    addPharmacydata.map((items,index)=>{
+                    inputAdd.map((items)=>{
                       return(
                         
 
-                          <TableBody key={index}>
+                          <TableBody >
                           <TableRow>                    
-                            <TableCell align="right">{items.product_name}</TableCell> */}
+                            <TableCell align="right">{items.product_name}</TableCell>
                             
                             
                             
-                                {/* <TableCell align="right">{items.item_msrp}</TableCell>
-                                <TableCell align="right">{items.cost_price}</TableCell> */}
-                                {/* <TableCell align="right">{items.selling_price}</TableCell>
+                                <TableCell align="right">{items.opd_price}</TableCell>
                             
                            
                         
@@ -1014,11 +801,101 @@ useEffect(()=>{
                          </TableContainer>
                          :null }
                     </>
-                  </Box>  */}
+                  </Box> 
 
-                  {/* <Box sx={{textAlign:"right", width: "100%", borderBottom: "none"}}>
+                  <Box sx={{textAlign:"right", width: "100%", borderBottom: "none"}}>
+                  {visit1.buttonName =='OPD'? 
+                   <TableContainer sx={{borderBottom: "none"}}>
+                   <Table sx={{borderBottom: "none"}}>
+                     <TableHead sx={{borderBottom: "none"}}>
+                     <TableRow sx={{borderBottom: "none"}}>
+                       <TableCell sx={{borderBottom: "none",paddingBottom:"0px"}} align="right">Total</TableCell>
+                       </TableRow>
+                     </TableHead>
+                     <TableBody sx={{borderBottom: "none"}}>
+                     <TableRow sx={{borderBottom: "none"}}>
+                     <TableCell sx={{borderBottom: "none"}} align="right">{price}</TableCell>
+                       </TableRow>
+                     </TableBody>
+                   </Table>
+                 </TableContainer>
+                    : null }
+                  </Box>
+
+
+                  <Box sx={{
+          mb: 2,
+          display: "flex",
+          flexDirection: "column",
+          maxHeight: 150,
+          overflow: "hidden",
+          overflowY: "scroll",
+          width: "100%"
+         
+        }}>
+                    <>
+                    {visit1.buttonName =='pharmacy'? 
+                  <TableContainer>
+                    <Table sx={{marginBottom:2, width:'100%'}}> 
+                          <TableHead>
+                          
+                          <TableRow>                    
+                            <TableCell align="right">Product Name</TableCell>
+                            
+                            
+                            <TableCell align="right">Item MSRP</TableCell>
+                            <TableCell align="right">Cost Price</TableCell>
+                            <TableCell align="right">Selling Price</TableCell>
+                            
+                          
+                            
+                            
+                          </TableRow>
+
+                          </TableHead>
+                    {
+                    addPharmacydata.map((items)=>{
+                      return(
+                        
+
+                          <TableBody >
+                          <TableRow>                    
+                            <TableCell align="right">{items.product_name}</TableCell>
+                            
+                            
+                            
+                                <TableCell align="right">{items.item_msrp}</TableCell>
+                                <TableCell align="right">{items.cost_price}</TableCell>
+                                <TableCell align="right">{items.selling_price}</TableCell>
+                            
+                           
+                        
+                            
+                          
+                            
+                           
+                          </TableRow>
+                         
+                          </TableBody>
+                         
+                         
+                        
+                      
+                      )
+ 
                  
-                 {visit1.supplier_name !=''? 
+                    })
+                    }
+
+                     </Table> 
+                         </TableContainer>
+                         :null }
+                    </>
+                  </Box> 
+
+                  <Box sx={{textAlign:"right", width: "100%", borderBottom: "none"}}>
+                 
+                 {visit1.buttonName =='pharmacy'? 
                      <TableContainer sx={{borderBottom: "none"}}>
                        <Table sx={{borderBottom: "none"}}>
                          <TableHead sx={{borderBottom: "none"}}>
@@ -1034,119 +911,7 @@ useEffect(()=>{
                        </Table>
                      </TableContainer>
                      : null }
-                  </Box> */}
-
-
-
-
-                  {/* <Box sx={{
-          mb: 2,
-          display: "flex",
-          flexDirection: "column",
-          maxHeight: 150,
-          overflow: "hidden",
-          overflowY: "scroll",
-          width: "100%"
-         
-        }}>
-                    <>
-                    {addOpticaldata !=''? 
-                  <TableContainer>
-                    <Table sx={{marginBottom:2, width:'100%'}}> 
-                          <TableHead>
-                          
-                          <TableRow>                    
-                            <TableCell align="right">Product Name</TableCell> */}
-                            
-                            
-                            {/* <TableCell align="right">Item MSRP</TableCell>
-                            <TableCell align="right">Cost Price</TableCell> */}
-                            {/* <TableCell align="right">Price</TableCell>
-                            
-                          
-                            
-                            
-                          </TableRow>
-
-                          </TableHead>
-                    {
-                    addOpticaldata.map((items,index)=>{
-                      return(
-                        
-
-                          <TableBody key={index}>
-                          <TableRow>                    
-                            <TableCell align="right">{items.product_name}</TableCell> */}
-                            
-                            
-                            
-                                {/* <TableCell align="right">{items.item_msrp}</TableCell>
-                                <TableCell align="right">{items.cost_price}</TableCell> */}
-                                {/* <TableCell align="right">{items.selling_price}</TableCell>
-                            
-                           
-                        
-                            
-                          
-                            
-                           
-                          </TableRow>
-                         
-                          </TableBody>
-                         
-                         
-                        
-                      
-                      )
- 
-                 
-                    })
-                    }
-
-                     </Table> 
-                         </TableContainer>
-                         :null }
-                    </>
-                  </Box>  */}
-
-                  <Box sx={{textAlign:"right", width: "100%", borderBottom: "none"}}>
-                  {inputAdddata !='' || addOpticaldata !='' || addPharmacydata !=''? 
-                   <TableContainer sx={{borderBottom: "none"}}>
-                   <Table sx={{borderBottom: "none"}}>
-                     <TableHead sx={{borderBottom: "none"}}>
-                     <TableRow sx={{borderBottom: "none"}}>
-                       <TableCell sx={{borderBottom: "none",paddingBottom:"0px"}} align="right">Total</TableCell>
-                       </TableRow>
-                     </TableHead>
-                     <TableBody sx={{borderBottom: "none"}}>
-                     <TableRow sx={{borderBottom: "none"}}>
-                     <TableCell sx={{borderBottom: "none"}} align="right">{price+price1+price2}</TableCell>
-                       </TableRow>
-                     </TableBody>
-                   </Table>
-                 </TableContainer>
-                    : null }
                   </Box>
-{/* 
-                  <Box sx={{textAlign:"right", width: "100%", borderBottom: "none"}}>
-                 
-                 {visit1.supplier_name !=''? 
-                     <TableContainer sx={{borderBottom: "none"}}>
-                       <Table sx={{borderBottom: "none"}}>
-                         <TableHead sx={{borderBottom: "none"}}>
-                         <TableRow sx={{borderBottom: "none"}}>
-                           <TableCell sx={{borderBottom: "none",paddingBottom:"0px"}} align="right">Total</TableCell>
-                           </TableRow>
-                         </TableHead>
-                         <TableBody sx={{borderBottom: "none"}}>
-                         <TableRow sx={{borderBottom: "none"}}>
-                         <TableCell sx={{borderBottom: "none"}} align="right">{price2}</TableCell>
-                           </TableRow>
-                         </TableBody>
-                       </Table>
-                     </TableContainer>
-                     : null }
-                  </Box> */}
                   
 
 
@@ -1323,10 +1088,10 @@ useEffect(()=>{
                         </TableHead>
 
                            {
-                            FetchVisitData.map((items,index) => {
+                            FetchVisitData.map((items) => {
                               return(
                               
-                              <TableBody key={index}>
+                              <TableBody>
                             <TableRow>
                             <TableCell align="right">{<FormControlLabel value={items.id} control={<Checkbox  />} 
                              label={items.product_name} onChange={() => SelectedCheckboxes(items)} />}</TableCell>
@@ -1349,56 +1114,6 @@ useEffect(()=>{
           </Button>
         </DialogActions>
       </BootstrapDialog>
-
-
-      <BootstrapDialog
-        onClose={handleClose1}
-        aria-labelledby="customized-dialog-title"
-        open={open1}
-      >
-        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose1}>
-         Products Details
-        </BootstrapDialogTitle>
-        <DialogContent dividers>
-        <TableContainer>
-                      <Table>
-                        <TableHead>
-                        <TableRow>
-                          <TableCell align="right">Product Name</TableCell>
-                          <TableCell align="right">Item MSRP</TableCell>
-                          <TableCell align="right">Cost Price</TableCell>
-                          <TableCell align="right">Selling Prices</TableCell>
-                          </TableRow>
-                        </TableHead>
-
-                           {
-                            FetchVisitData.map((items,index) => {
-                              return(
-                              
-                              <TableBody key={index}>
-                            <TableRow>
-                            <TableCell align="right">{<FormControlLabel value={items.id} control={<Checkbox  />} 
-                             label={items.product_name} onChange={() => SelectedCheckboxes1(items)} />}</TableCell>
-                            <TableCell align="right">{items.item_msrp}</TableCell>
-                            <TableCell align="right">{items.cost_price}</TableCell>
-                            <TableCell align="right">{items.selling_price}</TableCell>
-                              </TableRow>
-                              </TableBody>
-                              )
-                            })
-  
-                           }
-                        
-                      </Table>
-                    </TableContainer>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={pharmacydata1}>
-            Add
-          </Button>
-        </DialogActions>
-      </BootstrapDialog>
-
     </div>
       </div>
     </Layout>
