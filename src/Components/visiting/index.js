@@ -52,6 +52,7 @@ const useStyle = makeStyles((theme) => ({
       height: "auto",
       padding: `${theme.spacing(4)} 30px`,
       marginTop :'7%',
+      boxShadow: 'none',
       [theme.breakpoints.down("lg")]: {
         width: "70%",
         padding: `${theme.spacing(2)} 0`,
