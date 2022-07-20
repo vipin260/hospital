@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { FormControlLabel, Paper, Box, Button, Typography, TextField , Checkbox, FormLabel, Table, TableBody,
-  TableRow, TableCell, TableHead, TableContainer  } from "@mui/material";
+  TableRow, TableCell, TableHead, TableContainer, Autocomplete  } from "@mui/material";
 
 import { makeStyles } from "@mui/styles";
 import Layout from "../../Pages/Layout";
@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import {AddInvoiceData ,FetchSupplName, FetchData, FetchPurchases} from '../../redux/action/action'
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
+import ReactSelect, { createFilter } from 'react-select';
 import { FetchPatient, FetchSinglePatient } from '../../redux/action/Actions';
 // import Table from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
@@ -22,6 +23,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import ReactSearchBox from "react-search-box";
+
 
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -49,6 +52,7 @@ const useStyle = makeStyles((theme) => ({
       minWidth: "35%",
       width: "73%",
     marginLeft: "20%",
+    boxShadow:"none",
       height: "auto",
       padding: `${theme.spacing(4)} 30px`,
       marginTop :'7%',
@@ -57,6 +61,9 @@ const useStyle = makeStyles((theme) => ({
         padding: `${theme.spacing(2)} 0`,
       },
       //border:'1px solid yellow',
+    },
+    "& .css-tj5bde-Svg": {
+      cursor: "default",
     },
     
   },
@@ -87,7 +94,8 @@ const useStyle = makeStyles((theme) => ({
     },
     '& #react-select-3-listbox':{
       backgroundColor : 'white !important',
-      zIndex :'99'
+      zIndex :'99',
+      // visibility: 'hidden'
     },
     '& #react-select-5-listbox':{
       backgroundColor : 'white !important',
@@ -99,6 +107,9 @@ const useStyle = makeStyles((theme) => ({
   '& .css-2kitwc-MuiFormControlLabel-root.MuiFormControlLabel-label' : {
      justifyContent: 'space-between',
      width: '100% !important'
+},
+'& .css-6j8wv5-Input' : {
+cursor : 'text',
 },
 '& .MuiFormControlLabel-label':{
   width: '100%'
@@ -156,6 +167,7 @@ const Visiting = (props) => {
   const [addOptical, setAddOptical] = useState([]);
   const [addPharmacydata, setAddPharmacydata] = useState([]);
   const [addOpticaldata, setAddOpticaldata] = useState([]);
+  
   // const [storepharmacyid, setStorepharmacyid] = useState([]);
 
  
@@ -167,12 +179,12 @@ const Visiting = (props) => {
   
 
  
- 
+ console.log("pateint",PatientNameReducer)
 
   const options = []
   // const options1 = []
   PatientNameReducer.map((items)=>
-  options.push({ value: items.id, label: items.name })
+  options.push({ label: items.name,value: items.id, data1: items.phone_number+items.adhar_number })
   )
 
   const [purchaseDetail, setPurchaseDetail] = useState({
@@ -439,6 +451,8 @@ const Visiting = (props) => {
   };
 
   const handleChange = (selectedOption) => {
+    console.log("selected",selectedOption)
+    if(selectedOption!=null){
     setVisit((prev) => {
       return {
         ...prev,
@@ -448,7 +462,7 @@ const Visiting = (props) => {
     let singleData = {"id" : selectedOption.value, "action" : "getPatientByID"}
     Dispatch(FetchSinglePatient(singleData))
     
-  };
+  }};
 
   const handleChange1 = (value) => {
     setValue(value);
@@ -625,7 +639,11 @@ useEffect(()=>{
   
   
  
- 
+  // const filterOptions = (options, filterString, values) => {
+  //   return options.filter(
+  //     x => x.data1.includes(filterString) || x.label.includes(filterString)
+  //   );
+  // };
 
 
    useEffect(() => {
@@ -637,14 +655,16 @@ useEffect(()=>{
     Dispatch(FetchProductOpd(opd_fetch))
  }, [Dispatch])
 
+ const colourStyles = {
+  control: styles => ({ ...styles, cursor: 'text' }),
   
+};
   //  useEffect(()=>{
    
   //   let singleData = { "action" : "getPatientByID"}
   //   Dispatch(FetchSinglePatient(singleData))
   //  },[Dispatch])
-   
-
+  
   
   return (
     <Layout>
@@ -667,11 +687,47 @@ useEffect(()=>{
             <Box className="react_select_box" sx={{width:'100%', marginBottom: 2}}>
               <Select
                 options={options}
+                styles={colourStyles}
+                isClearable={true}
+                openMenuOnClick={false}
+                openMenuOnFocus={false}
+                defaultMenuIsOpen={false}
+                selectMenuOpen={false}
+                
+                // onMenuClose={(defaultInputValue) => { if(defaultInputValue==""){ {false}}}}
+                isOptions={true}
+                isSearchable={true}
+                placeholder={'Type to search'}
+                getOptionValue ={(options)=>options.data1}
+                components={{ DropdownIndicator:() => null, IndicatorSeparator:() => null }}
+                // filterOption={createFilter({
+                //   matchFrom: 'any',
+                //   stringify: options => `${options.label},${options.data},${options.value}`
+                // })}
+                // filterOption={createFilter({ options })}
                 defaultValue={visit.supplier_name}
                 onChange={handleChange}
                
               />
             </ Box>
+            <Box>
+            {/* <Autocomplete
+        style={{ width: 1000 }}
+        freeSolo
+        autoComplete
+        autoHighlight
+        openOnFocus={false}
+        onChange={handleChange}
+        options={options}
+        renderInput={(params) => (
+          <TextField {...params}
+          openOnFocus={false}
+            variant="outlined"
+            label="Search Box"
+          />
+        )}
+      /> */}
+            </Box>
             {/* <input className="form-control" type="checkbox" checked={chkValue}/>
             <FormControlLabel 
                     control= { 
