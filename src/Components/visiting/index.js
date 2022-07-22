@@ -30,6 +30,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
+import Fab from '@mui/material/Fab';
 
 
 
@@ -938,10 +939,32 @@ console.log("radio value",radiovalue)
   aria-label="empty textarea"
   placeholder="Prescription"
   style={{ width: '100%', height: '150px',fontSize: '16px',
-  border: '2px solid grey',
+  border: '1px solid rgba(224, 224, 224, 1)',
   padding: '10px 10px',outline:'none',boxSizing:'border-box' }}
 />
-<Button variant="contained" sx={{marginLeft:'auto',marginTop:'10px'}}>Submit</Button>
+<Box sx={{display:'flex',justifyContent:'flex-end',alignItems:'center',width:'100%'}}>
+<label htmlFor="upload-photo" style={{marginTop:'15px',marginRight:'20px'}}>
+  <input
+    style={{ display: 'none' }}
+    id="upload-photo"
+    name="upload-photo"
+    type="file"
+  />
+
+  <Fab
+    sx={{color:'#fff',backgroundColor:'rgb(105 105 105)',"&.MuiButtonBase-root:hover": {
+      backgroundColor: "rgb(73 73 73)"
+    }}}
+    size="small"
+    component="span"
+    aria-label="add"
+    variant="extended"
+  >
+    <AddIcon /> Upload Prescription
+  </Fab>
+</label>
+<Button variant="contained" sx={{marginTop:'10px'}}>Submit</Button>
+</Box>
     </Box>:null}
                   {/* <Box sx={{display:"flex",justifyContent:"flex-start",width:"100%",marginTop:"20px"}}>
                   <Button variant="contained" sx={{marginRight:"20px"}} onClick={currentVisit}>Current Visit</Button>
@@ -1053,7 +1076,8 @@ console.log("radio value",radiovalue)
           maxHeight: 150,
           overflow: "hidden",
           overflowY: "scroll",
-          width: "100%"
+          width: "100%",
+          marginTop: "30px"
          
         }}>
                     <>
