@@ -248,6 +248,7 @@ const Editcategory = () => {
               <Select
                 options={options}
                 defaultValue={category.product_category}
+                placeholder={SingleCategoryData.data.product_category}
                 // defaultValue={SingleCategoryData.data.product_category === '1' ? options[0] : 
                 // (SingleCategoryData.data.product_category === '3' ? options[2] : options[1]) }
                 onChange={handleChange}
