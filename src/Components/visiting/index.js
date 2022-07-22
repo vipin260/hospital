@@ -23,7 +23,11 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import ReactSearchBox from "react-search-box";
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControl from '@mui/material/FormControl';
+
+
 
 
 
@@ -66,6 +70,10 @@ const useStyle = makeStyles((theme) => ({
       cursor: "default",
     },
     
+  },
+  radio_button : {
+    display: 'flex !important',
+    flexDirection: 'row !important',
   },
 
   inputs: {
@@ -167,6 +175,7 @@ const Visiting = (props) => {
   const [addOptical, setAddOptical] = useState([]);
   const [addPharmacydata, setAddPharmacydata] = useState([]);
   const [addOpticaldata, setAddOpticaldata] = useState([]);
+  const [radiovalue, setRadiovalue] = useState('Search By Name');
   
   // const [storepharmacyid, setStorepharmacyid] = useState([]);
 
@@ -659,6 +668,11 @@ useEffect(()=>{
   control: styles => ({ ...styles, cursor: 'text' }),
   
 };
+
+const handleChange3 = (event) => {
+  setRadiovalue(event.target.value);
+};
+console.log("radio value",radiovalue)
   //  useEffect(()=>{
    
   //   let singleData = { "action" : "getPatientByID"}
@@ -685,6 +699,20 @@ useEffect(()=>{
             </Box>
            
             <Box className="react_select_box" sx={{width:'100%', marginBottom: 2}}>
+            <FormControl >
+            <FormLabel id="demo-controlled-radio-buttons-group"></FormLabel>
+            <RadioGroup 
+              className={classes.radio_button}
+              aria-labelledby="demo-controlled-radio-buttons-group"
+              name="controlled-radio-buttons-group"
+              value={radiovalue}
+              onChange={handleChange3}
+            >
+              <FormControlLabel value="Search By Name" control={<Radio />} label="Search By Name" />
+              <FormControlLabel value="Search By Number" control={<Radio />} label="Search By Number" />
+              <FormControlLabel value="Search By Aadhar Number" control={<Radio />} label="Search By Aadhar Number" />
+            </RadioGroup>
+          </FormControl>
               <Select
                 options={options}
                 styles={colourStyles}
@@ -700,11 +728,6 @@ useEffect(()=>{
                 placeholder={'Type to search'}
                 getOptionValue ={(options)=>options.data1}
                 components={{ DropdownIndicator:() => null, IndicatorSeparator:() => null }}
-                // filterOption={createFilter({
-                //   matchFrom: 'any',
-                //   stringify: options => `${options.label},${options.data},${options.value}`
-                // })}
-                // filterOption={createFilter({ options })}
                 defaultValue={visit.supplier_name}
                 onChange={handleChange}
                
