@@ -26,6 +26,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControl from '@mui/material/FormControl';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import PropTypes from 'prop-types';
+import TextareaAutosize from '@mui/material/TextareaAutosize';
 
 
 
@@ -128,6 +132,39 @@ cursor : 'text',
 }
 }));
 
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
 
 const Visiting = (props) => {
   
@@ -176,6 +213,8 @@ const Visiting = (props) => {
   const [addPharmacydata, setAddPharmacydata] = useState([]);
   const [addOpticaldata, setAddOpticaldata] = useState([]);
   const [radiovalue, setRadiovalue] = useState('Search By Name');
+  const [current, setCurrent] = useState(false);
+  const [tabvalue, setTabvalue] = useState('one');
   
   // const [storepharmacyid, setStorepharmacyid] = useState([]);
 
@@ -184,7 +223,7 @@ const Visiting = (props) => {
 
 
   const ButtonsName = [{id:'1',name :'OPD',para:'OPD'},{id:'2',name:'Pharmacy',para:'Pharmacy'},
-  {id:'3',name:'Opticals',para:'Opticals'}]
+  {id:'3',name:'Opticals',para:'Opticals'},{id:'4',name:'Prescription',para:'Prescription'}]
   
 
  
@@ -475,7 +514,7 @@ const Visiting = (props) => {
 
   const handleChange1 = (value) => {
     setValue(value);
-   
+    setCurrent(false)
     setVisit1((prev) => {
       return {
         ...prev,
@@ -531,6 +570,7 @@ const Visiting = (props) => {
         
         // addPharmacydata.splice(0, addPharmacydata.length)
         // addOpticaldata.splice(0, addOpticaldata.length)
+        setCurrent(false)
   setValue(null)
   options1.splice(0, options1.length)
   setOptions1( FetchOpdData.map((items)=>{ 
@@ -545,6 +585,7 @@ const Visiting = (props) => {
   
       }else if(value === '2' ){
          console.log('second button')
+         setCurrent(false)
          setValue(null)
          options1.splice(0, options1.length)
          setOptions1( FetchPharmacyData.map((items)=>{
@@ -569,7 +610,7 @@ const Visiting = (props) => {
   
         //  Dispatch(FetchPurchases())
       }else if(value === '3' ){
-         
+        setCurrent(false)
          setValue(null)
          options1.splice(0, options1.length)
          setOptions1( FetchOpticalData.map((items)=>{
@@ -583,6 +624,16 @@ const Visiting = (props) => {
         //Dispatch(FetchPurchases())
         
       }
+      else if(value === '4' ){
+         
+        setValue(null)
+        options1.splice(0, options1.length)
+        setCurrent(true)
+
+        
+       //Dispatch(FetchPurchases())
+       
+     }
       
       
  
@@ -669,6 +720,13 @@ useEffect(()=>{
   
 };
 
+const currentVisit = () => {
+setCurrent(true)
+}
+const history = () => {
+  setCurrent(false)
+  }
+
 const handleChange3 = (event) => {
   setRadiovalue(event.target.value);
 };
@@ -679,6 +737,10 @@ console.log("radio value",radiovalue)
   //   Dispatch(FetchSinglePatient(singleData))
   //  },[Dispatch])
   
+  const tabchange = (event, newValue) => {
+    setTabvalue(newValue);
+    console.log('change',newValue)
+  };
   
   return (
     <Layout>
@@ -808,7 +870,16 @@ console.log("radio value",radiovalue)
                     })
                     }
                   </Box> 
-          {visit.supplier_name !==''?          
+                  <Box sx={{ width: '100%' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={tabvalue} onChange={tabchange} aria-label="basic tabs example">
+          <Tab label="Current" {...a11yProps(0)} />
+          <Tab label="History" {...a11yProps(1)} />
+          
+        </Tabs>
+      </Box>
+      <TabPanel value={tabvalue} index={0}>
+      {visit.supplier_name !==''?          
             <Box  sx={{marginBottom:'2%',padding:'4px',display:'flex', width: "100%", justifyContent: "center"}}>
                
               {ButtonsName.map((itemsname,i)=>{
@@ -856,6 +927,27 @@ console.log("radio value",radiovalue)
            :  null
            
           }
+      </TabPanel>
+      <TabPanel value={tabvalue} index={1}>
+        Item Two
+      </TabPanel>
+      
+    </Box>
+    {(current==true)&&(tabvalue=='0')? <Box sx={{width:'100%',boxSizing:'border-box',textAlign:'right'}}>
+    <TextareaAutosize
+  aria-label="empty textarea"
+  placeholder="Prescription"
+  style={{ width: '100%', height: '150px',fontSize: '16px',
+  border: '2px solid grey',
+  padding: '10px 10px',outline:'none',boxSizing:'border-box' }}
+/>
+<Button variant="contained" sx={{marginLeft:'auto',marginTop:'10px'}}>Submit</Button>
+    </Box>:null}
+                  {/* <Box sx={{display:"flex",justifyContent:"flex-start",width:"100%",marginTop:"20px"}}>
+                  <Button variant="contained" sx={{marginRight:"20px"}} onClick={currentVisit}>Current Visit</Button>
+                  <Button variant="contained" onClick={history}>History</Button>
+                  </Box> */}
+          
           
           
         {/* to show button static */}
