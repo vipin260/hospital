@@ -59,5 +59,4 @@ const MainSidebar = () => {
             </Box>
     )
 }
-
 export default MainSidebar
