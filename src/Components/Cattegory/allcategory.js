@@ -19,8 +19,10 @@ from "../../redux/action/Actions";
 
 const useStyle = makeStyles((theme) => ({
   root: {
-    paddingTop: theme.spacing(20),
-    marginLeft:'300px',
+    paddingTop:theme.spacing(10),
+     paddingLeft:theme.spacing(3),
+     paddingRight:theme.spacing(3),
+    // marginLeft:'300px',
   },
   table: {
     //  width:'90%',
