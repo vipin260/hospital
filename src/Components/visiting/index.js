@@ -59,8 +59,9 @@ const useStyle = makeStyles((theme) => ({
 
     "& .MuiPaper-root": {
       minWidth: "35%",
-      width: "73%",
-    marginLeft: "20%",
+      // width: "73%",
+      width: "100%",
+    // marginLeft: "20%",
     boxShadow:"none",
       height: "auto",
       padding: `${theme.spacing(4)} 30px`,
@@ -930,7 +931,7 @@ console.log("radio value",radiovalue)
           }
       </TabPanel>
       <TabPanel value={tabvalue} index={1}>
-        Item Two
+        
       </TabPanel>
       
     </Box>
