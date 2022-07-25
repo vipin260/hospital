@@ -17,8 +17,6 @@ const Layout = ({children}) => {
   </Grid>
 </Grid>
      {/* <ButtonAppBar /> */}
-  
-        
     </div>
   )
 }
