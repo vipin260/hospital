@@ -258,6 +258,7 @@ const PurchaseAdd = (props) => {
     let data={"action": "AddNewPurchase","purchase": purchase, "purchasedetail": inputAdd}
       Dispatch(PurchaseInsert(data))
       .then(()=> Navigate('/Uploadfile'))
+      console.log("purchase data",data)
 
   };
 

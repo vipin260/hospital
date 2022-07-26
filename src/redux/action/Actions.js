@@ -6,7 +6,7 @@ import {ERROR, FETCHPPHARMACY, FETCHPOPTICAL, FETCHPOPD,
      PURCHASEINSERT, PURCHASEFETCH, PURCHASEBYID, UPDATEPURCHASE, DELETEEPURCHASE, FETCHPURCHASEDETAIL,
      PURCHASEDETAILINSERT, PURCHASEDETAILFETCH, PURCHASEDETAILBYID, UPDATEPURCHASEDETAIL, DELETEEPURCHASEDETAIL,
      PATIENTINSERT,  PATIENTFETCH, PATIENTBYID, UPDATEPATIENT, DELETEPATIENT,
-     DOWNLOADFILE,INVENTORYFILE} 
+     DOWNLOADFILE,INVENTORYFILE,VISITDATASEARCH,PRESCRIPTIONDETAIL} 
      from '../actionType/ActionType'
 import { linkUrl } from '../../Components/baseurl';
 
@@ -563,6 +563,46 @@ export const DownloadFiles= (id) => async dispatch =>{
     }
     
    }
+
+   // VISITDATASEARCH//
+
+   export const getnamephoneaadhar = (data) => async dispatch => {
+    try{
+        const response = await axios.post(linkUrl+ `visit.php`,{...data})
+        console.log('search ', response)
+        dispatch({
+            type : VISITDATASEARCH,
+            payload : response.data
+        })
+    }
+    catch(e){
+        dispatch({
+            type : ERROR,
+            payload : console.log(e)
+        })
+    }
+   }
+
+
+   // prescriptionDetail//
+
+   export const prescriptionDetail = (data) => async dispatch => {
+    try{
+        const response = await axios.post(linkUrl+ `visit.php`,{...data})
+        console.log('search ', response)
+        dispatch({
+            type : PRESCRIPTIONDETAIL,
+            payload : response.data
+        })
+    }
+    catch(e){
+        dispatch({
+            type : ERROR,
+            payload : console.log(e)
+        })
+    }
+   }
+
 
 // //DELETEEPURCHASEDETAIL
 // export const DeletePurchaseDetail = (data) => async dispatch =>{

@@ -13,7 +13,7 @@ import { FetchPatient, FetchSinglePatient } from '../../redux/action/Actions';
 // import Table from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
-import {FetchProductOpd, FetchProductPharmacy, FetchProductOptical, getAllInventory } from "../../redux/action/Actions";
+import {FetchProductOpd, FetchProductPharmacy, FetchProductOptical, getAllInventory,getnamephoneaadhar,prescriptionDetail } from "../../redux/action/Actions";
 import AddIcon from '@mui/icons-material/Add';
 
 import { styled } from '@mui/material/styles';
@@ -184,9 +184,13 @@ const Visiting = (props) => {
   const FetchPharmacyData = useSelector((state) => state.ProductReducersData.PharmacyFetch);
   const FetchOpticalData = useSelector((state) => state.ProductReducersData.OpticalFetch);
   const FetchVisitData = useSelector((state) => state.VisitReducer.fetchApi);
+  const Searchdata = useSelector((state) => state.VisitReducer.fetchApis);
+  const Prescriptiondata = useSelector((state) => state.VisitReducer.supplierApi);
   let newData = [SingleData.data];
- 
-  
+ console.log("searchdata",Searchdata)
+ console.log("searchdata222",SingleData)
+ console.log("prescription3333",Prescriptiondata.data?.PrescreptionDetail)
+//  const inputElement = useRef();
 
   const [datasApi,setDatasApi] = useState({
     PurchaseDatais : '',
@@ -199,6 +203,7 @@ const Visiting = (props) => {
   const [data,setData] = useState([])
   const [tableData,setTableData] = useState({})
   const [options1,setOptions1] = useState([])
+  const [options,setOptions] = useState([])
   const [value, setValue] = useState("one");
   const [opdpharmecyoptical,setOpdpharmecyoptical] = useState([])
   // const [selectdatasave, setSelectdatasave] = useState([]);
@@ -216,7 +221,7 @@ const Visiting = (props) => {
   const [addOpticaldata, setAddOpticaldata] = useState([]);
   const [radiovalue, setRadiovalue] = useState('Search By Name');
   const [current, setCurrent] = useState(false);
-  const [tabvalue, setTabvalue] = useState('one');
+  const [tabvalue, setTabvalue] = useState(0);
   
   // const [storepharmacyid, setStorepharmacyid] = useState([]);
 
@@ -231,12 +236,22 @@ const Visiting = (props) => {
  
  console.log("pateint",PatientNameReducer)
 
-  const options = []
+  
   // const options1 = []
-  PatientNameReducer.map((items)=>
-  options.push({ label: items.name,value: items.id, data1: items.phone_number+items.adhar_number })
-  )
-
+  useEffect(()=>{
+    if(Searchdata!=""){
+      console.log("SearchdataOption",Searchdata)
+      setOptions( Searchdata.map((items)=>{ 
+        return(
+          console.log("items",items),
+      { label: items.name,value: items.id, data1:items.phone_number+items.adhar_number  }
+      )
+       }))
+      }
+      
+  },[Searchdata]) 
+  
+console.log("optionsis",options)
   const [purchaseDetail, setPurchaseDetail] = useState({
     id                : "",
     item_name         : "",
@@ -514,6 +529,16 @@ const Visiting = (props) => {
     
   }};
 
+  const Onkey = (value) => {
+    // let value = inputElement.current.value
+    console.log("value is", value)
+    if(value!=""){
+    let data = {"name" : value, "action" : "SearchByName"}
+      Dispatch(getnamephoneaadhar(data))
+    }
+   
+  }
+
   const handleChange1 = (value) => {
     setValue(value);
     setCurrent(false)
@@ -729,10 +754,16 @@ const history = () => {
   setCurrent(false)
   }
 
-const handleChange3 = (event) => {
-  setRadiovalue(event.target.value);
-};
-console.log("radio value",radiovalue)
+// const handleChange3 = (event) => {
+//   setRadiovalue(event.target.value);
+// };
+
+// useEffect(() => {
+//   let data = {"name" : 'sh', "action" : "SearchByName"}
+//       Dispatch(getnamephoneaadhar(data))
+// }, [radiovalue])
+
+// console.log("radio value",radiovalue)
   //  useEffect(()=>{
    
   //   let singleData = { "action" : "getPatientByID"}
@@ -740,8 +771,16 @@ console.log("radio value",radiovalue)
   //  },[Dispatch])
   
   const tabchange = (event, newValue) => {
+    if(newValue==0){
     setTabvalue(newValue);
     console.log('change',newValue)
+    }
+    else if(newValue==1){
+      setTabvalue(newValue);
+      let data = {"id" : visit.supplier_name, "action" : "PrescreptionDetail"}
+      Dispatch(prescriptionDetail(data))
+      console.log("inside",visit.supplier_name)
+    }
   };
   
   return (
@@ -763,7 +802,7 @@ console.log("radio value",radiovalue)
             </Box>
            
             <Box className="react_select_box" sx={{width:'100%', marginBottom: 2}}>
-            <FormControl >
+            {/* <FormControl >
             <FormLabel id="demo-controlled-radio-buttons-group"></FormLabel>
             <RadioGroup 
               className={classes.radio_button}
@@ -776,7 +815,7 @@ console.log("radio value",radiovalue)
               <FormControlLabel value="Search By Number" control={<Radio />} label="Search By Number" />
               <FormControlLabel value="Search By Aadhar Number" control={<Radio />} label="Search By Aadhar Number" />
             </RadioGroup>
-          </FormControl>
+          </FormControl> */}
               <Select
                 options={options}
                 styles={colourStyles}
@@ -785,8 +824,6 @@ console.log("radio value",radiovalue)
                 openMenuOnFocus={false}
                 defaultMenuIsOpen={false}
                 selectMenuOpen={false}
-                
-                // onMenuClose={(defaultInputValue) => { if(defaultInputValue==""){ {false}}}}
                 isOptions={true}
                 isSearchable={true}
                 placeholder={'Type to search'}
@@ -794,8 +831,26 @@ console.log("radio value",radiovalue)
                 components={{ DropdownIndicator:() => null, IndicatorSeparator:() => null }}
                 defaultValue={visit.supplier_name}
                 onChange={handleChange}
+                onInputChange={Onkey}
                
               />
+              {/* <input
+            type="text"
+            id="header-search"
+            ref={inputElement}
+            placeholder="Search blog posts"
+            onKeyUp={() => Onkey()} 
+        />
+              <ul>
+                {Searchdata.map((items) => {
+                  return(
+                    <>
+                    <li>{items.name}</li>
+                    </>
+                  )
+                })}
+                
+              </ul> */}
             </ Box>
             <Box>
             {/* <Autocomplete
@@ -931,7 +986,29 @@ console.log("radio value",radiovalue)
           }
       </TabPanel>
       <TabPanel value={tabvalue} index={1}>
-        
+      <Box>
+                   { visit.supplier_name!="" ?
+                          <TableContainer  >
+                    <Table sx={{marginBottom:2, width:'100%'}}> 
+                          <TableHead>
+                          
+                          <TableRow>                    
+                            <TableCell align="left">Prescription History</TableCell>
+                          </TableRow>
+
+                          </TableHead>
+
+                          <TableBody >
+                          <TableRow>                    
+                            <TableCell align="left">{Prescriptiondata.data?.PrescreptionDetail}</TableCell>
+                            
+                          </TableRow>
+                          </TableBody>
+                          </Table> 
+                         </TableContainer>
+                    :null
+                   }
+                  </Box> 
       </TabPanel>
       
     </Box>
