@@ -86,3 +86,12 @@ export const DOWNLOADFILE          =  'DOWNLOADFILE'
 
 //INVENTORYFILE //
 export const INVENTORYFILE          =  'INVENTORYFILE'
+
+//visit data with name phone FILE //
+export const VISITDATASEARCH          =  'VISITDATASEARCH'
+
+//visit pescription //
+export const PRESCRIPTIONDETAIL          =  'PRESCRIPTIONDETAIL'
+
+
+
