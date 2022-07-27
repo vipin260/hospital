@@ -222,6 +222,7 @@ const Visiting = (props) => {
   const [radiovalue, setRadiovalue] = useState('Search By Name');
   const [current, setCurrent] = useState(false);
   const [tabvalue, setTabvalue] = useState(0);
+  const [newdatasingle, setNewdatasingle] = useState([]);
   
   // const [storepharmacyid, setStorepharmacyid] = useState([]);
 
@@ -236,20 +237,28 @@ const Visiting = (props) => {
  
  console.log("pateint",PatientNameReducer)
 
-  
+ useEffect(()=>{
+  if(Searchdata!=""){
+    console.log("SearchdataOption",Searchdata)
+    setOptions( Searchdata.map((items)=>{ 
+      return(
+        console.log("items",items),
+    { label: items.name,value: items.id, data1:items.phone_number+items.adhar_number  }
+    )
+     }))
+    }
+    
+},[Searchdata]) 
+
+
+  console.log("Newdatasingle",newdatasingle)
   // const options1 = []
   useEffect(()=>{
-    if(Searchdata!=""){
-      console.log("SearchdataOption",Searchdata)
-      setOptions( Searchdata.map((items)=>{ 
-        return(
-          console.log("items",items),
-      { label: items.name,value: items.id, data1:items.phone_number+items.adhar_number  }
-      )
-       }))
-      }
+    
+      setNewdatasingle(SingleData.data)
       
-  },[Searchdata]) 
+      
+  },[SingleData]) 
   
 console.log("optionsis",options)
   const [purchaseDetail, setPurchaseDetail] = useState({
@@ -878,8 +887,42 @@ const history = () => {
                       />  
                       }
                     /> */}
-                    
-                  <Box>
+                    <Box>{
+                            visit.supplier_name !=="" ?
+                          <TableContainer key={SingleData.data?.id} >
+                    <Table sx={{marginBottom:2, width:'100%'}}> 
+                          <TableHead>
+                          
+                          <TableRow>                    
+                            <TableCell align="right">Name</TableCell>
+                            <TableCell align="right">Phone Number</TableCell>
+                            <TableCell align="right">Address</TableCell>
+                            <TableCell align="right">City</TableCell>
+                            <TableCell align="right">State</TableCell>
+                            <TableCell align="right">Pincode</TableCell>
+                            <TableCell align="right">Aadhar Number</TableCell>
+                          </TableRow>
+
+                          </TableHead>
+
+                          <TableBody >
+                          <TableRow>                    
+                            <TableCell align="right">{SingleData.data?.name}</TableCell>
+                            <TableCell align="right">{SingleData.data?.phone_number}</TableCell>
+                            <TableCell align="right">{SingleData.data?.address}</TableCell>
+                            <TableCell align="right">{SingleData.data?.city}</TableCell>
+                            <TableCell align="right">{SingleData.data?.state}</TableCell>
+                            <TableCell align="right">{SingleData.data?.pincode}</TableCell>
+                            <TableCell align="right">{SingleData.data?.adhar_number}</TableCell>
+                          </TableRow>
+                          </TableBody>
+                          </Table> 
+                         </TableContainer>
+                       :null
+                     
+                    }
+                    </Box>
+                  {/* <Box>
                     {
                     PatientNameReducer.map((items,index)=>{
                       return(
@@ -926,7 +969,7 @@ const history = () => {
                  
                     })
                     }
-                  </Box> 
+                  </Box>  */}
                   <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={tabvalue} onChange={tabchange} aria-label="basic tabs example">
