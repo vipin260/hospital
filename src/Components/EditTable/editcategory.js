@@ -133,7 +133,7 @@ const Editcategory = () => {
   console.log('options are', options)
   
   const [category, setCategory] = useState({
-    product_id        : SingleCategoryData.data.product_id,
+    product_id        : SingleCategoryData.data.id,
     product_name      : SingleCategoryData.data.product_name,
     product_category  : SingleCategoryData.data.product_category,
     toggle            : SingleCategoryData.data.status==="0" ? false : true ,
