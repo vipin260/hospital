@@ -79,3 +79,21 @@ export const PURCHASEDETAILBYID    =  'PURCHASEDETAILBYID'
 export const UPDATEPURCHASEDETAIL  =  'UPDATEPURCHASEDETAIL'
 
 export const DELETEEPURCHASEDETAIL =  'DELETEEPURCHASEDETAIL'
+
+
+//DOWNLOADFILE //
+export const DOWNLOADFILE          =  'DOWNLOADFILE'
+
+//INVENTORYFILE //
+export const INVENTORYFILE          =  'INVENTORYFILE'
+
+//visit data with name phone FILE //
+export const VISITDATASEARCH          =  'VISITDATASEARCH'
+
+//visit pescription //
+export const PRESCRIPTIONDETAIL          =  'PRESCRIPTIONDETAIL'
+
+export const ADDINVOICE          =  'ADDINVOICE'
+
+
+

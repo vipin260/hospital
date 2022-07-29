@@ -20,9 +20,11 @@ import { FetchPatient, FetchSinglePatient, DeletePatient } from '../../redux/act
 
 const useStyle = makeStyles((theme)=>({
    root:{
-     paddingTop:theme.spacing(20),
+    paddingTop:theme.spacing(10),
+     paddingLeft:theme.spacing(3),
+     paddingRight:theme.spacing(3),
      //border:'1px solid red',
-     marginLeft:'300px',
+    //  marginLeft:'300px',
    },
    table:{  
     //  width:'90%',
@@ -46,6 +48,7 @@ const PatientTable = () => {
   const toggleState = useSelector((state)=>state.togglingReducer.togglingAll);
   const patientData = useSelector((state) =>state.PatientReducerData.apiState);
   //const patientData = useSelector((state) =>state.FetchDataReducer.apiState);
+  console.log("patient",patientData);
 
   const [deleteSuccess, setDeleteSuccess] = useState("");
 
@@ -192,7 +195,7 @@ console.log('setTableData',tableData)
                 Add Patient
               </Button>
               <Paper variant='outlined' className={classes.table}
-               style={{  marginTop:'4%' }}>
+               style={{  marginTop:'5%' }}>
                      <DataTableExtensions {...tableData} >
                         <Table
                           columns={columns}

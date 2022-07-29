@@ -5,7 +5,8 @@ import {ERROR, FETCHPPHARMACY, FETCHPOPTICAL, FETCHPOPD,
      SUPPLIERINSERT,  SUPPLIERFETCH, SUPPLIERBYID, UPDATESUPPLIER, DELETEESUPPLIER, 
      PURCHASEINSERT, PURCHASEFETCH, PURCHASEBYID, UPDATEPURCHASE, DELETEEPURCHASE, FETCHPURCHASEDETAIL,
      PURCHASEDETAILINSERT, PURCHASEDETAILFETCH, PURCHASEDETAILBYID, UPDATEPURCHASEDETAIL, DELETEEPURCHASEDETAIL,
-     PATIENTINSERT,  PATIENTFETCH, PATIENTBYID, UPDATEPATIENT, DELETEPATIENT} 
+     PATIENTINSERT,  PATIENTFETCH, PATIENTBYID, UPDATEPATIENT, DELETEPATIENT,
+     DOWNLOADFILE,INVENTORYFILE,VISITDATASEARCH,PRESCRIPTIONDETAIL, ADDINVOICE} 
      from '../actionType/ActionType'
 import { linkUrl } from '../../Components/baseurl';
 
@@ -30,14 +31,12 @@ export const InsertPatient = (data) => async dispatch =>{
 
 //PATIENTFETCH
 export const FetchPatient = (data) => async dispatch =>{
-    
     try{
     const response = await axios.post(linkUrl + 'patient.php',{...data})
         dispatch({
             type    : PATIENTFETCH,
             payload : response.data
         })
-        
     }catch(e){
         dispatch({
             type    : ERROR,
@@ -45,7 +44,7 @@ export const FetchPatient = (data) => async dispatch =>{
         })
     }
  }
- 
+
 //PATIENTBYID
 export const FetchSinglePatient = ( data) => async dispatch =>{
     //console.log("getSupplierByID",id)
@@ -102,7 +101,7 @@ export const DeletePatient = (data) => async dispatch =>{
 
 //CATEGORYDATA
  export const categoryData = (data) => async dispatch => {
-    //console.log("Rakesh dekh le",data)
+    console.log("data is",data)
  try{
  const response = await axios.post(linkUrl + 'product.php',{...data}) 
 
@@ -203,10 +202,14 @@ export const FetchProductOpd = (fetch) => async dispatch =>{
 
 
 //PRODUCTBYID
-export const FetchSingleProduct = (id,data) => async dispatch =>{
-    //console.log('PRODUCTBYID is', id)
+export const FetchSingleProduct = (data) => async dispatch =>{
+    console.log('PRODUCTBYID is', data)
   try{
-    const res = await axios.post(linkUrl + `product.php?product_id=${id}`,{"action" : "getProductByID",...data})
+    const res = await axios.post(linkUrl + `product.php`,{...data})
+
+    //const res = await axios.post(linkUrl + `product.php?product_id=${id}`,{"action" : "getProductByID",...data})
+    //const res = await axios.post(linkUrl + `purchase.php`,{...data})
+
     dispatch({
         type    :   PRODUCTBYID,
         payload :   res.data
@@ -220,10 +223,10 @@ export const FetchSingleProduct = (id,data) => async dispatch =>{
 }
 
  //UPDATEPRODUCT
- export const UpdateProduct = (id,data) => async dispatch =>{
-    //console.log('UPDATEPRODUCT is', data)
+ export const UpdateProduct = (data) => async dispatch =>{
+    console.log('UPDATEPRODUCT is', data)
     try{
-        const response = await axios.post(linkUrl + `product.php?${id}`,{"action" : "UpdateProduct",...data})
+        const response = await axios.post(linkUrl + `product.php`,{...data})
         dispatch({
             type    : UPDATEPRODUCT,
             payload : response.data
@@ -521,6 +524,99 @@ const response = await axios.post(linkUrl + `PurchaseDetail/purchase_detail.php?
     })
 }
 }
+
+//DOWNLOADFILE//
+
+export const DownloadFiles= (id) => async dispatch =>{
+    console.log('DownloadFiles id is', id)
+    try{
+    const response = await axios.post(linkUrl+`downloadfile.php?id=${id}`)
+        dispatch({
+            type    : DOWNLOADFILE,
+            payload : response.data
+        })
+    }catch(e){
+        dispatch({
+            type    : ERROR,
+            payload : console.log(e)
+        })
+    }
+    }
+
+   // inventoryaction//
+
+   export const getAllInventory = (data) => async dispatch => {
+    console.log('inventory id is', data)
+    try{
+        const response = await axios.post(linkUrl+ `inventory.php`,{...data})
+        console.log('inventory ', response)
+        dispatch({
+            type : INVENTORYFILE,
+            payload : response.data
+        })
+    }
+    catch(e){
+        dispatch({
+            type : ERROR,
+            payload : console.log(e)
+        })
+    }
+    
+   }
+
+   // VISITDATASEARCH//
+
+   export const getnamephoneaadhar = (data) => async dispatch => {
+    try{
+        const response = await axios.post(linkUrl+ `visit.php`,{...data})
+        console.log('search ', response)
+        dispatch({
+            type : VISITDATASEARCH,
+            payload : response.data
+        })
+    }
+    catch(e){
+        dispatch({
+            type : ERROR,
+            payload : console.log(e)
+        })
+    }
+   }
+
+
+   // prescriptionDetail//
+
+   export const prescriptionDetail = (data) => async dispatch => {
+    try{
+        const response = await axios.post(linkUrl+ `visit.php`,{...data})
+        console.log('search ', response)
+        dispatch({
+            type : PRESCRIPTIONDETAIL,
+            payload : response.data
+        })
+    }
+    catch(e){
+        dispatch({
+            type : ERROR,
+            payload : console.log(e)
+        })
+    }
+   }
+
+   //ADDINVOICE
+export const AddInvoiceData = (data) => async dispatch => {
+    //const AddInvoiceapi = await axios.post( baseUrl + '/insert_purchase.php',{ ...data });
+    const AddInvoiceapi = await axios.post( linkUrl + '/visit.php',{ ...data });
+
+
+    dispatch({
+
+        type    : ADDINVOICE
+      
+
+    })
+}
+
 
 // //DELETEEPURCHASEDETAIL
 // export const DeletePurchaseDetail = (data) => async dispatch =>{

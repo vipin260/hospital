@@ -37,11 +37,11 @@ const handleToggle = () => {
    dispatch(toggle())
    setSideBarToggle(sideBarToggle)
 }
-
+// style={{ position: 'absolute', right: 0, left: sideBarToggle ? 300 : 0, transition: '.3s all'}}
   return (
     <>
     <Box display="flex" justifyContent="space-between"   sx={{ flexGrow: 1 }} className='hello'
-      style={{ position: 'absolute', right: 0, left: sideBarToggle ? 300 : 0, transition: '.3s all'}}>
+      >
       <AppBar position="static" >
         <Toolbar  className={classes.iconsButton} >
           <Box>
@@ -67,7 +67,7 @@ const handleToggle = () => {
       </AppBar>
     
     </Box>
-    <MainSidebar state={sideBarToggle} /> 
+    {/* <MainSidebar state={sideBarToggle} />  */}
         </>
   );
 }

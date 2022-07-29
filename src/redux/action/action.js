@@ -205,7 +205,7 @@ export const UpdatePurchaseData = (id,data) => async dispatch =>{
 //ADDINVOICE
 export const AddInvoiceData = (data) => async dispatch => {
     //const AddInvoiceapi = await axios.post( baseUrl + '/insert_purchase.php',{ ...data });
-    const AddInvoiceapi = await axios.post( baseUrl + '/purchase_order_items.php',{ ...data });
+    const AddInvoiceapi = await axios.post( baseUrl + '/visit.php',{ ...data });
 
 
     dispatch({

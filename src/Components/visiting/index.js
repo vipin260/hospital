@@ -1,11 +1,51 @@
-import React, { useEffect, useState } from "react";
-import { FormControlLabel, Paper, Box, Button, Typography, TextField , Checkbox  } from "@mui/material";
+import React, { useEffect, useState, useRef } from "react";
+import { FormControlLabel, Paper, Box, Button, Typography, TextField , Checkbox, FormLabel, Table, TableBody,
+  TableRow, TableCell, TableHead, TableContainer, Autocomplete  } from "@mui/material";
+import '../../index.css'
+
 import { makeStyles } from "@mui/styles";
 import Layout from "../../Pages/Layout";
 import { useNavigate } from "react-router-dom";
-import {AddInvoiceData ,FetchSupplName, FetchData, FetchCattegoryData, FetchPurchases} from '../../redux/action/action'
+// import {AddInvoiceData ,FetchSupplName, FetchData, FetchPurchases} from '../../redux/action/action'
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
+import ReactSelect, { createFilter } from 'react-select';
+import { FetchPatient, FetchSinglePatient } from '../../redux/action/Actions';
+// import Table from "react-data-table-component";
+import DataTableExtensions from "react-data-table-component-extensions";
+import "react-data-table-component-extensions/dist/index.css";
+import {FetchProductOpd, FetchProductPharmacy, FetchProductOptical, getAllInventory,getnamephoneaadhar,prescriptionDetail, AddInvoiceData } from "../../redux/action/Actions";
+import AddIcon from '@mui/icons-material/Add';
+
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControl from '@mui/material/FormControl';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import PropTypes from 'prop-types';
+import TextareaAutosize from '@mui/material/TextareaAutosize';
+import Fab from '@mui/material/Fab';
+import Grid from '@mui/material/Grid';
+
+
+
+
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -20,16 +60,28 @@ const useStyle = makeStyles((theme) => ({
     //border:'1px solid red',
 
     "& .MuiPaper-root": {
-      width: "35%",
+      minWidth: "35%",
+      // width: "73%",
+      width: "100%",
+    // marginLeft: "20%",
+    boxShadow:"none",
       height: "auto",
-      padding: `${theme.spacing(4)} 0`,
-      marginTop :'7%',
+      padding: `${theme.spacing(4)} 30px`,
+      marginTop :'2%',
       [theme.breakpoints.down("lg")]: {
         width: "70%",
         padding: `${theme.spacing(2)} 0`,
       },
       //border:'1px solid yellow',
     },
+    "& .css-tj5bde-Svg": {
+      cursor: "default",
+    },
+    
+  },
+  radio_button : {
+    display: 'flex !important',
+    flexDirection: 'row !important',
   },
 
   inputs: {
@@ -58,7 +110,8 @@ const useStyle = makeStyles((theme) => ({
     },
     '& #react-select-3-listbox':{
       backgroundColor : 'white !important',
-      zIndex :'99'
+      zIndex :'99',
+      // visibility: 'hidden'
     },
     '& #react-select-5-listbox':{
       backgroundColor : 'white !important',
@@ -71,14 +124,54 @@ const useStyle = makeStyles((theme) => ({
      justifyContent: 'space-between',
      width: '100% !important'
 },
+'& .css-6j8wv5-Input' : {
+cursor : 'text',
+},
 '& .MuiFormControlLabel-label':{
   width: '100%'
+},
+'& .css-19kzrtu':{
+padding : "0 !important"
 },
   buttonsgrp : {
     width: '100%',
     maxWidth : '90%',
 }
 }));
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography component={'span'}>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
 
 const Visiting = (props) => {
   
@@ -89,9 +182,21 @@ const Visiting = (props) => {
 
   const PatientNameReducer = useSelector((state)=>state.PatientReducerData.apiState)
   const SupplierNameReducer = useSelector((state)=>state.PurchaseReducer.supplierApi)
-  const CategoryData = useSelector((state) => state.CategoryReducerData.apiState);
+  const CategoryData = useSelector((state) => state.ProductReducersData.FetchApi);
   const PurchaseData       = useSelector((state) =>state.PurchaseReducer.fetchApi);
-  //console.log('CategoryData name',CategoryData);
+  const SingleData         = useSelector((state) =>state.PatientReducerData.stateApi);
+  const FetchOpdData = useSelector((state) => state.ProductReducersData.OpdFetch);
+  const FetchPharmacyData = useSelector((state) => state.ProductReducersData.PharmacyFetch);
+  const FetchOpticalData = useSelector((state) => state.ProductReducersData.OpticalFetch);
+  const FetchVisitData = useSelector((state) => state.VisitReducer.fetchApi);
+  const Searchdata = useSelector((state) => state.VisitReducer.fetchApis);
+  const Prescriptiondata = useSelector((state) => state.VisitReducer.supplierApi);
+  let newData = [SingleData.data];
+ console.log("searchdata",Searchdata)
+ console.log("searchdata222",SingleData)
+ console.log("prescription3333",FetchVisitData)
+ const textareainput = useRef();
+ const filereference = useRef();
 
   const [datasApi,setDatasApi] = useState({
     PurchaseDatais : '',
@@ -101,28 +206,93 @@ const Visiting = (props) => {
   const [trueData, setTrueData]       = useState(true)
   const [trueDataOne, setTrueDataOne] = useState(true)
   const [trueDataTwo, setTrueDataTwo] = useState(true)
- 
+  const [data,setData] = useState([])
+  const [tableData,setTableData] = useState({})
+  const [options1,setOptions1] = useState([])
+  const [options,setOptions] = useState([])
+  const [value, setValue] = useState("one");
+  const [opdpharmecyoptical,setOpdpharmecyoptical] = useState([])
+  // const [selectdatasave, setSelectdatasave] = useState([]);
+  const [inputAdd, setInputAdd] = useState([]);
+  const [inputAdddata, setInputAdddata] = useState([]);
+  const [price, setPrice] = useState(0);
+  const [price1, setPrice1] = useState(0);
+  const [price2, setPrice2] = useState(0);
+  const [pricetotal, setPricetotal] = useState(0);
+  const [addPharmacy, setAddPharmacy] = useState([]);
+  const [beforePharmacy, setBeforePharmacy] = useState([]);
+  const [beforeOptical, setBeforeOptical] = useState([]);
+  const [addOptical, setAddOptical] = useState([]);
+  const [addPharmacydata, setAddPharmacydata] = useState([]);
+  const [addOpticaldata, setAddOpticaldata] = useState([]);
+  const [radiovalue, setRadiovalue] = useState('Search By Name');
+  const [current, setCurrent] = useState(false);
+  const [tabvalue, setTabvalue] = useState(0);
+  const [newdatasingle, setNewdatasingle] = useState([]);
+  const [combinedata, setCombinedata] = useState([]);
+  const [textareavalue, setTextareavalue] = useState();
+  const [filevaluedata, setFilevaluedata] = useState();
+  const [singledatapatient, setSingledatapatient] = useState();
+  const [comingprescription, setComingprescription] = useState();
+  const [removeduplicatecombine, setRemoveduplicatecombine] = useState();
+  
+  
+  // const [storepharmacyid, setStorepharmacyid] = useState([]);
 
+ 
+console.log("sdhjsdhs",comingprescription) 
 
 
   const ButtonsName = [{id:'1',name :'OPD',para:'OPD'},{id:'2',name:'Pharmacy',para:'Pharmacy'},
   {id:'3',name:'Opticals',para:'Opticals'}]
-  //console.log('ButtonsName is',ButtonsName);
+  
+  // {id:'4',name:'Prescription',para:'Prescription'}
+ 
+ console.log("pateint",PatientNameReducer)
 
-  if(PatientNameReducer.length === 0){
-    Dispatch(FetchData());
-  }
-  // if(CategoryData.length === 0){
-  //   Dispatch(FetchCattegoryData());
-  // }
-  // if(PurchaseData.length === 0){
-  //   Dispatch(FetchPurchases());
-  // }
+ useEffect(()=>{
+  if(Searchdata!=""){
+    console.log("SearchdataOption",Searchdata)
+    setOptions( Searchdata.map((items)=>{ 
+      return(
+        console.log("items",items),
+    { label: items.name,value: items.id, data1:items.phone_number+items.adhar_number  }
+    )
+     }))
+    }
+    
+},[Searchdata]) 
 
-  const options = []
-  PatientNameReducer.map((items)=>
-  options.push({ value: items.id, label: items.name })
-  )
+
+  console.log("Newdatasingle",newdatasingle)
+  // const options1 = []
+  useEffect(()=>{
+    
+      setNewdatasingle(SingleData.data)
+      
+      
+  },[SingleData]) 
+
+  useEffect(()=>{
+    
+    setComingprescription(Prescriptiondata.data?.PrescreptionDetail)
+    
+    
+},[Prescriptiondata]) 
+
+console.log("comingprescription",comingprescription)
+  
+console.log("optionsis",options)
+  const [purchaseDetail, setPurchaseDetail] = useState({
+    id                : "",
+    item_name         : "",
+    item_qty          : "",
+    item_msrp         : "",
+    cost_price        : "",
+    selling_price     : "",
+  })
+
+  
 
   const [supplierList, setSupplierList]=useState([]);
   const [chkValue, setChkValue] = useState(false);
@@ -134,7 +304,241 @@ const Visiting = (props) => {
     buttonName        : "",
   });
 
+  const [visit1, setVisit1] = useState({
+    id                : "",
+    supplier_name     : "",
+    buttonName        : "",
+  });
+
+  const handleServiceAdd = (items) => {
+    console.log("items",items)
+    if(items.name==="OPD"){
+    setInputAdd([...inputAdd,  
+      {
+        product_name       : items.product_name, 
+        product_id        : items.id,  
+        product_name       : items.product_name,
+        product_category      : items.product_category, 
+        opd_price           : items.opd_price 
+      }])
+      
+      // if(inputAdd!==""){
+      //   setPrice(price + parseFloat(items.opd_price))
+        
+      // }
+      
+    }
+    else if(items.name==="pharmacy"){
+      // setStorepharmacyid()
+      let data = {"pharmacy_id" : items.id, "action" : "getAllInvertory"}
+      Dispatch(getAllInventory(data))
+      // .then(() => {
+      //   console.log("checking data",FetchVisitData)
+        
+        
+      // }
+      //   )
+    }
+    else if(items.name==="optical"){
+      // setStorepharmacyid()
+      let data = {"pharmacy_id" : items.id, "action" : "getAllInvertory"}
+      Dispatch(getAllInventory(data))
+      // .then(() => {
+      //   console.log("checking data",FetchVisitData)
+        
+        
+      // }
+      //   )
+    }
+  };
+
+  useEffect(()=>{
+    setInputAdddata([...new Map(inputAdd.map(item => [item.product_id, item])).values()])
+    
+  },[inputAdd]) 
+
   
+
+  useEffect(()=>{
+    
+    let pricevar2 = 0;
+    inputAdddata.map((items) => {
+      return(
+      
+      pricevar2 += parseFloat(items.opd_price)
+      )
+    })
+    setPrice(pricevar2)
+    
+  },[inputAdddata]) 
+
+
+  useEffect(()=>{
+    if(visit1.buttonName =='pharmacy'){
+    if(FetchVisitData.length>1&&visit1.buttonName =='pharmacy'){
+      handleClickOpen()
+    }
+    else{
+      FetchVisitData.map((items) => {
+        return(
+          setAddPharmacy([ ...addPharmacy,
+          {
+           id : items.id,
+           product_name : items.product_name,
+           selling_price : items.selling_price,
+           cost_price : items.cost_price,
+           item_msrp : items.item_msrp,
+          } 
+         ])
+        )
+      })
+        
+      
+      }
+    }
+
+    else if(visit1.buttonName =='optical'){
+      if(FetchVisitData.length>1&&visit1.buttonName =='optical'){
+        handleClickOpen1()
+      }
+      else{
+        FetchVisitData.map((items) => {
+          return(
+            setAddOptical([ ...addOptical,
+            {
+             id : items.id,
+             product_name : items.product_name,
+             selling_price : items.selling_price,
+             cost_price : items.cost_price,
+             item_msrp : items.item_msrp,
+            } 
+           ])
+          )
+        })
+          
+        
+        }
+      }
+     
+    
+  },[FetchVisitData]) 
+
+
+  useEffect(()=>{
+    
+    let pricevar = 0;
+    addPharmacydata.map((items) => {
+      return(
+      
+      pricevar += parseFloat(items.selling_price)
+      )
+    })
+    setPrice1( pricevar)
+    
+  },[addPharmacydata]) 
+
+  useEffect(()=>{
+    
+    let pricevar1 = 0;
+    addOpticaldata.map((items) => {
+      return(
+      
+      pricevar1 += parseFloat(items.selling_price)
+      )
+    })
+    setPrice2(pricevar1)
+    
+  },[addOpticaldata]) 
+
+
+  
+
+  
+
+  
+  // console.log("data is ",FetchVisitData)
+  const BootstrapDialogTitle = (props) => {
+    const { children, onClose, ...other } = props;
+  
+    return (
+      <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+        {children}
+        {onClose ? (
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        ) : null}
+      </DialogTitle>
+    );
+  };
+
+ 
+
+  
+    const [open, setOpen] = React.useState(false);
+  
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+    const handleClose = () => {
+      setOpen(false);
+    };
+
+    const [open1, setOpen1] = React.useState(false);
+  
+    const handleClickOpen1 = () => {
+      setOpen1(true);
+    };
+    const handleClose1 = () => {
+      setOpen1(false);
+    };
+
+    const pharmacydata = (items) => {
+    //   setAddPharmacydata( addPharmacy.filter((c) => {
+    //     return (
+    //       addPharmacy.map((y) => {
+    //         return(
+    //         (y.id).findIndex((c.id))!=2
+    //         )
+    //       })
+    //     )
+    // })
+    //   )
+    console.log(beforePharmacy);
+    setAddPharmacy([...addPharmacy,...beforePharmacy]);
+    
+    setOpen(false);
+    // let pricevar = 0;
+   
+   
+    // addPharmacydata.map((items) => {
+    //   return(
+      
+    //   pricevar += price1 + parseFloat(items.selling_price)
+    //   )
+    // })
+    // setPrice1(pricevar)
+    
+    }
+    const pharmacydata1 = (items) => {
+      setAddOptical([...addOptical,...beforeOptical]);
+      setOpen1(false);
+
+      
+      
+      }
+    
+
+     
   const submitPntData = (e) => {
     let { name, value } = e.target;
     setVisit({ 
@@ -145,13 +549,62 @@ const Visiting = (props) => {
   };
 
   const handleChange = (selectedOption) => {
+    console.log("selected",selectedOption)
+    if(selectedOption!=null){
     setVisit((prev) => {
       return {
         ...prev,
         supplier_name: selectedOption.value,
       };
     });
+    let singleData = {"id" : selectedOption.value, "action" : "getPatientByID"}
+    Dispatch(FetchSinglePatient(singleData))
+    
+  }};
+
+  const Onkey = (value) => {
+    // let value = inputElement.current.value
+    console.log("value is", value)
+    if(value!=""){
+    let data = {"name" : value, "action" : "SearchByName"}
+      Dispatch(getnamephoneaadhar(data))
+    }
+   
+  }
+
+  const handleChange1 = (value) => {
+
+    setValue(value);
+    setCurrent(false)
+    setVisit1((prev) => {
+      return {
+        ...prev,
+        supplier_name: value.value,
+        buttonName: value.data
+      };
+    });
+    
+    
+  
+    
+    
+   
   };
+  
+  console.log("value is the",value)
+  
+  
+
+  useEffect(()=>{
+    
+   },[visit1])
+
+   useEffect(()=>{
+    setData(PatientNameReducer)
+   },[PatientNameReducer])
+
+
+
       const checkedItem = (e) =>{
         let { value ,checked } = e.target
         if(checked){
@@ -162,114 +615,357 @@ const Visiting = (props) => {
         //console.log('supplier list is ',supplierList) 
         }
     }
-    //const filterButton = ButtonsName.map((items)=>{return (items.name) })
-    //   for(let i=0;i<filterButton.length;i++){
-    //     return (filterButton[i].name)
-    //  }
-      //return items.name 
+
     
-      // const filterItems =( itemsname)=>{ 
-      //   let {name, value} = itemsname.target
-      //     const filterButton = ButtonsName.filter((items)=> items.id === value )
-      //     for (let i=0;i<=filterButton.length;i++){
-      //       return (filterButton[i].id)
-      //     }
-      //     console.log('first', itemsname)
-      //   }
-      //   console.log('first', filterItems)
+
+
 
   const clickOpd =( itemsname)=>{ 
-    let {name, value} = itemsname.target
-      // const filterButton = ButtonsName.map((items)=>{
-      //   return items.id === value 
-      // })
-      const ButtonFilter = ButtonsName.filter((items)=> { return value === items.id } )
-
-      //const FiltBtn = () =>{
-      // const filterButton = ButtonsName.filter((items)=>  value === items.id )
-      // for (let i=0;i<=filterButton.length;i++){
-      //   //return (console.log('filterButtonItems',filterButton[i].id))
-      //   return (filterButton[i].id)
-      // }
-    //}
-      //console.log('filterButton', FiltBtn)
-
-      if(value  === '1' ){
-          console.log('first button')
-          Dispatch(FetchCattegoryData())   
-      }else if(value === '2' ){
-         console.log('second button')
-         Dispatch(FetchPurchases())
-      }else if(value === '3' ){
-         console.log('third button')
-        //Dispatch(FetchPurchases())
-      }
-      
-
-  //  value === '1' ?  Dispatch(FetchCattegoryData()) : ( value === '2' ? Dispatch(FetchPurchases()) : 
-  //  ( value === '3' ? console.log('third button') : console.log('sorry no button is clicked')))
-    //console.log('hello1', value)
-
+    console.log("itemsValue",itemsname)
+    let value = itemsname.id
+     console.log("itemValue",value)
+      // const ButtonFilter = ButtonsName.filter((items)=> { return value === items.id } )
 
     
-   // if(CategoryData.length === 0){
-    //   Dispatch(FetchCattegoryData());
-    // }
 
-    //const filterButton = ButtonsName.map((items)=>{return items.name})
-    //   for(let i=0;i<filterButton.length;i++){
-    //     return (filterButton[i].name)
-    //  }
-      //return items.name 
-   //    const datass = filterButton[0]
+      if(value  === '1' ){
+        
+        // addPharmacydata.splice(0, addPharmacydata.length)
+        // addOpticaldata.splice(0, addOpticaldata.length)
+        console.log("target",FetchOpdData)
+        setCurrent(false)
+  setValue(null)
+  options1.splice(0, options1.length)
+   FetchOpdData.map((items)=>{ 
+    return(
+  options1.push({ value: items.product_id, label: items.product_name, data: items.name })
+  )
+         }) 
+   
+  setOpdpharmecyoptical(FetchOpdData)
+  // setDefaultvalue({label:"net"})
+  // console.log("option",options1)
+  
+      }else if(value === '2' ){
+         console.log('second button')
+         setCurrent(false)
+         setValue(null)
+         options1.splice(0, options1.length)
+          FetchPharmacyData.map((items)=>{
+          return(
+options1.push({ value: items.product_id, label: items.product_name, data: items.name })
+          )
+         }) 
+           
+         
+         setOpdpharmecyoptical(FetchPharmacyData)
 
-    //   const datass = filterButton[0] =='OPD' ? 
-    //   console.log('have data')
-    // : console.log('sorry')
+         
+  //        if(options1!==""){
+  //         options1.splice(0, options1.length)
+  //         FetchPharmacyData.map((items)=>
+  // options1.push({ value: items.product_id, label: items.product_name })
+  // ) 
+  
+  //        }
+        
+  // setDefaultvalue({label:"get"})
+  
+        //  Dispatch(FetchPurchases())
+      }else if(value === '3' ){
+        setCurrent(false)
+         setValue(null)
+         options1.splice(0, options1.length)
+         FetchOpticalData.map((items)=>{
+          return(
+  options1.push({ value: items.product_id, label: items.product_name, data: items.name })
+          )
+      })
+         
+
+         setOpdpharmecyoptical(FetchOpticalData)
+        //Dispatch(FetchPurchases())
+        
+      }
+      else if(value === '4' ){
+         
+        setValue(null)
+        options1.splice(0, options1.length)
+        setCurrent(true)
+
+        
+       //Dispatch(FetchPurchases())
+       
+     }
       
-    //console.log('hello',datass)
-      //Dispatch(FetchCattegoryData())    
+      
+ 
+  }
+  
+  console.log("optionshdhgshd",options1)
+ const SelectedCheckboxes = (value) => {
+  
+  setBeforePharmacy([ ...beforePharmacy,
+   {
+    id : value.id,
+    product_name : value.product_name,
+    selling_price : value.selling_price,
+    cost_price : value.cost_price,
+    item_msrp : value.item_msrp
+    
+   } 
+  ])
+
+}
+  const SelectedCheckboxes1 = (value) => {
+  
+    setBeforeOptical([ ...beforeOptical,
+     {
+      id : value.id,
+      product_name : value.product_name,
+      selling_price : value.selling_price,
+      cost_price : value.cost_price,
+      item_msrp : value.item_msrp,
+     } 
+    ])
+  
+  // console.log("check",addPharmacy)
+      
+      // setPrice1(price1 + parseFloat(value.selling_price))
+  
+   
+ }
+
+ console.log("fgdhgfhdf",opdpharmecyoptical)
+ 
+ useEffect(()=>{
+  setAddPharmacydata([...new Map(addPharmacy.map(item => [item.id, item])).values()])
+  
+},[addPharmacy]) 
+
+useEffect(()=>{
+  setAddOpticaldata([...new Map(addOptical.map(item => [item.id, item])).values()])
+  
+},[addOptical]) 
+
+// console.log("addPharmacy222",addPharmacydata)
+  
+  const SubmitData = () => {
+    
+let Data ={"patient" : singledatapatient,"opd" : removeduplicatecombine , "price": pricetotal, "prescription" : textareavalue, "fileupload": filevaluedata, "action" : "AddNewVisit"}
+console.log('Data is', Data)
+        Dispatch(AddInvoiceData(Data))
+  //  .then(()=> Navigate('/allvisit'))
+  };
+
+ 
+  useEffect(()=>{
+    let data = {"action" : "getAllPatient"};
+    Dispatch(FetchPatient(data))
+    // Dispatch(FetchCattegoryData())   
+  },[Dispatch]) 
+
+  useEffect(()=>{
+    setSingledatapatient(SingleData?.data)
+    // Dispatch(FetchCattegoryData())   
+  },[SingleData])
+  
+ 
+  // const filterOptions = (options, filterString, values) => {
+  //   return options.filter(
+  //     x => x.data1.includes(filterString) || x.label.includes(filterString)
+  //   );
+  // };
+
+
+   useEffect(() => {
+    let opd_fetch      = {"action" : "getProductOPD"}
+    let pharmacy_data  = {"action" : "getProductPharmacy"}
+    let optical_fetch  = {"action" : "getProductOptical"}
+    Dispatch(FetchProductPharmacy(pharmacy_data))
+    Dispatch(FetchProductOptical(optical_fetch))
+    Dispatch(FetchProductOpd(opd_fetch))
+ }, [Dispatch])
+
+ const colourStyles = {
+  control: styles => ({ ...styles, cursor: 'text' }),
+  
+};
+
+const currentVisit = () => {
+setCurrent(true)
+}
+const history = () => {
+  setCurrent(false)
   }
 
+// const handleChange3 = (event) => {
+//   setRadiovalue(event.target.value);
+// };
 
+// useEffect(() => {
+//   let data = {"name" : 'sh', "action" : "SearchByName"}
+//       Dispatch(getnamephoneaadhar(data))
+// }, [radiovalue])
 
-  const SubmitData = () => {
-//     Dispatch(AddInvoiceData(visit))
-//    .then(()=> Navigate('/allvisit'))
+// console.log("radio value",radiovalue)
+  //  useEffect(()=>{
+   
+  //   let singleData = { "action" : "getPatientByID"}
+  //   Dispatch(FetchSinglePatient(singleData))
+  //  },[Dispatch])
+  
+  const tabchange = (event, newValue) => {
+    if(newValue==0){
+    setTabvalue(newValue);
+    console.log('change',newValue)
+    }
+    else if(newValue==1){
+      setTabvalue(newValue);
+      let data = {"id" : visit.supplier_name, "action" : "PrescreptionDetail"}
+      Dispatch(prescriptionDetail(data))
+      console.log("inside",visit.supplier_name)
+    }
   };
 
   useEffect(()=>{
-    Dispatch(FetchData())
-    // Dispatch(FetchCattegoryData())   
-  },[Dispatch])
+    setRemoveduplicatecombine([...new Map(combinedata.map(item => [item.id, item])).values()])
+    
+  },[combinedata])
 
-  // useEffect(()=>{
-  //   setDatasApi({
-  //     PurchaseDatais : PurchaseData,
-  //     CategoryDatais : CategoryData
-  //   })
-  // },[PurchaseData ,CategoryData])
- 
-  //console.log('visit is ',visit)
-  //console.log('supplier is' ,supplierList)
-  //console.log('datasApi is',datasApi);
+  
 
+  useEffect(()=>{
+    if(inputAdddata!=""){
+    setCombinedata([...combinedata,...inputAdddata])
+    }
+  },[inputAdddata]) 
+  useEffect(()=>{
+    if(addPharmacydata!=""){
+    setCombinedata([...combinedata,...addPharmacydata])
+    }
+  },[addPharmacydata])
+  useEffect(()=>{
+    if(addOpticaldata!=""){
+    setCombinedata([...combinedata,...addOpticaldata])
+    }
+  },[addOpticaldata])
+
+  useEffect(()=>{
+    if(price!=""){
+      setPricetotal(pricetotal+price)
+    }
+  },[price]) 
+  useEffect(()=>{
+    if(price1!=""){
+      setPricetotal(pricetotal+price1)
+    }
+  },[price1])
+  useEffect(()=>{
+    if(price2!=""){
+      setPricetotal(pricetotal+price2)
+    }
+  },[price2])
+
+  console.log("combine",combinedata)
+  console.log("combineprice",pricetotal)
+  console.log("textareainput",textareainput.current)
+  const text = () => {
+    console.log("textareainput",textareainput.current.value)
+    setTextareavalue(textareainput.current.value)
+  }
+  const filevalue = () => {
+    setFilevaluedata(filereference.current.value)
+  }
+  console.log("filereference",filevaluedata)
+  console.log("textareainputafter",textareavalue)
   return (
     <Layout>
       <div className={classes.root}>
         <Paper className={classes.paper} elevation={5}>
           <Box className={classes.inputs}>
-            <Typography variant="h5" component="h5" sx={{ marginBottom: 2 }}>
+          <Box className={classes.inputs} sx={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', width:'100%', marginBottom: '16px'}}>
+          <Typography variant="h5" component="h5" sx={{ marginBottom: 2 }}>
               Add Visiting
             </Typography>
-            <Box className="react_select_box" sx={{width:'90%', marginBottom: 2}}>
+            <Button
+              onClick={SubmitData}
+              variant="contained"
+              className={classes.stundentBtn}
+            >
+              Add Invoice
+            </Button>
+            </Box>
+           
+            <Box className="react_select_box" sx={{width:'100%', marginBottom: 2}}>
+            {/* <FormControl >
+            <FormLabel id="demo-controlled-radio-buttons-group"></FormLabel>
+            <RadioGroup 
+              className={classes.radio_button}
+              aria-labelledby="demo-controlled-radio-buttons-group"
+              name="controlled-radio-buttons-group"
+              value={radiovalue}
+              onChange={handleChange3}
+            >
+              <FormControlLabel value="Search By Name" control={<Radio />} label="Search By Name" />
+              <FormControlLabel value="Search By Number" control={<Radio />} label="Search By Number" />
+              <FormControlLabel value="Search By Aadhar Number" control={<Radio />} label="Search By Aadhar Number" />
+            </RadioGroup>
+          </FormControl> */}
               <Select
                 options={options}
+                styles={colourStyles}
+                isClearable={true}
+                openMenuOnClick={false}
+                openMenuOnFocus={false}
+                defaultMenuIsOpen={false}
+                selectMenuOpen={false}
+                isOptions={true}
+                isSearchable={true}
+                placeholder={'Type to search'}
+                getOptionValue ={(options)=>options.data1}
+                components={{ DropdownIndicator:() => null, IndicatorSeparator:() => null }}
                 defaultValue={visit.supplier_name}
                 onChange={handleChange}
+                onInputChange={Onkey}
                
               />
+              {/* <input
+            type="text"
+            id="header-search"
+            ref={inputElement}
+            placeholder="Search blog posts"
+            onKeyUp={() => Onkey()} 
+        />
+              <ul>
+                {Searchdata.map((items) => {
+                  return(
+                    <>
+                    <li>{items.name}</li>
+                    </>
+                  )
+                })}
+                
+              </ul> */}
             </ Box>
+            <Box>
+            {/* <Autocomplete
+        style={{ width: 1000 }}
+        freeSolo
+        autoComplete
+        autoHighlight
+        openOnFocus={false}
+        onChange={handleChange}
+        options={options}
+        renderInput={(params) => (
+          <TextField {...params}
+          openOnFocus={false}
+            variant="outlined"
+            label="Search Box"
+          />
+        )}
+      /> */}
+            </Box>
             {/* <input className="form-control" type="checkbox" checked={chkValue}/>
             <FormControlLabel 
                     control= { 
@@ -278,28 +974,310 @@ const Visiting = (props) => {
                       />  
                       }
                     /> */}
-          {visit.supplier_name !==''?          
-            <Box  sx={{marginBottom:'2%',padding:'4px',display:'flex'}}>
+                    <Box>{
+                            visit.supplier_name !=="" ?
+                          <TableContainer key={singledatapatient?.id} >
+                    <Table sx={{marginBottom:2, width:'100%'}}> 
+                          <TableHead>
+                          
+                          <TableRow>                    
+                            <TableCell align="right">Name</TableCell>
+                            <TableCell align="right">Phone Number</TableCell>
+                            <TableCell align="right">Address</TableCell>
+                            <TableCell align="right">City</TableCell>
+                            <TableCell align="right">State</TableCell>
+                            <TableCell align="right">Pincode</TableCell>
+                            <TableCell align="right">Aadhar Number</TableCell>
+                          </TableRow>
+
+                          </TableHead>
+
+                          <TableBody >
+                          <TableRow>                    
+                            <TableCell align="right">{singledatapatient?.name}</TableCell>
+                            <TableCell align="right">{singledatapatient?.phone_number}</TableCell>
+                            <TableCell align="right">{singledatapatient?.address}</TableCell>
+                            <TableCell align="right">{singledatapatient?.city}</TableCell>
+                            <TableCell align="right">{singledatapatient?.state}</TableCell>
+                            <TableCell align="right">{singledatapatient?.pincode}</TableCell>
+                            <TableCell align="right">{singledatapatient?.adhar_number}</TableCell>
+                          </TableRow>
+                          </TableBody>
+                          </Table> 
+                         </TableContainer>
+                       :null
+                     
+                    }
+                    </Box>
+                  {/* <Box>
+                    {
+                    PatientNameReducer.map((items,index)=>{
+                      return(
+                        <>
+                          {
+                          visit.supplier_name === items.id ?
+                          <>
+                          <TableContainer key={index} >
+                    <Table sx={{marginBottom:2, width:'100%'}}> 
+                          <TableHead>
+                          
+                          <TableRow>                    
+                            <TableCell align="right">Name</TableCell>
+                            <TableCell align="right">Phone Number</TableCell>
+                            <TableCell align="right">Address</TableCell>
+                            <TableCell align="right">City</TableCell>
+                            <TableCell align="right">State</TableCell>
+                            <TableCell align="right">Pincode</TableCell>
+                            <TableCell align="right">Aadhar Number</TableCell>
+                          </TableRow>
+
+                          </TableHead>
+
+                          <TableBody >
+                          <TableRow>                    
+                            <TableCell align="right">{items.name}</TableCell>
+                            <TableCell align="right">{items.phone_number}</TableCell>
+                            <TableCell align="right">{items.address}</TableCell>
+                            <TableCell align="right">{items.city}</TableCell>
+                            <TableCell align="right">{items.state}</TableCell>
+                            <TableCell align="right">{items.pincode}</TableCell>
+                            <TableCell align="right">{items.adhar_number}</TableCell>
+                          </TableRow>
+                          </TableBody>
+                          </Table> 
+                         </TableContainer>
+                         </>
+                          : null
+                        }
+                        </>
+                      
+                      )
+ 
+                 
+                    })
+                    }
+                  </Box>  */}
+                  <Box sx={{ width: '100%' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={tabvalue} onChange={tabchange} aria-label="basic tabs example">
+          <Tab label="Current" {...a11yProps(0)} />
+          <Tab label="History" {...a11yProps(1)} />
+          
+        </Tabs>
+      </Box>
+      <TabPanel value={tabvalue} index={0}>
+      <Grid container>
+  <Grid item xs={4.5}>
+  {/* {(current==true)&&(tabvalue=='0')? <Box sx={{width:'100%',boxSizing:'border-box',textAlign:'right'}}> */}
+  {(tabvalue=='0')? <Box sx={{width:'100%',boxSizing:'border-box',textAlign:'right'}}>
+    <TextareaAutosize
+  aria-label="empty textarea"
+  placeholder="Prescription"
+  ref={textareainput}
+  onChange={text}
+  style={{ width: '100%', height: '150px',fontSize: '16px',
+  border: '1px solid rgba(224, 224, 224, 1)',
+  padding: '10px 10px',outline:'none',boxSizing:'border-box' }}
+/>
+<Box sx={{display:'flex',justifyContent:'flex-start',alignItems:'center',width:'100%'}}>
+<label htmlFor="upload-photo" style={{marginTop:'15px',marginRight:'20px'}}>
+  <input
+    style={{ display: 'none' }}
+    id="upload-photo"
+    name="upload-photo"
+    type="file"
+    ref = {filereference}
+    onChange={filevalue}
+  />
+
+  <Fab
+    sx={{color:'#fff',backgroundColor:'rgb(105 105 105)',"&.MuiButtonBase-root:hover": {
+      backgroundColor: "rgb(73 73 73)"
+    }}}
+    size="small"
+    component="span"
+    aria-label="add"
+    variant="extended"
+  >
+    <AddIcon /> Upload Prescription
+  </Fab>
+</label>
+<Button variant="contained" sx={{marginTop:'10px'}}>Submit</Button>
+</Box>
+    </Box>:null}
+  </Grid>
+  <Grid item xs={7.5} pl={2} pr={2}>
+  {visit.supplier_name !==''?          
+            <Box  sx={{marginBottom:'2%',padding:'4px',display:'flex', width: "100%", justifyContent: "flex-start"}}>
+               
               {ButtonsName.map((itemsname,i)=>{
                 return(
                   <Box key={i} sx={{marginBottom:'2%',padding:'4px',display:'flex'}}>
+                   
                     <Button sx={{marginRight:'2%'}}
                         variant="contained"
                         className={classes.buttonsgrp}
                         value={itemsname.id} 
                         name ={itemsname.name}
-                        onClick={(items)=>clickOpd(items)}
+                        onClick={()=>clickOpd(itemsname)}
                         >
                         {itemsname.name} 
                       </Button>
+                     
                   </Box>
                   ) 
               })
              }
+             <div style={{width: '50%'}}>
+             <Select
+             style={{width:"50%"}}
+                options={options1}
+                value={value}
+              //  defaultValue={defaultvalue}
+                onChange={handleChange1}
+               
+              />
+              </div>
+              
+                    <AddIcon  sx={{marginTop:'7px',marginLeft:'15px',color:'white', backgroundColor:'blue', borderRadius:'50%'}} 
+                            name='more_input_fields' onClick={handleServiceAdd}  /> 
             </Box>
            :  null
            
           }
+
+        
+<Box sx={{
+          mb: 2,
+          display: "flex",
+          flexDirection: "column",
+          maxHeight: 150,
+          overflow: "hidden",
+          overflowY: "scroll",
+          width: "100%",
+          marginTop: "30px"
+         
+        }}>
+                    <>
+                    {inputAdddata !='' || addOpticaldata !='' || addPharmacydata !=''? 
+                  <TableContainer>
+                    <Table sx={{marginBottom:2, width:'100%'}}> 
+                          <TableHead>
+                          
+                          <TableRow sx={{display : 'flex'}}>                    
+                            <TableCell sx={{flexBasis : '50%'}}  align="left">Product Name</TableCell>
+                            
+                            
+                            <TableCell sx={{flexBasis : '50%'}} align="left">Price</TableCell>
+                            
+                          
+                            
+                            
+                          </TableRow>
+
+                          </TableHead>
+                          <TableBody >
+                    {
+                    inputAdddata.map((items,index)=>{
+                      return(
+                          <TableRow key={index} sx={{display : 'flex'}}>                    
+                            <TableCell align="left" sx={{flexBasis : '50%'}}>{items.product_name}</TableCell>
+                                <TableCell align="left" sx={{flexBasis : '50%'}}>{items.opd_price}</TableCell>
+                                <TableCell align="left" sx={{flexBasis : '50%'}}>{items.opd_price}</TableCell>
+                          </TableRow> 
+                      )
+                    })
+                    }
+
+                   {
+                    addPharmacydata.map((items,index)=>{
+                      return(
+                          <TableRow key={index} sx={{display : 'flex'}}>                    
+                            <TableCell align="left" sx={{flexBasis : '50%'}}>{items.product_name}</TableCell>
+                                <TableCell align="left" sx={{flexBasis : '50%'}}>{items.selling_price}</TableCell>
+                          </TableRow> 
+                      )
+                    })
+                    }
+                     {
+                    addOpticaldata.map((items,index)=>{
+                      return(
+                          <TableRow key={index} sx={{display : 'flex'}}>                    
+                            <TableCell align="left" sx={{flexBasis : '50%'}}>{items.product_name}</TableCell>
+                                <TableCell align="left" sx={{flexBasis : '50%'}}>{items.selling_price}</TableCell>
+                          </TableRow> 
+                      )
+                    })
+                    }
+                    </TableBody>
+
+                     </Table> 
+                         </TableContainer>
+                         :null }
+                    </>
+                  </Box> 
+                  
+
+                  <Box sx={{textAlign:"right", width: "100%", borderBottom: "none"}}>
+                  {inputAdddata !='' || addOpticaldata !='' || addPharmacydata !=''? 
+                   <TableContainer sx={{borderBottom: "none"}}>
+                   <Table sx={{borderBottom: "none"}}>
+                     <TableHead sx={{borderBottom: "none"}}>
+                     <TableRow sx={{borderBottom: "none"}}>
+                       <TableCell sx={{borderBottom: "none",paddingBottom:"0px"}} align="right">Total</TableCell>
+                       </TableRow>
+                     </TableHead>
+                     <TableBody sx={{borderBottom: "none"}}>
+                     <TableRow sx={{borderBottom: "none"}}>
+                     <TableCell sx={{borderBottom: "none"}} align="right">{pricetotal}</TableCell>
+                       </TableRow>
+                     </TableBody>
+                   </Table>
+                 </TableContainer>
+                    : null }
+                  </Box>
+  </Grid>
+</Grid>
+      
+
+             
+
+
+      </TabPanel>
+      <TabPanel value={tabvalue} index={1}>
+      <Box>
+                   { visit.supplier_name!="" ?
+                          <TableContainer  >
+                    <Table sx={{marginBottom:2, width:'100%'}}> 
+                          <TableHead>
+                          
+                          <TableRow>                    
+                            <TableCell align="left">Prescription History</TableCell>
+                          </TableRow>
+
+                          </TableHead>
+
+                          <TableBody >
+                          <TableRow>                    
+                            <TableCell align="left">{comingprescription}</TableCell>
+                            
+                          </TableRow>
+                          </TableBody>
+                          </Table> 
+                         </TableContainer>
+                    :null
+                   }
+                  </Box> 
+      </TabPanel>
+      
+    </Box>
+   
+                  {/* <Box sx={{display:"flex",justifyContent:"flex-start",width:"100%",marginTop:"20px"}}>
+                  <Button variant="contained" sx={{marginRight:"20px"}} onClick={currentVisit}>Current Visit</Button>
+                  <Button variant="contained" onClick={history}>History</Button>
+                  </Box> */}
+          
+          
           
         {/* to show button static */}
          {/* {visit.supplier_name !==''?
@@ -334,7 +1312,263 @@ const Visiting = (props) => {
          </Box>
          </Box> : null}   */}
             {/* ends here code */}
+
+            <Box>
+                    {/* {
+                    opdpharmecyoptical.map((items)=>{
+                      return(
+                        <>
+                          {
+                          visit1.supplier_name === items.product_id ?
+                          <>
+                          <TableContainer>
+                    <Table sx={{marginBottom:2, width:'100%'}}> 
+                          <TableHead>
+                          
+                          <TableRow>                    
+                            <TableCell align="right">Product Name</TableCell>
+                            
+                            {items.name === "OPD" ?
+                            <TableCell align="right">Opd Price</TableCell>
+                            :null
+                          }
+                            
+                            
+                          </TableRow>
+
+                          </TableHead>
+
+                          <TableBody >
+                          <TableRow>                    
+                            <TableCell align="right">{items.product_name}</TableCell>
+                            
+                            {items.name === "OPD" ?
+                            <>
+                                <TableCell align="right">{items.opd_price}</TableCell>
+                            <AddIcon sx={{marginTop:'15px',color:'white', backgroundColor:'blue', borderRadius:'50%'}} 
+                            name='more_input_fields'  onClick={()=>handleServiceAdd(items)} /> 
+                            </>
+                        
+                            :null
+                          }
+                            
+                           
+                          </TableRow>
+                          <TableRow>
+                         
+                          </TableRow>
+                          </TableBody>
+                          </Table> 
+                         </TableContainer>
+                         
+                         </>
+                         
+                          : null
+                        }
+                        </>
+                      
+                      )
+ 
+                 
+                    })
+                    } */}
+                  </Box> 
+
+
+
+                 
+
+{/* 
+                  <Box sx={{
+          mb: 2,
+          display: "flex",
+          flexDirection: "column",
+          maxHeight: 150,
+          overflow: "hidden",
+          overflowY: "scroll",
+          width: "100%"
          
+        }}>
+                    <>
+                    {addPharmacydata !=''? 
+                  <TableContainer>
+                    <Table sx={{marginBottom:2, width:'100%'}}> 
+                          <TableHead>
+                          
+                          <TableRow>                    
+                            <TableCell align="right">Product Name</TableCell> */}
+                            
+                            
+                            {/* <TableCell align="right">Item MSRP</TableCell>
+                            <TableCell align="right">Cost Price</TableCell> */}
+                            {/* <TableCell align="right">Price</TableCell> */}
+                            
+                          
+                            
+                            
+                          {/* </TableRow>
+
+                          </TableHead>
+                    {
+                    addPharmacydata.map((items,index)=>{
+                      return(
+                        
+
+                          <TableBody key={index}>
+                          <TableRow>                    
+                            <TableCell align="right">{items.product_name}</TableCell> */}
+                            
+                            
+                            
+                                {/* <TableCell align="right">{items.item_msrp}</TableCell>
+                                <TableCell align="right">{items.cost_price}</TableCell> */}
+                                {/* <TableCell align="right">{items.selling_price}</TableCell>
+                            
+                           
+                        
+                            
+                          
+                            
+                           
+                          </TableRow>
+                         
+                          </TableBody>
+                         
+                         
+                        
+                      
+                      )
+ 
+                 
+                    })
+                    }
+
+                     </Table> 
+                         </TableContainer>
+                         :null }
+                    </>
+                  </Box>  */}
+
+                  {/* <Box sx={{textAlign:"right", width: "100%", borderBottom: "none"}}>
+                 
+                 {visit1.supplier_name !=''? 
+                     <TableContainer sx={{borderBottom: "none"}}>
+                       <Table sx={{borderBottom: "none"}}>
+                         <TableHead sx={{borderBottom: "none"}}>
+                         <TableRow sx={{borderBottom: "none"}}>
+                           <TableCell sx={{borderBottom: "none",paddingBottom:"0px"}} align="right">Total</TableCell>
+                           </TableRow>
+                         </TableHead>
+                         <TableBody sx={{borderBottom: "none"}}>
+                         <TableRow sx={{borderBottom: "none"}}>
+                         <TableCell sx={{borderBottom: "none"}} align="right">{price1}</TableCell>
+                           </TableRow>
+                         </TableBody>
+                       </Table>
+                     </TableContainer>
+                     : null }
+                  </Box> */}
+
+
+
+
+                  {/* <Box sx={{
+          mb: 2,
+          display: "flex",
+          flexDirection: "column",
+          maxHeight: 150,
+          overflow: "hidden",
+          overflowY: "scroll",
+          width: "100%"
+         
+        }}>
+                    <>
+                    {addOpticaldata !=''? 
+                  <TableContainer>
+                    <Table sx={{marginBottom:2, width:'100%'}}> 
+                          <TableHead>
+                          
+                          <TableRow>                    
+                            <TableCell align="right">Product Name</TableCell> */}
+                            
+                            
+                            {/* <TableCell align="right">Item MSRP</TableCell>
+                            <TableCell align="right">Cost Price</TableCell> */}
+                            {/* <TableCell align="right">Price</TableCell>
+                            
+                          
+                            
+                            
+                          </TableRow>
+
+                          </TableHead>
+                    {
+                    addOpticaldata.map((items,index)=>{
+                      return(
+                        
+
+                          <TableBody key={index}>
+                          <TableRow>                    
+                            <TableCell align="right">{items.product_name}</TableCell> */}
+                            
+                            
+                            
+                                {/* <TableCell align="right">{items.item_msrp}</TableCell>
+                                <TableCell align="right">{items.cost_price}</TableCell> */}
+                                {/* <TableCell align="right">{items.selling_price}</TableCell>
+                            
+                           
+                        
+                            
+                          
+                            
+                           
+                          </TableRow>
+                         
+                          </TableBody>
+                         
+                         
+                        
+                      
+                      )
+ 
+                 
+                    })
+                    }
+
+                     </Table> 
+                         </TableContainer>
+                         :null }
+                    </>
+                  </Box>  */}
+
+                  
+{/* 
+                  <Box sx={{textAlign:"right", width: "100%", borderBottom: "none"}}>
+                 
+                 {visit1.supplier_name !=''? 
+                     <TableContainer sx={{borderBottom: "none"}}>
+                       <Table sx={{borderBottom: "none"}}>
+                         <TableHead sx={{borderBottom: "none"}}>
+                         <TableRow sx={{borderBottom: "none"}}>
+                           <TableCell sx={{borderBottom: "none",paddingBottom:"0px"}} align="right">Total</TableCell>
+                           </TableRow>
+                         </TableHead>
+                         <TableBody sx={{borderBottom: "none"}}>
+                         <TableRow sx={{borderBottom: "none"}}>
+                         <TableCell sx={{borderBottom: "none"}} align="right">{price2}</TableCell>
+                           </TableRow>
+                         </TableBody>
+                       </Table>
+                     </TableContainer>
+                     : null }
+                  </Box> */}
+                  
+
+
+          
+
+{/*          
            {visit.supplier_name !==''?
            <Box> 
             {CategoryData.map((items,id)=>{
@@ -392,7 +1626,7 @@ const Visiting = (props) => {
               
            })
         } 
-        </Box>: null }
+        </Box>: null } */}
       
 
             {/* {visit.supplier_name !==''?
@@ -462,16 +1696,126 @@ const Visiting = (props) => {
         </Box> 
             :
             null} */}
+            {/* <Paper variant='outlined' className={classes.table}
+               style={{  marginTop:'4%' }}>
+                     <DataTableExtensions {...tableData} >
+                        <Table
+                          columns={columns}
+                          data={data}
+                          noHeader
+                          defaultSortField="id"
+                          defaultSortAsc={false}
+                          pagination
+                          highlightOnHover
+                        />
+                      </DataTableExtensions>
+                    </Paper> */}
   
-            <Button
-              onClick={SubmitData}
-              variant="contained"
-              className={classes.stundentBtn}
-            >
-              Add Invoice
-            </Button>
+           
           </Box>
         </Paper>
+        <div>
+      {/* <Button variant="outlined" onClick={handleClickOpen}>
+        Open dialog
+      </Button> */}
+      <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+         Products Details
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+        <TableContainer>
+                      <Table>
+                        <TableHead>
+                        <TableRow>
+                          <TableCell align="right">Product Name</TableCell>
+                          <TableCell align="right">Item MSRP</TableCell>
+                          <TableCell align="right">Cost Price</TableCell>
+                          <TableCell align="right">Selling Price</TableCell>
+                          </TableRow>
+                        </TableHead>
+
+                           {
+                            FetchVisitData?.map((items,index) => {
+                              return(
+                              
+                              <TableBody key={index}>
+                            <TableRow>
+                            <TableCell align="right">{<FormControlLabel value={items.id} control={<Checkbox  />} 
+                             label={items.product_name} onChange={() => SelectedCheckboxes(items)} />}</TableCell>
+                            <TableCell align="right">{items.item_msrp}</TableCell>
+                            <TableCell align="right">{items.cost_price}</TableCell>
+                            <TableCell align="right">{items.selling_price}</TableCell>
+                              </TableRow>
+                              </TableBody>
+                              )
+                            })
+  
+                           }
+                        
+                      </Table>
+                    </TableContainer>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={pharmacydata}>
+            Add
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
+
+
+      <BootstrapDialog
+        onClose={handleClose1}
+        aria-labelledby="customized-dialog-title"
+        open={open1}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose1}>
+         Products Details
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+        <TableContainer>
+                      <Table>
+                        <TableHead>
+                        <TableRow>
+                          <TableCell align="right">Product Name</TableCell>
+                          <TableCell align="right">Item MSRP</TableCell>
+                          <TableCell align="right">Cost Price</TableCell>
+                          <TableCell align="right">Selling Prices</TableCell>
+                          </TableRow>
+                        </TableHead>
+
+                           {
+                            FetchVisitData.map((items,index) => {
+                              return(
+                              
+                              <TableBody key={index}>
+                            <TableRow>
+                            <TableCell align="right">{<FormControlLabel value={items.id} control={<Checkbox  />} 
+                             label={items.product_name} onChange={() => SelectedCheckboxes1(items)} />}</TableCell>
+                            <TableCell align="right">{items.item_msrp}</TableCell>
+                            <TableCell align="right">{items.cost_price}</TableCell>
+                            <TableCell align="right">{items.selling_price}</TableCell>
+                              </TableRow>
+                              </TableBody>
+                              )
+                            })
+  
+                           }
+                        
+                      </Table>
+                    </TableContainer>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={pharmacydata1}>
+            Add
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
+
+    </div>
       </div>
     </Layout>
   );
