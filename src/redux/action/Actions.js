@@ -6,7 +6,7 @@ import {ERROR, FETCHPPHARMACY, FETCHPOPTICAL, FETCHPOPD,
      PURCHASEINSERT, PURCHASEFETCH, PURCHASEBYID, UPDATEPURCHASE, DELETEEPURCHASE, FETCHPURCHASEDETAIL,
      PURCHASEDETAILINSERT, PURCHASEDETAILFETCH, PURCHASEDETAILBYID, UPDATEPURCHASEDETAIL, DELETEEPURCHASEDETAIL,
      PATIENTINSERT,  PATIENTFETCH, PATIENTBYID, UPDATEPATIENT, DELETEPATIENT,
-     DOWNLOADFILE,INVENTORYFILE,VISITDATASEARCH,PRESCRIPTIONDETAIL} 
+     DOWNLOADFILE,INVENTORYFILE,VISITDATASEARCH,PRESCRIPTIONDETAIL, ADDINVOICE} 
      from '../actionType/ActionType'
 import { linkUrl } from '../../Components/baseurl';
 
@@ -602,6 +602,20 @@ export const DownloadFiles= (id) => async dispatch =>{
         })
     }
    }
+
+   //ADDINVOICE
+export const AddInvoiceData = (data) => async dispatch => {
+    //const AddInvoiceapi = await axios.post( baseUrl + '/insert_purchase.php',{ ...data });
+    const AddInvoiceapi = await axios.post( linkUrl + '/visit.php',{ ...data });
+
+
+    dispatch({
+
+        type    : ADDINVOICE
+      
+
+    })
+}
 
 
 // //DELETEEPURCHASEDETAIL

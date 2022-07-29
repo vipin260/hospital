@@ -93,5 +93,7 @@ export const VISITDATASEARCH          =  'VISITDATASEARCH'
 //visit pescription //
 export const PRESCRIPTIONDETAIL          =  'PRESCRIPTIONDETAIL'
 
+export const ADDINVOICE          =  'ADDINVOICE'
+
 
 
