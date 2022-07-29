@@ -294,7 +294,7 @@ console.log("optionsis",options)
     setInputAdd([...inputAdd,  
       {
         product_name       : items.product_name, 
-        product_id        : items.id,  
+        product_id         : items.id,  
         product_name       : items.product_name,
         product_category      : items.product_category, 
         opd_price           : items.opd_price 
