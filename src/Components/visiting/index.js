@@ -331,7 +331,7 @@ console.log("optionsis",options)
   };
 
   useEffect(()=>{
-    setInputAdddata([...new Map(inputAdd.map(item => [item.product_id, item])).values()])
+    setInputAdddata([...new Map(inputAdd.map(item => [item.id, item])).values()])
     
   },[inputAdd]) 
 
@@ -611,7 +611,7 @@ console.log("optionsis",options)
   options1.splice(0, options1.length)
   setOptions1( FetchOpdData.map((items)=>{ 
     return(
-  { value: items.product_id, label: items.product_name, data: items.name }
+  { value: items.id, label: items.product_name, data: items.name }
   )
          }) 
   )  
@@ -626,7 +626,7 @@ console.log("optionsis",options)
          options1.splice(0, options1.length)
          setOptions1( FetchPharmacyData.map((items)=>{
           return(
-{ value: items.product_id, label: items.product_name, data: items.name }
+{ value: items.id, label: items.product_name, data: items.name }
           )
          }) 
          )   
@@ -651,7 +651,7 @@ console.log("optionsis",options)
          options1.splice(0, options1.length)
          setOptions1( FetchOpticalData.map((items)=>{
           return(
-  { value: items.product_id, label: items.product_name, data: items.name }
+  { value: items.id, label: items.product_name, data: items.name }
           )
       })
          )
@@ -1009,10 +1009,11 @@ const history = () => {
               />
               {
                     opdpharmecyoptical.map((items,index)=>{
+                      console.log("jsskj", items)
                       return(
                         <>
                           {
-                          visit1.supplier_name === items.product_id ?
+                          visit1.supplier_name === items.id ?
                           <>
                             <AddIcon key={index} sx={{marginTop:'7px',marginLeft:'15px',color:'white', backgroundColor:'blue', borderRadius:'50%'}} 
                             name='more_input_fields'  onClick={()=>handleServiceAdd(items)} /> 
