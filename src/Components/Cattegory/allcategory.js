@@ -60,16 +60,16 @@ const CattegoryTable = () => {
   const FetchOpdData = useSelector((state) => state.ProductReducersData.OpdFetch);
 
 console.log("check",FetchOpdData)
-  const edithandle = (product_id) => {
-    let data = { "id":parseInt(product_id), "action" : "getProductByID"}
+  const edithandle = (id) => {
+    let data = { "id":parseInt(id), "action" : "getProductByID"}
     dispatch(FetchSingleProduct(data))
     .then(()=> Navigates('/editcategory'))
   };
 
 
-  const handledelete = (product_id) => {
+  const handledelete = (id) => {
     let data = {"action" : "getAllProduct"}
-    let deleteData = {"id" : product_id ,"action" : "DeleteProduct"}
+    let deleteData = {"id" : id ,"action" : "DeleteProduct"}
     if (window.confirm("Are you sure to delete the product ?")) {
       dispatch(DeleteProduct(deleteData))
         .then(() => dispatch(FetchProduct(data)))
@@ -108,10 +108,10 @@ console.log("check",FetchOpdData)
       name: "Action",
       sortable: row => row.false,
       selector: row => row.null,
-      cell: (d, product_id) => [
-        <Box key={product_id}>
-        <EditIcon className={classes.edit}  onClick={()=>edithandle(d.product_id)} />
-        <DeleteIcon className={classes.delete} onClick={() => handledelete(d.product_id)} />
+      cell: (d, id) => [
+        <Box key={id}>
+        <EditIcon className={classes.edit}  onClick={()=>edithandle(d.id)} />
+        <DeleteIcon className={classes.delete} onClick={() => handledelete(d.id)} />
         </Box>
       ],
     },
@@ -153,10 +153,10 @@ console.log("check",FetchOpdData)
   //     name: "Action",
   //     sortable: row => row.false,
   //     selector: row => row.null,
-  //     cell: (d, product_id) => [
-  //       <Box key={product_id}>
-  //       <EditIcon className={classes.edit}  onClick={()=>edithandle(d.product_id)} />
-  //       <DeleteIcon className={classes.delete} onClick={() => handledelete(d.product_id)} />
+  //     cell: (d, id) => [
+  //       <Box key={id}>
+  //       <EditIcon className={classes.edit}  onClick={()=>edithandle(d.id)} />
+  //       <DeleteIcon className={classes.delete} onClick={() => handledelete(d.id)} />
   //       </Box>
   //     ],
   //   },

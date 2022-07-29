@@ -294,7 +294,7 @@ console.log("optionsis",options)
     setInputAdd([...inputAdd,  
       {
         product_name       : items.product_name, 
-        product_id        : items.product_id,  
+        product_id         : items.id,  
         product_name       : items.product_name,
         product_category      : items.product_category, 
         opd_price           : items.opd_price 
@@ -308,7 +308,7 @@ console.log("optionsis",options)
     }
     else if(items.name==="pharmacy"){
       // setStorepharmacyid()
-      let data = {"pharmacy_id" : items.product_id, "action" : "getAllInvertory"}
+      let data = {"pharmacy_id" : items.id, "action" : "getAllInvertory"}
       Dispatch(getAllInventory(data))
       // .then(() => {
       //   console.log("checking data",FetchVisitData)
@@ -319,7 +319,7 @@ console.log("optionsis",options)
     }
     else if(items.name==="optical"){
       // setStorepharmacyid()
-      let data = {"pharmacy_id" : items.product_id, "action" : "getAllInvertory"}
+      let data = {"pharmacy_id" : items.id, "action" : "getAllInvertory"}
       Dispatch(getAllInventory(data))
       // .then(() => {
       //   console.log("checking data",FetchVisitData)
