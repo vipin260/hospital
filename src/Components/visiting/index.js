@@ -622,9 +622,9 @@ console.log("inputtttt",inputAdd)
 
       if(value  === '1' ){
         console.log("index",i)
-        if(i===0){
-          setActive(true)
-        }
+        setActive(i) 
+         
+        
         
         // addPharmacydata.splice(0, addPharmacydata.length)
         // addOpticaldata.splice(0, addOpticaldata.length)
@@ -644,9 +644,7 @@ console.log("inputtttt",inputAdd)
   
       }else if(value === '2' ){
         console.log("index",i)
-        if(i === 1){
-          setActive(true)
-        }
+      setActive(i) 
         
          console.log('second button')
          setCurrent(false)
@@ -675,12 +673,7 @@ options1.push({ value: items.id, label: items.product_name, data: items.name })
         //  Dispatch(FetchPurchases())
       }else if(value === '3' ){
         console.log("index",i)
-        if(i === 2){
-          setActive(true)
-        }
-        else{
-          setActive(false)
-        }
+       setActive(i)
         setCurrent(false)
          setValue(null)
          options1.splice(0, options1.length)
@@ -1081,7 +1074,7 @@ const history = () => {
                    
                     <Button sx={{ marginRight:'2%',background: '#e9e9e9',boxShadow: 'none',border: '1px solid #000',color: '#000!important',width:'100%'}}
                         variant="contained"
-                        className={active ? "con" : null }
+                        className={active === i ? "con" : null }
                         value={itemsname.id} 
                         name ={itemsname.name}
                         onClick={(items)=>clickOpd(items,i)}
