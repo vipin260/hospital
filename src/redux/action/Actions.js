@@ -602,6 +602,58 @@ export const DownloadFiles= (id) => async dispatch =>{
         })
     }
    }
+   export const medicalDetail = (data) => async dispatch => {
+    try{
+        const response = await axios.post(linkUrl+ `visit.php`,{...data})
+        console.log('search ', response)
+        dispatch({
+            type : 'MEDICAL_DETAIL',
+            payload : response.data
+        })
+    }
+    catch(e){
+        dispatch({
+            type : ERROR,
+            payload : console.log(e)
+        })
+    }
+   }
+
+   export const quantitydata = (data) => async dispatch => {
+    try{
+        const response = await axios.post(linkUrl+ `visit.php`,{...data})
+        console.log('quantiytyt ', response)
+        dispatch({
+            type : 'QUANTITY',
+            payload : response.data
+        })
+    }
+    catch(e){
+        dispatch({
+            type : ERROR,
+            payload : console.log(e)
+        })
+    }
+   }
+
+   export const AddInvoiceData = (data) => async dispatch => {
+    try{
+        const response = await axios.post(linkUrl+ `visit.php`,{...data})
+        
+        dispatch({
+            type : 'SAVEDATA',
+            payload : response.data
+        })
+    }
+    catch(e){
+        dispatch({
+            type : ERROR,
+            payload : console.log(e)
+        })
+    }
+   }
+
+   
 
 
 // //DELETEEPURCHASEDETAIL
