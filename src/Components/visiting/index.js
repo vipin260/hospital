@@ -213,7 +213,7 @@ console.log("quantitydatata",Prescriptiondata)
   const [file, setFile] = useState();
   const [fileName, setFileName] = useState("");
   const [quantity, setQuantity] = useState();
-  const [uniqueId, setUniqueId] = useState();
+  const [VisitingID, setVisitingID] = useState();
   const [combineData, setCombineData] = useState([]);
   const [maincombine, setMaincombine] = useState([]);
   const [prescriptionsavedata, setPrescriptionsavedata] = useState();
@@ -231,30 +231,27 @@ console.log("quantitydatata",Prescriptiondata)
 
 
 
-let fi =[]
   const saveFile = (e) => {
-      setFile(e.target.files[0]);
-      setFileName(e.target.files[0].name);
-      
-      
-      setAllfile(e.target.files);
-      console.log('file',e.target.files)
-    };
-
-    console.log("date",uniqueId)
-    const uploadFile = async (e) => {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("fileName", fileName);
-      formData.append("headers", {"Content-type": "multipart/form-data"});
-       console.log('formData', formData)
-      try {
-        const res = await axios.post( linkUrl+'visit.php', formData );
-      } catch (ex) {
-        console.log(ex);
-      }
-    };
-    console.log('file',fileName)
+    setFile(e.target.files);
+    setFileName(e.target.files[0].name);
+  };
+  console.log("slectedfiless",file)
+  const uploadFile = async (e) => {
+    const data = new FormData();
+    data.append("VisitingID", VisitingID);
+    for (let i = 0; i < file.length; i++) {
+      data.append("file[]", file[i]);
+    }
+    
+    try {
+      const res = await axios.post( linkUrl+'visit_file_upload.php', data );
+      console.log('res', res)
+  
+    } catch (ex) {
+      console.log(ex);
+    }
+    setOpen2(false);
+  };
 
   useEffect(() => {
     if (Searchdata != "") {
@@ -303,7 +300,8 @@ let fi =[]
         product_name: itemsdata.product_name,
         product_category: itemsdata.product_category,
         opd_price: itemsdata.opd_price,
-        quantity: quantity
+        quantity: quantity,
+        priceTotal : itemsdata.opd_price
       }])
     }
     else if (itemsdata.name === "pharmacy") {
@@ -351,7 +349,8 @@ let fi =[]
               selling_price: items.selling_price,
               cost_price: items.cost_price,
               item_msrp: items.item_msrp,
-              quantity : quantity
+              quantity : quantity,
+              priceTotal : parseFloat(value.selling_price)*parseFloat(quantity)
             }
             ])
           )
@@ -375,7 +374,8 @@ let fi =[]
               selling_price: items.selling_price,
               cost_price: items.cost_price,
               item_msrp: items.item_msrp,
-              quantity : quantity
+              quantity : quantity,
+              priceTotal : parseFloat(value.selling_price)*parseFloat(quantity)
             }
             ])
           )
@@ -390,7 +390,7 @@ let fi =[]
     addPharmacydata.map((items) => {
       return (
 
-        pricevar +=  parseFloat(items.selling_price)
+        pricevar +=  parseFloat(items.priceTotal)
       )
     })
     setPrice1(pricevar)
@@ -401,7 +401,7 @@ let fi =[]
     let pricevar1 = 0;
     addOpticaldata.map((items) => {
       return (
-        pricevar1 += parseFloat(items.selling_price)
+        pricevar1 += parseFloat(items.priceTotal)
       )
     })
     setPrice2(pricevar1)
@@ -465,6 +465,15 @@ let fi =[]
   const handleClose2 = () => {
     setOpen2(false);
   };
+  const [open3, setOpen3] = useState(false);
+
+  const handleClickOpen3 = () => {
+    setOpen3(true);
+  };
+  const handleClose3 = () => {
+    setOpen3(false);
+  };
+
 
   const pharmacydata = (items) => {
     setAddPharmacy([...addPharmacy, ...beforePharmacy]);
@@ -570,7 +579,8 @@ const handleChange = (selectedOption) => {
       selling_price: value.selling_price,
       cost_price: value.cost_price,
       item_msrp: value.item_msrp,
-      quantity : quantity
+      quantity : quantity,
+      priceTotal : parseFloat(value.selling_price)*parseFloat(quantity)
     }
     ])
 
@@ -584,7 +594,8 @@ const handleChange = (selectedOption) => {
       selling_price: value.selling_price,
       cost_price: value.cost_price,
       item_msrp: value.item_msrp,
-      quantity : quantity
+      quantity : quantity,
+      priceTotal : parseFloat(value.selling_price)*parseFloat(quantity)
     }
     ])
 
@@ -635,16 +646,16 @@ console.log("combine",maincombine)
 
 useEffect(() => {
   const unique = new Date().valueOf();
-  setUniqueId(unique)
+  setVisitingID(unique)
 },[])
 
 
   // console.log("addPharmacy222",addPharmacydata)
 
   const SubmitData = () => {
-    let data = { "pateint": SingleData?.data,"products": maincombine,"totalprice":totalprice,"prescription": prescriptionsavedata,"Files":allfile,"action": "getAllPatient" };
+    let data = { "VisitingID":VisitingID,"patient": SingleData?.data,"products": maincombine,"totalprice":totalprice,"prescription": prescriptionsavedata,"action": "AddNewVisit" };
     console.log("sendingdata",data)
-        // Dispatch(AddInvoiceData(data))
+        Dispatch(AddInvoiceData(data))
       
       //  .then(()=> Navigate('/allvisit'))
   };
@@ -693,7 +704,7 @@ useEffect(() => {
       setQuantity(null)
     }
     else{
-      alert("empty stock");
+      alert("Out of Stock");
       console.log("checkinggg",parseInt((quantityData?.data?.item_qty))>parseInt((quantityvalue)))
       setQuantity(null)
       
@@ -725,7 +736,7 @@ console.log("jhddh",prescriptionsavedata)
   const handleReadMore = () =>{
     setReadMore(true)
   }
-console.log('Prescriptiondata.data',medicalData)
+console.log('Prescriptiondata',medicalData)
 const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${medicalData[0]?.Quantity}`
 
   return (
@@ -871,7 +882,8 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                                 <TableRow sx={{ display: 'flex' }}>
                                   <TableCell sx={{ flexBasis: '50%' }} align="left">Product Name</TableCell>
                                   <TableCell sx={{ flexBasis: '50%' }} align="left">Price</TableCell>
-                                  <TableCell sx={{ flexBasis: '50%' }} align="left">quatity</TableCell>
+                                  <TableCell sx={{ flexBasis: '50%' }} align="left">quantity</TableCell>
+                                  <TableCell sx={{ flexBasis: '50%' }} align="left">total</TableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody >
@@ -881,7 +893,9 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                                       <TableRow key={index} sx={{ display: 'flex' }}>
                                         <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.product_name}</TableCell>
                                         <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.opd_price}</TableCell>
-                                        <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.quantity}</TableCell>
+                                        {/* <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.quantity}</TableCell> */}
+                                        <TableCell align="left" sx={{ flexBasis: '50%' }}></TableCell>
+                                        <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.priceTotal}</TableCell>
                                       </TableRow>
                                     )
                                   })
@@ -893,6 +907,8 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                                         <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.product_name}</TableCell>
                                         <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.selling_price}</TableCell>
                                         <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.quantity}</TableCell>
+                                        <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.priceTotal}</TableCell>
+                                        
                                       </TableRow>
                                     )
                                   })
@@ -904,6 +920,7 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                                         <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.product_name}</TableCell>
                                         <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.selling_price}</TableCell>
                                         <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.quantity}</TableCell>
+                                        <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.priceTotal}</TableCell>
                                       </TableRow>
                                     )
                                   })
@@ -942,20 +959,21 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                       <Table sx={{ marginBottom: 2, width: '100%' }}>
                         <TableHead>
                           <TableRow>
-                            <TableCell sx={{ width: '100px' }} align="left">Visit Date</TableCell>
-                            <TableCell sx={{ width: '600px' }} align="left">Prescription</TableCell>
-                            <TableCell align="left">Medical</TableCell>
-                            <TableCell align="left">File</TableCell>
+                            <TableCell sx={{ width: '15%' }} align="left">Visit Date</TableCell>
+                            <TableCell sx={{ minWidth: '40%' }} align="left">Prescription</TableCell>
+                            <TableCell sx={{ width: '25%' }} align="left">Medical</TableCell>
+                            <TableCell sx={{ minWidth: '25%' }} align="left">File</TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody >
                           <TableRow>
-                            <TableCell align="left">{Prescriptiondata===undefined ? 'not visit date' : Prescriptiondata?.time}</TableCell>
-                            <TableCell align="left">{Prescriptiondata===undefined ? 'not Prescription' : readMore ? `${Prescriptiondata?.PrescreptionDetail?.substring(0, Prescriptiondata?.PrescreptionDetail.length)}`:  `${Prescriptiondata?.PrescreptionDetail?.substring(0, 100)}...`}{Prescriptiondata===undefined ? null : readMore ? null :<button
-                           onClick={handleReadMore} >Read More</button>}</TableCell>
+                            <TableCell align="left">{Prescriptiondata==="" ? 'not visit date' : Prescriptiondata.time}</TableCell>
+                            <TableCell align="left">{Prescriptiondata==='undefined' ? 'not Prescription' : readMore ? `${Prescriptiondata?.PrescreptionDetail?.substring(0, Prescriptiondata?.PrescreptionDetail.length)}`:  `${Prescriptiondata?.PrescreptionDetail?.substring(0, 100)}`}{Prescriptiondata?.PrescreptionDetail?.length<100 ? null :`...${<button
+                           onClick={handleReadMore} >Read More</button>}`}</TableCell>
                              <TableCell align="left" sx={{display:'flex' ,flexDirection:'column'}}>{Prescriptiondata===undefined ? 'not visit date' : ProductName  }
-                         
-                             <button>view</button>
+                         { medicalData.length>1?
+                             <button style={{ width: '50%' }} onClick={handleClickOpen3}>view</button>:null
+                         }
                              </TableCell>
                           </TableRow>
 
@@ -1075,10 +1093,45 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
             <UploadVisitingFile uploadFile={uploadFile} saveFile={saveFile} file={file} fileName={fileName}/>
             </DialogContent>
             <DialogActions>
-              <Button autoFocus >
+              <Button autoFocus onClick={uploadFile} >
                 Submit
               </Button>
             </DialogActions>
+          </BootstrapDialog>
+
+
+          <BootstrapDialog
+            onClose={handleClose3}
+            aria-labelledby="customized-dialog-title"
+            open={open3}
+          >
+            <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose3}>
+              Medical Details
+            </BootstrapDialogTitle>
+            <DialogContent dividers>
+              
+                  <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="right">Product Name</TableCell>
+                      <TableCell align="right">Quantity</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  {medicalData.map((items) => {
+                return(
+                  <TableBody>
+                          <TableRow>
+                            <TableCell align="right">{items.product_name}</TableCell>
+                            <TableCell align="right">{items.Quantity}</TableCell>
+                          </TableRow>
+                        </TableBody> 
+                )
+              })}
+              </Table>
+                </TableContainer>
+            </DialogContent>
+           
           </BootstrapDialog>
         </div>
       </div>
