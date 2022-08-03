@@ -32,7 +32,7 @@ console.log(props.fileName)
         component="span"
         aria-label="add"
         variant="extended"
-        onClick={props.uploadFile}
+        // onClick={props.uploadFile}
       >
         <AddIcon /> Upload Prescription
       </Fab>
