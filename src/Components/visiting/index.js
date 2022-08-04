@@ -944,9 +944,9 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                         <TableHead>
                           <TableRow>
                             <TableCell sx={{ width: '15%' }} align="left">Visit Date</TableCell>
-                            <TableCell sx={{ minWidth: '40%' }} align="left">Prescription</TableCell>
-                            <TableCell sx={{ width: '25%' }} align="left">Medical</TableCell>
-                            <TableCell sx={{ minWidth: '25%' }} align="left">File</TableCell>
+                            <TableCell sx={{ maxWidth: '30%' }} align="left">Prescription</TableCell>
+                            <TableCell sx={{ maxWidth: '25%' }} align="left">Medical</TableCell>
+                            <TableCell sx={{ maxWidth: '20%' }} align="left">File</TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody >
@@ -959,13 +959,15 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                              <button style={{ width: '50%' }} onClick={handleClickOpen3}>view</button>:null
                          }
                              </TableCell>
+                             <TableCell align="left">
                              {downloadfilelist.map((items) => {
                               return(
-                               <TableCell align="left"><a className={classes.download} href={linkUrl+`visit_file_download.php?id=${items.id}`} download >
-                               <GetAppIcon/></a></TableCell>
+                               <a className={classes.download} href={linkUrl+`visit_file_download.php?id=${items.id}`} download >
+                               <GetAppIcon/></a>
                               )
                              })
                              }
+                             </TableCell>
                           </TableRow>
                           
                               
