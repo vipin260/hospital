@@ -23,8 +23,10 @@ import { saveAs } from "file-saver";
 
 const useStyle = makeStyles((theme)=>({
    root:{
-     paddingTop:theme.spacing(20),
-     marginLeft:'300px',
+     paddingTop:theme.spacing(10),
+     paddingLeft:theme.spacing(3),
+     paddingRight:theme.spacing(3),
+    //  marginLeft:'300px',
    },
    table:{
     //  width:'90%',
@@ -90,79 +92,7 @@ const PurchaseTable = () => {
     .then(()=> Navigate('/editpurchase'))
   };
 
-  const downloadFileBtn = async (id) => {
-    
-    dispatch(DownloadFiles(id))
-
-      // let FileSaver = require('file-saver');
-      // let blob = new Blob([Filereducer], {type: "text/plain;charset=utf-8"});
-      // FileSaver.saveAs(blob, "hello world.txt");
-
-
-
-    // const blob = new Blob(
-    //   [ 'uploads/myw3schoolsimage.jpg' ],
-    //   { type: 'image/jpeg' }
-    // );
-    console.log('id is', id)
-    try{
-
-      //  const res =  axios.post(linkUrl+'downloadfile.php', {file_id:parseInt(id), responseType: "blob"})
-      //.then((resp)=> saveAs( resp.data))
-
-       //.then((resp)=> download({data : resp.data}))
-       //.then((resp)=> fileDownload(resp.data))
-
-
-      //  saveAs(
-      //   "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-      //   "example.pdf"
-      // );
- 
-
-       
-      //-----------------------------------------------------------------
-      // .then(res => {
-      //   const url = window.URL.createObjectURL(new Blob([res.data]
-      //     ,{type: "application/pdf"}))
-      //   var link = document.createElement('a');
-      //   link.href = url;
-      //   link.setAttribute('download', 'get_started_with_smallpdf');
-      //   document.body.appendChild(link);
-      //   link.click();
-      // })
-
-
-      //-------------------------------------------------------
-
-      //const originalImage="https://cdn1.iconfinder.com/data/icons/ninja-things-1/1772/ninja-simple-512.png";
-      // const originalImage="http://localhost/hospital_management/uploads/ninja-simple-512.png";
-      // const image = await fetch(originalImage);
   
-      // const nameSplit=originalImage.split("/");
-      // const  duplicateName=nameSplit.pop();
-      // const imageBlog = await image.blob()
-      // const imageURL = URL.createObjectURL(imageBlog)
-      // const link = document.createElement('a')
-      // link.href = imageURL;
-      // link.download = ""+duplicateName+"";
-      // document.body.appendChild(link)
-      // link.click()
-      // document.body.removeChild(link) 
-
-     //---------------------------------------------------------
-
-      //console.log('res',res.data);
- 
-      // .then((resp) => {
-      // console.log('resp',resp);
-      //   fileDownload(resp.data)
-      // })
-    }catch (ex) {
-        console.log(ex);
-      }
-  
-  };
 
   const handledelete = (id) => {
     let data = {"action" : "getAllPurchase"}

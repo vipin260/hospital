@@ -143,7 +143,7 @@ const PurchaseAdd = (props) => {
 
   const item_name_options = [];
   FetchProductData.map((items)=>{
-    item_name_options.push({value : items.product_id, label : items.product_name})
+    item_name_options.push({value : items.id, label : items.product_name})
   })
 
 
@@ -258,6 +258,7 @@ const PurchaseAdd = (props) => {
     let data={"action": "AddNewPurchase","purchase": purchase, "purchasedetail": inputAdd}
       Dispatch(PurchaseInsert(data))
       .then(()=> Navigate('/Uploadfile'))
+      console.log("purchase data",data)
 
   };
 

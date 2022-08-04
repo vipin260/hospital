@@ -13,10 +13,11 @@ import PurchaseTable from '../Purchase/allpurchase';
 const useStyle = makeStyles((theme)=>({
    root:{
     height:'100vh',
-     position: 'fixed',
-     top:0,
-     left:0,
-     width:'300px' ,
+    width: '100%',
+    //  position: 'fixed',
+    //  top:0,
+    //  left:0,
+    //  width:'300px' ,
      background:'#fff',
      //border:'1px solid yellow',
      zIndex:999,
@@ -58,5 +59,4 @@ const MainSidebar = () => {
             </Box>
     )
 }
-
 export default MainSidebar
