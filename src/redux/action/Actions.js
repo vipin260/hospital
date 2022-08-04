@@ -653,6 +653,23 @@ export const DownloadFiles= (id) => async dispatch =>{
     }
    }
 
+   export const downloadFile = (data) => async dispatch => {
+    try{
+        const response = await axios.post(linkUrl+ `visit.php`,{...data})
+        
+        dispatch({
+            type : 'DOWNLOADDATA',
+            payload : response.data
+        })
+    }
+    catch(e){
+        dispatch({
+            type : ERROR,
+            payload : console.log(e)
+        })
+    }
+   }
+
    
 
 
