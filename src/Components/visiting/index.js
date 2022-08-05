@@ -254,16 +254,24 @@ console.log("quantitydatata",downloadfilelist)
     }
     setOpen2(false);
   };
-
+  
   useEffect(() => {
     if (Searchdata != "") {
       console.log("SearchdataOption", Searchdata)
-      setOptions(Searchdata?.map((items) => {
+      options.splice(0,options.length)
+      Searchdata.map((items) => {
         return (
-  
-          { label: `${items.name} (${items.address})`, value: items.id, data1: items.phone_number + items.adhar_number }
+          options.push({ label: `${items.name} (${items.address})`, value: items.id, data1: items.phone_number + items.adhar_number })
         )
-      }))
+      })
+      // setOptions(Searchdata?.map((items) => {
+      //   return (
+  
+      //     { label: `${items.name} (${items.address})`, value: items.id, data1: items.phone_number + items.adhar_number }
+      //   )
+      // }))
+      setOptions1(options)
+      console.log("hfdfhjd",options)
     }
 
   }, [Searchdata])
@@ -440,6 +448,15 @@ console.log("quantitydatata",downloadfilelist)
   };
   const handleClose3 = () => {
     setOpen3(false);
+  };
+
+  const [open4, setOpen4] = useState(false);
+
+  const handleClickOpen4 = () => {
+    setOpen4(true);
+  };
+  const handleClose4 = () => {
+    setOpen4(false);
   };
 
 
@@ -721,8 +738,10 @@ const prescriptionfunction = (event) => {
     setReadMore(true)
   }
 
-const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${medicalData[0]?.Quantity}`
-
+const ProductName = <><div>Product Name:{`${medicalData[0]?.product_name}`}</div> <div> Quantity: {`${medicalData[0]?.Quantity}`}</div></>
+const FileName = <a style={{display:'block'}} className={classes.download} href={linkUrl+`visit_file_download.php?id=${downloadfilelist[0]?.id}`} download >
+<GetAppIcon/></a>
+console.log("downloadfiledetail",downloadfilelist)
   return (
     <Layout>
       <div className={classes.root}>
@@ -851,16 +870,17 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                       mb: 2,
                       display: "flex",
                       flexDirection: "column",
-                      maxHeight: 150,
-                      overflow: "hidden",
-                      overflowY: "scroll",
+                     
                       width: "100%",
                       marginTop: "30px"
 
                     }}>
                       <>
                         {inputAdd != '' || addOptical != '' || addPharmacy != '' ?
-                          <TableContainer>
+                          <TableContainer sx={{ maxHeight: 150,
+                            overflow: "hidden",
+                            overflowY: "scroll",
+                            paddingLeft: "10px"}}>
                             <Table sx={{ marginBottom: 2, width: '100%' }}>
                               <TableHead>
                                 <TableRow sx={{ display: 'flex' }}>
@@ -950,24 +970,21 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                           </TableRow>
                         </TableHead>
                         <TableBody >
-                          <TableRow>
-                            <TableCell align="left">{Prescriptiondata.length<=0 ?  'not visit date' : Prescriptiondata.time  }</TableCell>
-                            <TableCell align="left">{Prescriptiondata.length<=0 || Prescriptiondata?.PrescreptionDetail == ""  ? 'not Prescription' : readMore ? `${Prescriptiondata?.PrescreptionDetail?.substring(0, Prescriptiondata?.PrescreptionDetail.length)}`: Prescriptiondata?.PrescreptionDetail?.length > 100 ? `${Prescriptiondata?.PrescreptionDetail?.substring(0, 100)}...` : `${Prescriptiondata?.PrescreptionDetail?.substring(0, 100)}` }{Prescriptiondata?.PrescreptionDetail===undefined ? null : Prescriptiondata?.PrescreptionDetail?.length < 100 ? null : readMore && Prescriptiondata?.PrescreptionDetail?.length > 100 ? null :  <button
+                          <TableRow sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)'}}>
+                            <TableCell sx={{borderBottom:'none'}} align="left">{Prescriptiondata.length<=0 ?  'no visit date' : Prescriptiondata.time  }</TableCell>
+                            <TableCell sx={{borderBottom:'none'}} align="left">{Prescriptiondata.length<=0 || Prescriptiondata?.PrescreptionDetail == ""  ? 'no Prescription' : readMore ? `${Prescriptiondata?.PrescreptionDetail?.substring(0, Prescriptiondata?.PrescreptionDetail.length)}`: Prescriptiondata?.PrescreptionDetail?.length > 100 ? `${Prescriptiondata?.PrescreptionDetail?.substring(0, 100)}...` : `${Prescriptiondata?.PrescreptionDetail?.substring(0, 100)}` }{Prescriptiondata?.PrescreptionDetail===undefined ? null : Prescriptiondata?.PrescreptionDetail?.length < 100 ? null : readMore && Prescriptiondata?.PrescreptionDetail?.length > 100 ? null :  <button
                            onClick={handleReadMore} >Read More</button>}</TableCell>
-                             <TableCell align="left" sx={{display:'flex' ,flexDirection:'column'}}>{Prescriptiondata.length===0 ? 'not visit date' : ProductName  }
+                             <TableCell align="left" sx={{display:'flex' ,flexDirection:'column',borderBottom:'none'}}>{Prescriptiondata.length===0 ? 'no Medical history' : ProductName  }
                          { medicalData.length>1?
-                             <button style={{ width: '50%' }} onClick={handleClickOpen3}>view</button>:null
+                             <button style={{ width: '50%',marginTop:'10px' }} onClick={handleClickOpen3}>view</button>:null
                          }
                              </TableCell>
-                             <TableCell align="left">
-                             {downloadfilelist.map((items) => {
-                              return(
-                               <a className={classes.download} href={linkUrl+`visit_file_download.php?id=${items.id}`} download >
-                               <GetAppIcon/></a>
-                              )
-                             })
-                             }
+                             <TableCell sx={{borderBottom:'none'}} align="left">{downloadfilelist.length===0 ? 'no file to download' : FileName  }
+                         { downloadfilelist.length>1?
+                             <button style={{display:'block'}} onClick={handleClickOpen4}>view</button>:null
+                         }
                              </TableCell>
+                             
                           </TableRow>
                           
                               
@@ -1121,6 +1138,46 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                         </TableBody> 
                 )
               })}
+              </Table>
+                </TableContainer>
+            </DialogContent>
+           
+          </BootstrapDialog>
+
+
+          <BootstrapDialog
+            onClose={handleClose4}
+            aria-labelledby="customized-dialog-title"
+            open={open4}
+          >
+            <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose4}>
+              Files Details
+            </BootstrapDialogTitle>
+            <DialogContent dividers>
+              
+                  <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">File Name</TableCell>
+                      <TableCell align="center">Download</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  { downloadfilelist?.map((items) => {
+                return(
+                  <TableBody>
+                          <TableRow>
+                          <TableCell align="center">{items.FileName}</TableCell>
+                            <TableCell align="center">{items.file_path !==null ?
+                  <a className={classes.download} href={linkUrl+`downloadfile.php?id=${items.id}`} download >
+                     <GetAppIcon/></a> : "No file to download"}</TableCell>
+                            
+                          </TableRow>
+                        </TableBody> 
+                )
+              })}
+
+                        
               </Table>
                 </TableContainer>
             </DialogContent>

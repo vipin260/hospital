@@ -134,8 +134,9 @@ const PurchaseTable = () => {
             cell: (d,id) => [ 
               <Box key={id}>
                   {/* <GetAppIcon className={classes.download} onClick={()=>downloadFileBtn(d.id)}   /> */}
+                  {d.file_path !==null ?
                   <a className={classes.download} href={linkUrl+`downloadfile.php?id=${d.id}`} download >
-                     <GetAppIcon/></a>
+                     <GetAppIcon/></a> : "No file to download"}
               </Box>
             ],
           },
