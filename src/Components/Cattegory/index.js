@@ -129,6 +129,7 @@ const Addcategory = () => {
   const CategoryData = useSelector((state) => state.CategoryReducerData.apiState);
   const DataCategory = useSelector((state) => state.CategoryDataReducers.ApiStat)
 
+  console.log("this",DataCategory)
 
   const dispatch = useDispatch();
 
