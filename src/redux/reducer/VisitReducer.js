@@ -2,7 +2,7 @@ import { INVENTORYFILE,VISITDATASEARCH,PRESCRIPTIONDETAIL}
 from '../actionType/ActionType'
 
 const InitFetch   ={fetchApi :[], fetchApis :[] ,supplierApi:[], purchaseDetail :[], 
-    visitUploadFile:[], medical:[], quantityproduct:[],savedata:[] }
+    visitUploadFile:[], medical:[], quantityproduct:[],savedata:[],downloaddata:[] }
 
 const VisitReducer = (state = InitFetch, action) => {
     switch(action.type){
@@ -35,6 +35,10 @@ const VisitReducer = (state = InitFetch, action) => {
                 case 'SAVEDATA' :
                     return { ...state,
                         savedata : action.payload
+                        };
+                case 'DOWNLOADDATA' :
+                    return { ...state,
+                        downloaddata : action.payload
                         };
 
         default  : return {...state};

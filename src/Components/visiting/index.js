@@ -9,7 +9,7 @@ import Layout from "../../Pages/Layout";
 
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
-import { FetchPatient, FetchSinglePatient,medicalDetail,quantitydata,AddInvoiceData } from '../../redux/action/Actions';
+import { FetchPatient, FetchSinglePatient,medicalDetail,quantitydata,AddInvoiceData,downloadFile } from '../../redux/action/Actions';
 
 import { FetchProductOpd, FetchProductPharmacy, FetchProductOptical, getAllInventory, getnamephoneaadhar, prescriptionDetail } from "../../redux/action/Actions";
 import AddIcon from '@mui/icons-material/Add';
@@ -29,6 +29,7 @@ import TextareaAutosize from '@mui/material/TextareaAutosize';
 import Grid from '@mui/material/Grid';
 import UploadVisitingFile from "./UploadVisitingFile";
 import Selected_patient from "./Selected_patient";
+import GetAppIcon from '@mui/icons-material/GetApp';
 
 
 
@@ -181,8 +182,9 @@ const Visiting = (props) => {
   const Prescriptiondata = useSelector((state) => state.VisitReducer.supplierApi);
   const medicalData = useSelector((state) => state.VisitReducer.medical);
   const quantityData = useSelector((state) => state.VisitReducer.quantityproduct);
+  const downloadfilelist = useSelector((state) => state.VisitReducer.downloaddata);
 
-console.log("quantitydatata",Prescriptiondata)
+console.log("quantitydatata",downloadfilelist)
 
 
   const [data, setData] = useState([])
@@ -252,16 +254,24 @@ console.log("quantitydatata",Prescriptiondata)
     }
     setOpen2(false);
   };
-
+  
   useEffect(() => {
     if (Searchdata != "") {
       console.log("SearchdataOption", Searchdata)
-      setOptions(Searchdata?.map((items) => {
+      options.splice(0,options.length)
+      Searchdata.map((items) => {
         return (
-  
-          { label: `${items.name} (${items.address})`, value: items.id, data1: items.phone_number + items.adhar_number }
+          options.push({ label: `${items.name} (${items.address})`, value: items.id, data1: items.phone_number + items.adhar_number })
         )
-      }))
+      })
+      // setOptions(Searchdata?.map((items) => {
+      //   return (
+  
+      //     { label: `${items.name} (${items.address})`, value: items.id, data1: items.phone_number + items.adhar_number }
+      //   )
+      // }))
+      setOptions1(options)
+      console.log("hfdfhjd",options)
     }
 
   }, [Searchdata])
@@ -317,22 +327,8 @@ console.log("quantitydatata",Prescriptiondata)
     }
 
   };
-  console.log("inputtttt", inputAdd)
-  useEffect(() => {
-    setInputAdddata([...new Map(inputAdd.map(item => [item.id, item])).values()])
-  }, [inputAdd])
-  useEffect(() => {
-
-    let pricevar2 = 0;
-    inputAdddata.map((items) => {
-      return (
-
-        pricevar2 += parseFloat(items.opd_price)
-      )
-    })
-    setPrice(pricevar2)
-
-  }, [inputAdddata])
+  
+  
 
   useEffect(() => {
     if (visit1.buttonName == 'pharmacy') {
@@ -350,7 +346,7 @@ console.log("quantitydatata",Prescriptiondata)
               cost_price: items.cost_price,
               item_msrp: items.item_msrp,
               quantity : quantity,
-              priceTotal : parseFloat(value.selling_price)*parseFloat(quantity)
+              priceTotal : parseFloat(items.selling_price)*parseFloat(quantity)
             }
             ])
           )
@@ -375,7 +371,7 @@ console.log("quantitydatata",Prescriptiondata)
               cost_price: items.cost_price,
               item_msrp: items.item_msrp,
               quantity : quantity,
-              priceTotal : parseFloat(value.selling_price)*parseFloat(quantity)
+              priceTotal : parseFloat(items.selling_price)*parseFloat(quantity)
             }
             ])
           )
@@ -384,28 +380,8 @@ console.log("quantitydatata",Prescriptiondata)
     }
   }, [FetchVisitData])
 
-
-  useEffect(() => {
-    let pricevar = 0;
-    addPharmacydata.map((items) => {
-      return (
-
-        pricevar +=  parseFloat(items.priceTotal)
-      )
-    })
-    setPrice1(pricevar)
-
-  }, [addPharmacydata])
-
-  useEffect(() => {
-    let pricevar1 = 0;
-    addOpticaldata.map((items) => {
-      return (
-        pricevar1 += parseFloat(items.priceTotal)
-      )
-    })
-    setPrice2(pricevar1)
-  }, [addOpticaldata])
+  
+  
 
 
 
@@ -474,6 +450,15 @@ console.log("quantitydatata",Prescriptiondata)
     setOpen3(false);
   };
 
+  const [open4, setOpen4] = useState(false);
+
+  const handleClickOpen4 = () => {
+    setOpen4(true);
+  };
+  const handleClose4 = () => {
+    setOpen4(false);
+  };
+
 
   const pharmacydata = (items) => {
     setAddPharmacy([...addPharmacy, ...beforePharmacy]);
@@ -500,6 +485,8 @@ const handleChange = (selectedOption) => {
       Dispatch(prescriptionDetail(data))
       let medicalData = { "id": selectedOption.value, "action": "MedicalData" }
       Dispatch(medicalDetail(medicalData))
+      let downloaddata = { "id": selectedOption.value, "action": "FileData" }
+      Dispatch(downloadFile(downloaddata))
     }
   };
 
@@ -599,22 +586,12 @@ const handleChange = (selectedOption) => {
     }
     ])
 
-    // console.log("check",addPharmacy)
-
-    // setPrice1(price1 + parseFloat(value.selling_price))
+    
 
 
   }
 
-  useEffect(() => {
-    setAddPharmacydata([...new Map(addPharmacy.map(item => [item.id, item])).values()])
-
-  }, [addPharmacy])
-
-  useEffect(() => {
-    setAddOpticaldata([...new Map(addOptical.map(item => [item.id, item])).values()])
-
-  }, [addOptical])
+ 
 
   useEffect(() => {
   }, [visit1])
@@ -624,25 +601,49 @@ const handleChange = (selectedOption) => {
   }, [PatientNameReducer])
 
   useEffect(() => {
-    setCombineData([...combineData,...inputAdddata,...addPharmacydata,...addOpticaldata
+    setCombineData([...inputAdd,...addPharmacy,...addOptical
       ])
-  }, [inputAdddata,addPharmacydata,addOpticaldata])
+      let pricevar2 = 0;
+    inputAdd.map((items) => {
+      return (
 
-  useEffect(() => {
-    setMaincombine([...new Map(combineData.map(item => [item.id, item])).values()])
+        pricevar2 += parseFloat(items.priceTotal)
+      )
+    })
+    setPrice(pricevar2)
 
-  }, [combineData])
+    let pricevar = 0;
+    addPharmacy.map((items) => {
+      return (
+
+        pricevar +=  parseFloat(items.priceTotal)
+      )
+    })
+    setPrice1(pricevar)
+
+    let pricevar1 = 0;
+    addOptical.map((items) => {
+      return (
+        pricevar1 += parseFloat(items.priceTotal)
+      )
+    })
+    setPrice2(pricevar1)
+  }, [inputAdd,addPharmacy,addOptical])
+
+
+
+ 
 
   useEffect(() => {
     setTotalprice(price+price1+price2)
 
   }, [price,price1,price2])
-  console.log("price",totalprice)
+ 
 
   
 
 
-console.log("combine",maincombine)
+
 
 useEffect(() => {
   const unique = new Date().valueOf();
@@ -653,8 +654,8 @@ useEffect(() => {
   // console.log("addPharmacy222",addPharmacydata)
 
   const SubmitData = () => {
-    let data = { "VisitingID":VisitingID,"patient": SingleData?.data,"products": maincombine,"totalprice":totalprice,"prescription": prescriptionsavedata,"action": "AddNewVisit" };
-    console.log("sendingdata",data)
+    let data = { "VisitingID":VisitingID,"patient": SingleData?.data,"products": combineData,"totalprice":totalprice,"prescription": prescriptionsavedata,"action": "AddNewVisit" };
+   
         Dispatch(AddInvoiceData(data))
       
       //  .then(()=> Navigate('/allvisit'))
@@ -687,6 +688,7 @@ useEffect(() => {
     Dispatch(FetchProductPharmacy(pharmacy_data))
     Dispatch(FetchProductOptical(optical_fetch))
     Dispatch(FetchProductOpd(opd_fetch))
+    
   }, [Dispatch])
 
   const colourStyles = {
@@ -695,8 +697,7 @@ useEffect(() => {
   };
 
   const quantityFunction = (quantityvalue) => {
-    console.log("hghghgh",quantityvalue)
-    console.log("hghghgh222222",quantityData?.data?.item_qty)
+   
     if ((parseInt((quantityData?.data?.item_qty))>=parseInt((quantityvalue)))){
       setQuantity(quantityvalue)
     }
@@ -705,7 +706,7 @@ useEffect(() => {
     }
     else{
       alert("Out of Stock");
-      console.log("checkinggg",parseInt((quantityData?.data?.item_qty))>parseInt((quantityvalue)))
+      
       setQuantity(null)
       
     }
@@ -715,7 +716,7 @@ useEffect(() => {
   const tabchange = (event, newValue) => {
     if (newValue == 0) {
       setTabvalue(newValue);
-      console.log('change', newValue)
+      
     }
     else if (newValue == 1) {
       setTabvalue(newValue);
@@ -732,13 +733,15 @@ useEffect(() => {
 const prescriptionfunction = (event) => {
   setPrescriptionsavedata(event.target.value)
 }
-console.log("jhddh",prescriptionsavedata)
+
   const handleReadMore = () =>{
     setReadMore(true)
   }
-console.log('Prescriptiondata',medicalData)
-const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${medicalData[0]?.Quantity}`
 
+const ProductName = <><div>Product Name:{`${medicalData[0]?.product_name}`}</div> <div> Quantity: {`${medicalData[0]?.Quantity}`}</div></>
+const FileName = <a style={{display:'block'}} className={classes.download} href={linkUrl+`visit_file_download.php?id=${downloadfilelist[0]?.id}`} download >
+<GetAppIcon/></a>
+console.log("downloadfiledetail",downloadfilelist)
   return (
     <Layout>
       <div className={classes.root}>
@@ -853,9 +856,9 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
 
                             />
                           </div>
-                          <div style={{ width: '36%' }}>
-                          <input style={{ height:'80%',marginLeft:'10px',fontSize:'14px'}} type="text"  name="quantity" onKeyUp = {(event) => quantityFunction(event.target.value)} placeholder="Quantity"/>
-                          </div>
+                          {visit1.buttonName==='OPD'? null :<div style={{ width: '36%' }}>
+                           <input style={{ height:'80%',marginLeft:'10px',fontSize:'14px'}} type="text"  name="quantity" onKeyUp = {(event) => quantityFunction(event.target.value)} placeholder="Quantity"/>
+                          </div>}
                           <AddIcon sx={{ marginTop: '7px', marginLeft: '15px', color: 'white', backgroundColor: 'blue', borderRadius: '50%' }}
                             name='more_input_fields' onClick={() => handleServiceAdd()} />
                         </Box>
@@ -867,16 +870,17 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                       mb: 2,
                       display: "flex",
                       flexDirection: "column",
-                      maxHeight: 150,
-                      overflow: "hidden",
-                      overflowY: "scroll",
+                     
                       width: "100%",
                       marginTop: "30px"
 
                     }}>
                       <>
-                        {inputAdddata != '' || addOpticaldata != '' || addPharmacydata != '' ?
-                          <TableContainer>
+                        {inputAdd != '' || addOptical != '' || addPharmacy != '' ?
+                          <TableContainer sx={{ maxHeight: 150,
+                            overflow: "hidden",
+                            overflowY: "scroll",
+                            paddingLeft: "10px"}}>
                             <Table sx={{ marginBottom: 2, width: '100%' }}>
                               <TableHead>
                                 <TableRow sx={{ display: 'flex' }}>
@@ -888,7 +892,7 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                               </TableHead>
                               <TableBody >
                                 {
-                                  inputAdddata.map((items, index) => {
+                                  inputAdd.map((items, index) => {
                                     return (
                                       <TableRow key={index} sx={{ display: 'flex' }}>
                                         <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.product_name}</TableCell>
@@ -901,7 +905,7 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                                   })
                                 }
                                 {
-                                  addPharmacydata.map((items, index) => {
+                                  addPharmacy.map((items, index) => {
                                     return (
                                       <TableRow key={index} sx={{ display: 'flex' }}>
                                         <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.product_name}</TableCell>
@@ -914,7 +918,7 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                                   })
                                 }
                                 {
-                                  addOpticaldata.map((items, index) => {
+                                  addOptical.map((items, index) => {
                                     return (
                                       <TableRow key={index} sx={{ display: 'flex' }}>
                                         <TableCell align="left" sx={{ flexBasis: '50%' }}>{items.product_name}</TableCell>
@@ -932,7 +936,7 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                       </>
                     </Box>
                     <Box sx={{ textAlign: "right", width: "100%", borderBottom: "none" }}>
-                      {inputAdddata != '' || addOpticaldata != '' || addPharmacydata != '' ?
+                      {inputAdd != '' || addOptical != '' || addPharmacy != '' ?
                         <TableContainer sx={{ borderBottom: "none" }}>
                           <Table sx={{ borderBottom: "none" }}>
                             <TableHead sx={{ borderBottom: "none" }}>
@@ -942,7 +946,7 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                             </TableHead>
                             <TableBody sx={{ borderBottom: "none" }}>
                               <TableRow sx={{ borderBottom: "none" }}>
-                                <TableCell sx={{ borderBottom: "none" }} align="right">{price + price1 + price2}</TableCell>
+                                <TableCell sx={{ borderBottom: "none" }} align="right">{totalprice}</TableCell>
                               </TableRow>
                             </TableBody>
                           </Table>
@@ -960,23 +964,29 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                         <TableHead>
                           <TableRow>
                             <TableCell sx={{ width: '15%' }} align="left">Visit Date</TableCell>
-                            <TableCell sx={{ minWidth: '40%' }} align="left">Prescription</TableCell>
-                            <TableCell sx={{ width: '25%' }} align="left">Medical</TableCell>
-                            <TableCell sx={{ minWidth: '25%' }} align="left">File</TableCell>
+                            <TableCell sx={{ maxWidth: '30%' }} align="left">Prescription</TableCell>
+                            <TableCell sx={{ maxWidth: '25%' }} align="left">Medical</TableCell>
+                            <TableCell sx={{ maxWidth: '20%' }} align="left">File</TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody >
-                          <TableRow>
-                            <TableCell align="left">{Prescriptiondata==="" ? 'not visit date' : Prescriptiondata.time}</TableCell>
-                            <TableCell align="left">{Prescriptiondata==='undefined' ? 'not Prescription' : readMore ? `${Prescriptiondata?.PrescreptionDetail?.substring(0, Prescriptiondata?.PrescreptionDetail.length)}`:  `${Prescriptiondata?.PrescreptionDetail?.substring(0, 100)}`}{Prescriptiondata?.PrescreptionDetail?.length<100 ? null :`...${<button
-                           onClick={handleReadMore} >Read More</button>}`}</TableCell>
-                             <TableCell align="left" sx={{display:'flex' ,flexDirection:'column'}}>{Prescriptiondata===undefined ? 'not visit date' : ProductName  }
+                          <TableRow sx={{ borderBottom: '1px solid rgba(224, 224, 224, 1)'}}>
+                            <TableCell sx={{borderBottom:'none'}} align="left">{Prescriptiondata.length<=0 ?  'no visit date' : Prescriptiondata.time  }</TableCell>
+                            <TableCell sx={{borderBottom:'none'}} align="left">{Prescriptiondata.length<=0 || Prescriptiondata?.PrescreptionDetail == ""  ? 'no Prescription' : readMore ? `${Prescriptiondata?.PrescreptionDetail?.substring(0, Prescriptiondata?.PrescreptionDetail.length)}`: Prescriptiondata?.PrescreptionDetail?.length > 100 ? `${Prescriptiondata?.PrescreptionDetail?.substring(0, 100)}...` : `${Prescriptiondata?.PrescreptionDetail?.substring(0, 100)}` }{Prescriptiondata?.PrescreptionDetail===undefined ? null : Prescriptiondata?.PrescreptionDetail?.length < 100 ? null : readMore && Prescriptiondata?.PrescreptionDetail?.length > 100 ? null :  <button
+                           onClick={handleReadMore} >Read More</button>}</TableCell>
+                             <TableCell align="left" sx={{display:'flex' ,flexDirection:'column',borderBottom:'none'}}>{Prescriptiondata.length===0 ? 'no Medical history' : ProductName  }
                          { medicalData.length>1?
-                             <button style={{ width: '50%' }} onClick={handleClickOpen3}>view</button>:null
+                             <button style={{ width: '50%',marginTop:'10px' }} onClick={handleClickOpen3}>view</button>:null
                          }
                              </TableCell>
+                             <TableCell sx={{borderBottom:'none'}} align="left">{downloadfilelist.length===0 ? 'no file to download' : FileName  }
+                         { downloadfilelist.length>1?
+                             <button style={{display:'block'}} onClick={handleClickOpen4}>view</button>:null
+                         }
+                             </TableCell>
+                             
                           </TableRow>
-
+                          
                               
                         </TableBody>
                       </Table>
@@ -1118,7 +1128,7 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                       <TableCell align="right">Quantity</TableCell>
                     </TableRow>
                   </TableHead>
-                  {medicalData.map((items) => {
+                  { medicalData?.map((items) => {
                 return(
                   <TableBody>
                           <TableRow>
@@ -1128,6 +1138,46 @@ const ProductName = `Product Name: ${medicalData[0]?.product_name},Quantity: ${m
                         </TableBody> 
                 )
               })}
+              </Table>
+                </TableContainer>
+            </DialogContent>
+           
+          </BootstrapDialog>
+
+
+          <BootstrapDialog
+            onClose={handleClose4}
+            aria-labelledby="customized-dialog-title"
+            open={open4}
+          >
+            <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose4}>
+              Files Details
+            </BootstrapDialogTitle>
+            <DialogContent dividers>
+              
+                  <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">File Name</TableCell>
+                      <TableCell align="center">Download</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  { downloadfilelist?.map((items) => {
+                return(
+                  <TableBody>
+                          <TableRow>
+                          <TableCell align="center">{items.FileName}</TableCell>
+                            <TableCell align="center">{items.file_path !==null ?
+                  <a className={classes.download} href={linkUrl+`downloadfile.php?id=${items.id}`} download >
+                     <GetAppIcon/></a> : "No file to download"}</TableCell>
+                            
+                          </TableRow>
+                        </TableBody> 
+                )
+              })}
+
+                        
               </Table>
                 </TableContainer>
             </DialogContent>
