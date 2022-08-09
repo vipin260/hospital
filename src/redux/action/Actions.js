@@ -670,6 +670,23 @@ export const DownloadFiles= (id) => async dispatch =>{
     }
    }
 
+   export const reportPharmacy = (data) => async dispatch => {
+    try{
+        const response = await axios.post(linkUrl+ `stock.php`,{...data})
+        
+        dispatch({
+            type : 'REPORTPHARMECY',
+            payload : response.data
+        })
+    }
+    catch(e){
+        dispatch({
+            type : ERROR,
+            payload : console.log(e)
+        })
+    }
+   }
+
    
 
 
