@@ -256,12 +256,13 @@ console.log("quantitydatata",downloadfilelist)
   };
   
   useEffect(() => {
+    let searchresult = []
     if (Searchdata != "") {
       console.log("SearchdataOption", Searchdata)
       options.splice(0,options.length)
-      Searchdata.map((items) => {
+      Searchdata?.map((items) => {
         return (
-          options.push({ label: `${items.name} (${items.address})`, value: items.id, data1: items.phone_number + items.adhar_number })
+          searchresult.push({ label: `${items.name} (${items.address})`, value: items.id, data1: items.phone_number + items.adhar_number })
         )
       })
       // setOptions(Searchdata?.map((items) => {
@@ -270,8 +271,8 @@ console.log("quantitydatata",downloadfilelist)
       //     { label: `${items.name} (${items.address})`, value: items.id, data1: items.phone_number + items.adhar_number }
       //   )
       // }))
-      setOptions1(options)
-      console.log("hfdfhjd",options)
+      setOptions(searchresult)
+      console.log("hfdfhjd",searchresult)
     }
 
   }, [Searchdata])
@@ -510,6 +511,7 @@ const handleChange = (selectedOption) => {
     });
   };
   const clickOpd = (itemsname, i) => {
+    let searchopd = [];
     let { name, value } = itemsname.target
     if (value === '1') {
       setActive(i)
@@ -518,9 +520,10 @@ const handleChange = (selectedOption) => {
       options1.splice(0, options1.length)
       FetchOpdData.map((items) => {
         return (
-          options1.push({ value: items.id, label: items.product_name, data: items.name })
+          searchopd.push({ value: items.id, label: items.product_name, data: items.name })
         )
       })
+      setOptions1(searchopd)
       setOpdpharmecyoptical(FetchOpdData)
     } else if (value === '2') {
       setActive(i)
@@ -529,9 +532,10 @@ const handleChange = (selectedOption) => {
       options1.splice(0, options1.length)
       FetchPharmacyData.map((items) => {
         return (
-          options1.push({ value: items.id, label: items.product_name, data: items.name })
+          searchopd.push({ value: items.id, label: items.product_name, data: items.name })
         )
       })
+      setOptions1(searchopd)
       setOpdpharmecyoptical(FetchPharmacyData)
     } else if (value === '3') {
       console.log("index", i)
@@ -541,9 +545,10 @@ const handleChange = (selectedOption) => {
       options1.splice(0, options1.length)
       FetchOpticalData.map((items) => {
         return (
-          options1.push({ value: items.id, label: items.product_name, data: items.name })
+          searchopd.push({ value: items.id, label: items.product_name, data: items.name })
         )
       })
+      setOptions1(searchopd)
       setOpdpharmecyoptical(FetchOpticalData)
     }
     else if (value === '4') {
@@ -556,7 +561,7 @@ const handleChange = (selectedOption) => {
     }
   }
 
-  console.log("active", active)
+  console.log("active", options1)
   const SelectedCheckboxes = (value) => {
 
     setBeforePharmacy([...beforePharmacy,
