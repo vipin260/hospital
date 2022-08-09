@@ -10,7 +10,8 @@ import { toggle ,  FetchCattegoryData } from "../../redux/action/action";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
-import { FetchProduct, FetchSingleProduct, DeleteProduct, FetchProductPharmacy, FetchProductOptical, FetchProductOpd,categoryData } 
+import { FetchProduct, FetchSingleProduct, DeleteProduct, FetchProductPharmacy, FetchProductOptical, 
+  FetchProductOpd,categoryData,reportPharmacy } 
 from "../../redux/action/Actions";
 
 
@@ -58,9 +59,14 @@ const CattegoryTable = () => {
   const FetchPharmacyData = useSelector((state) => state.ProductReducersData.PharmacyFetch);
   const FetchOpticalData = useSelector((state) => state.ProductReducersData.OpticalFetch);
   const FetchOpdData = useSelector((state) => state.ProductReducersData.OpdFetch);
-  const DataCategory = useSelector((state) => state.CategoryDataReducers.ApiStat)
+  const DataCategory = useSelector((state) => state.CategoryDataReducers.ApiStat);
+  const pharmacyreportdata = useSelector((state) => state.reportReducer.reportpharmacydata)
 
-
+console.log("datacoming",pharmacyreportdata)
+let availablereportquantity = pharmacyreportdata.AvailableQuantity;
+let salesreportquantity = pharmacyreportdata.SalesQuantity;
+console.log("salesreportquantity",salesreportquantity)
+console.log("availablereportquantity",availablereportquantity)
 console.log("checkingggg",DataCategory)
 console.log("checkingggg2222",FetchPharmacyData)
   const edithandle = (id) => {
@@ -89,22 +95,16 @@ console.log("checkingggg2222",FetchPharmacyData)
       sortable: true,
     },
     {
-      name: "Product Category",
-      selector: row =>  row.name,
+      name: "Total Quantity",
+      selector: row =>  row.AvailableQuantity,
       sortable: true,
     },
   
     {
-      name: "Status ",
-      selector: row => row.status,
+      name: "remaining Quantity ",
+      selector: row => row.SalesQuantity,
       sortable: true,
-      cell : (rows)  =>{
-        if(rows.status ==="0"){
-          return "inactive"
-        }else{
-          return "active"
-        }
-      }
+      
     },
 
     // {
@@ -134,21 +134,45 @@ let text= false;
 
   const clickNavigateCattegory =(e) =>{
     let {name} = e.target
+    console.log("pharcamey",e.target)
    
     if(name === 'pharmacy'){ 
+      let parmacyId = ""
+       DataCategory.map((item) => {
+        if (name==item.name){
+          return (
+            parmacyId = item.id
+            )
+        }
+      })
+      let pharmecyreport  = {"id" : parmacyId,"action" : "AvailabaleQuantity"}
+      dispatch(reportPharmacy(pharmecyreport))
+      console.log("pharmacy",parmacyId)
       const newColumn1 = columns.filter((v) => {
         return v.name!=="Opd Price";
       })
       // const newColumn1 = columns.slice(0,4);
       setTableOPDData(false)
-      setData(FetchPharmacyData)
+      // setData(availablereportquantity)
+      setData(pharmacyreportdata)
       setColumns(newColumn1);
       console.log("after",columns)
       
       let run = columns[2]; 
      }
     else if(name === 'optical'){
-      setData(FetchOpticalData);
+      let opticalId = ""
+       DataCategory.map((item) => {
+        if (name==item.name){
+          return (
+            opticalId = item.id
+            )
+        }
+      })
+      let pharmecyreport  = {"id" : opticalId,"action" : "AvailabaleQuantity"}
+      dispatch(reportPharmacy(pharmecyreport))
+      // setData(salesreportquantity);
+      setData(pharmacyreportdata)
       const newColumn1 = columns.filter((v) => {
         return v.name!=="Opd Price";
       })
@@ -199,7 +223,7 @@ let text= false;
     
   }
 
-
+console.log("datata",data)
   useEffect(() => {
     setData(FetchProductData);
     dispatch(toggle());
